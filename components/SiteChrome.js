@@ -1,0 +1,44 @@
+import Logo from './Logo';
+import { JoinButton, SignOutButton } from './Membership';
+
+export function Header({ lang, t, member, path = '' }) {
+  return (
+    <header className="top">
+      <div className="wrap">
+        <a className="brand" href={`/${lang}`} aria-label={t.brandName}>
+          <Logo />
+          <b>{t.brandName}</b>
+        </a>
+        <nav className="links" aria-label="Main">
+          <a href={`/${lang}#listings`}>{t.nav.listings}</a>
+          <a href={`/${lang}#about`}>{t.nav.about}</a>
+          <a href={`/${lang}#market`}>{t.nav.market}</a>
+          <a href={`/${lang}#contact`}>{t.nav.contact}</a>
+        </nav>
+        {member && <span className="member-pill">{t.memberAs.replace('{n}', member.name.split(' ')[0])}</span>}
+        <a className="lang" href={`/${t.otherLang}${path}`} hrefLang={t.otherLang} lang={t.otherLang}>
+          {t.otherLangLabel}
+        </a>
+        {member ? <SignOutButton label={t.signOut} /> : <JoinButton label={t.join} />}
+      </div>
+    </header>
+  );
+}
+
+export function Footer({ lang, t }) {
+  return (
+    <footer>
+      <div className="wrap">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <img src="/images/c21.png" alt="Century 21" width="44" height="44" />
+          <span>{t.footerBrokerage}</span>
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 18px' }}>
+          <a href={`/${lang}/privacy`}>{t.footerPrivacy}</a>
+          <span>© {new Date().getFullYear()} johnjanjani.com</span>
+        </div>
+        <p style={{ margin: 0, flexBasis: '100%', opacity: 0.8 }}>{t.footerNote}</p>
+      </div>
+    </footer>
+  );
+}

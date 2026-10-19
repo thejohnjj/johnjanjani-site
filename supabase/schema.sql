@@ -1,0 +1,77 @@
+-- johnjanjani.com database setup
+-- Paste this whole file into Supabase → SQL Editor → New query, then press Run.
+-- Safe to run more than once.
+
+create extension if not exists "pgcrypto";
+
+-- Members: people who sign up to see prices and addresses (your leads)
+create table if not exists public.members (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null unique,
+  phone text not null,
+  lang text not null default 'en',
+  consent boolean not null default false,
+  consent_at timestamptz,
+  first_listing text,
+  created_at timestamptz not null default now(),
+  last_seen_at timestamptz not null default now()
+);
+
+-- Listings you add from the admin page
+create table if not exists public.listings (
+  id uuid primary key default gen_random_uuid(),
+  slug text not null unique,
+  mls_number text,
+  status text not null default 'sale' check (status in ('sale', 'rent')),
+  kind text not null default 'house' check (kind in ('house', 'townhouse', 'condo')),
+  city_en text not null,
+  city_fa text not null default '',
+  type_en text not null,
+  type_fa text not null default '',
+  price integer not null,
+  address text not null,
+  beds numeric not null default 0,
+  baths numeric not null default 0,
+  parking integer not null default 0,
+  sqft text not null default '',
+  description_en text not null default '',
+  description_fa text not null default '',
+  features_en text[] not null default '{}',
+  features_fa text[] not null default '{}',
+  photos text[] not null default '{}',
+  active boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Which member looked at which listing
+create table if not exists public.listing_views (
+  id bigserial primary key,
+  member_id uuid not null references public.members(id) on delete cascade,
+  listing_id uuid not null references public.listings(id) on delete cascade,
+  viewed_at timestamptz not null default now()
+);
+
+-- "Book a private showing" requests
+create table if not exists public.showing_requests (
+  id bigserial primary key,
+  member_id uuid not null references public.members(id) on delete cascade,
+  listing_id uuid not null references public.listings(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists listing_views_member_idx on public.listing_views(member_id);
+create index if not exists listings_active_idx on public.listings(active, sort_order);
+
+-- Lock every table: only the website's server (service role key) can read or write.
+alter table public.members enable row level security;
+alter table public.listings enable row level security;
+alter table public.listing_views enable row level security;
+alter table public.showing_requests enable row level security;
+
+-- Public bucket for listing photos (anyone can view a photo; only the server can create upload links)
+insert into storage.buckets (id, name, public)
+values ('listing-photos', 'listing-photos', true)
+on conflict (id) do nothing;
