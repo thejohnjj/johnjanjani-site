@@ -51,7 +51,7 @@ export function LogoutButton() {
 const EMPTY = {
   mls_number: '', status: 'sale', kind: 'house', city_en: '', city_fa: '', type_en: '', type_fa: '', price: '', address: '',
   beds: '', baths: '', parking: '', sqft: '', description_en: '', description_fa: '', features_en: '', features_fa: '',
-  photos: [], active: true, sort_order: 0,
+  photos: [], listing_brokerage: '', tour_url: '', active: true, sort_order: 0,
 };
 
 export function ListingEditor({ initial }) {
@@ -142,6 +142,8 @@ export function ListingEditor({ initial }) {
     <form className="form" onSubmit={save} style={{ padding: 0 }}>
       <div className="admin-grid">
         {F({ id: 'mls_number', label: 'MLS® number' })}
+        {F({ id: 'listing_brokerage', label: 'Listing brokerage (shown on the listing)', required: true, placeholder: 'e.g. HomeLife Landmark Realty Inc.' })}
+        {F({ id: 'tour_url', label: 'Instagram home tour link (optional)', type: 'url', placeholder: 'https://www.instagram.com/reel/…' })}
         <div className="field">
           <label htmlFor="status">For sale or rent</label>
           <select id="status" value={v.status} onChange={set('status')}>

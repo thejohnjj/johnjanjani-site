@@ -42,6 +42,7 @@ export default function ListingCard({ l, t, lang }) {
         <Price l={l} t={t} lang={lang} />
         {l.address && <div className="where ltr" dir="ltr" style={{ textAlign: 'start' }}>{l.address}</div>}
         <Specs l={l} t={t} lang={lang} />
+        {l.brokerage && <div className="broker">{t.brokerage}: <span dir="ltr">{l.brokerage}</span></div>}
       </div>
     </a>
   );

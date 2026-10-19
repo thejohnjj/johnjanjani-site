@@ -73,7 +73,13 @@ export default async function ListingPage({ params }) {
             ) : (
               <JoinButton label={t.unlockBtn} listingLabel={label} />
             )}
-            {l.mls && <p style={{ fontSize: 13 }} className="ltr">{t.mls} {l.mls}</p>}
+            {l.tour && (
+              <a className="btn btn-ghost tour" href={l.tour} target="_blank" rel="noopener noreferrer">{t.watchTour}</a>
+            )}
+            <div className="broker">
+              {l.brokerage && <p>{t.brokerage}: <b dir="ltr">{l.brokerage}</b></p>}
+              {l.mls && <p className="ltr" dir="ltr">{t.mls} {l.mls}</p>}
+            </div>
           </div>
         </div>
       </main>

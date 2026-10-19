@@ -40,12 +40,14 @@ export async function POST(req) {
     features_en: lines(b.features_en),
     features_fa: lines(b.features_fa),
     photos: Array.isArray(b.photos) ? b.photos.filter((u) => typeof u === 'string' && u.startsWith('https://')).slice(0, 40) : [],
+    listing_brokerage: String(b.listing_brokerage || '').trim(),
+    tour_url: /^https:\/\//.test(String(b.tour_url || '').trim()) ? String(b.tour_url).trim() : null,
     active: b.active !== false,
     sort_order: parseInt(b.sort_order, 10) || 0,
     updated_at: new Date().toISOString(),
   };
-  if (!row.city_en || !row.type_en || !row.address || !row.price) {
-    return NextResponse.json({ error: 'City, type, address and price are required.' }, { status: 400 });
+  if (!row.city_en || !row.type_en || !row.address || !row.price || !row.listing_brokerage) {
+    return NextResponse.json({ error: 'City, type, address, price and listing brokerage are required.' }, { status: 400 });
   }
 
   const client = db();

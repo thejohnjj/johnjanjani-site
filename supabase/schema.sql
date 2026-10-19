@@ -75,3 +75,7 @@ alter table public.showing_requests enable row level security;
 insert into storage.buckets (id, name, public)
 values ('listing-photos', 'listing-photos', true)
 on conflict (id) do nothing;
+
+-- Added October 2026: listing brokerage (shown on every listing) and Instagram home tour link.
+alter table listings add column if not exists listing_brokerage text not null default '';
+alter table listings add column if not exists tour_url text;

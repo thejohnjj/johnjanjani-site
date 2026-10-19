@@ -207,3 +207,10 @@ th { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: v
 .admin-photos img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; display: block; }
 .admin-photos div div { display: flex; gap: 6px; margin-top: 6px; }
 .admin-photos button { flex: 1; min-height: 36px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 8px; cursor: pointer; }
+
+/* Listing brokerage line and home tour link */
+.broker { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.broker p { margin: 0; }
+.card .broker { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 2px; }
+.btn.tour { align-self: flex-start; color: var(--ink); border-color: var(--line); }
+.btn.tour::before { content: '▶'; font-size: 11px; margin-inline-end: 8px; color: var(--accent); }
