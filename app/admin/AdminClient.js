@@ -68,8 +68,8 @@ export function ListingEditor({ initial }) {
   async function upload(e) {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const url = String(process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
+    const anon = String(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
     if (!url || !anon) return setMsg('Supabase keys are missing in Vercel settings.');
     const supa = createClient(url, anon);
     setBusy(true);
