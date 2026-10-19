@@ -1,3 +1,4 @@
+import { SITE } from '@/lib/site';
 import '../globals.css';
 import { notFound } from 'next/navigation';
 import { t as dictFor, isLang } from '@/lib/i18n';
@@ -11,7 +12,7 @@ export const viewport = {
 
 export function generateMetadata({ params }) {
   const t = dictFor(params.lang);
-  const site = process.env.SITE_URL || 'https://johnjanjani.com';
+  const site = SITE;
   return {
     metadataBase: new URL(site),
     title: { default: t.metaTitle, template: `%s | ${t.brandName}` },

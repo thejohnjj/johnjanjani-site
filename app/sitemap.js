@@ -1,9 +1,10 @@
+import { SITE } from '@/lib/site';
 import { db } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap() {
-  const site = process.env.SITE_URL || 'https://johnjanjani.com';
+  const site = SITE;
   const now = new Date();
   const pages = ['', '/privacy'].flatMap((p) =>
     ['en', 'fa'].map((lang) => ({ url: `${site}/${lang}${p}`, lastModified: now, changeFrequency: p ? 'yearly' : 'weekly', priority: p ? 0.3 : 1 }))

@@ -25,7 +25,7 @@ Bilingual (English / Farsi) real estate website for Purya (John) Janjani, Centur
 | `SUPABASE_SERVICE_ROLE_KEY` | Same page → `service_role` key (secret, never share it) |
 | `SESSION_SECRET` | Any long random text, 40+ characters |
 | `ADMIN_PASSWORD` | The password you will use for /admin |
-| `SITE_URL` | `https://johnjanjani.com` |
+| `SITE_URL` | Not used any more (the address is set in `lib/site.js`) |
 | `RESEND_API_KEY` | Optional, for email alerts (resend.com) |
 | `LEAD_NOTIFY_EMAIL` | Optional, the email that receives alerts |
 
