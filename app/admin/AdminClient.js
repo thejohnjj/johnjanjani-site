@@ -96,6 +96,24 @@ export function ListingEditor({ initial }) {
     e.target.value = '';
   }
 
+  async function importLinks() {
+    const urls = String(v.photo_links || '').split(/\s+/).filter((u) => u.startsWith('https://'));
+    if (!urls.length) return setMsg('Paste photo links first, one per line.');
+    setBusy(true);
+    setMsg(`Copying ${urls.length} photo(s)…`);
+    const r = await fetch('/api/admin/import-photos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ urls }),
+    });
+    const data = await r.json().catch(() => ({}));
+    setBusy(false);
+    if (!r.ok) return setMsg(data.error || 'Could not copy photos.');
+    setV((cur) => ({ ...cur, photo_links: '', photos: [...cur.photos, ...data.photos] }));
+    const failed = data.failed?.length ? ` ${data.failed.length} could not be copied.` : '';
+    setMsg(`${data.photos.length} photo(s) added.${failed} Press Save to keep them.`);
+  }
+
   function movePhoto(i, d) {
     const p = [...v.photos];
     const j = i + d;
@@ -198,6 +216,13 @@ export function ListingEditor({ initial }) {
       <div className="field">
         <label htmlFor="photos">Photos (the first one is the cover)</label>
         <input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={upload} disabled={busy} />
+      </div>
+      <div className="field">
+        <label htmlFor="photo_links">Or paste photo links (one per line)</label>
+        <textarea id="photo_links" rows="3" value={v.photo_links || ''} onChange={set('photo_links')} placeholder="https://…jpg" />
+        <button type="button" className="btn" style={{ border: '1px solid var(--line)', alignSelf: 'flex-start', marginTop: 8 }} onClick={importLinks} disabled={busy}>
+          Copy photos from links
+        </button>
       </div>
       {v.photos.length > 0 && (
         <div className="admin-photos">
