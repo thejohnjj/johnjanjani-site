@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/supabase';
 import { isAdmin } from '@/lib/session';
 import { slugify } from '@/lib/format';
+import { cleanCode } from '@/lib/listings';
 
 export const runtime = 'nodejs';
 
@@ -22,6 +23,7 @@ export async function POST(req) {
 
   const price = parseInt(String(b.price || '').replace(/\D/g, ''), 10);
   const row = {
+    code: cleanCode(b.code) || null,
     mls_number: String(b.mls_number || '').trim() || null,
     status: b.status === 'rent' ? 'rent' : 'sale',
     kind: ['house', 'townhouse', 'condo'].includes(b.kind) ? b.kind : 'house',
@@ -66,7 +68,10 @@ export async function POST(req) {
     }
     result = await client.from('listings').insert({ ...row, slug }).select('id, slug').single();
   }
-  if (result.error) return NextResponse.json({ error: result.error.message }, { status: 500 });
+  if (result.error) {
+    const dup = /listings_code_key|duplicate/i.test(result.error.message);
+    return NextResponse.json({ error: dup ? `Code ${row.code} is already used by another listing.` : result.error.message }, { status: dup ? 409 : 500 });
+  }
   revalidatePath('/', 'layout');
   return NextResponse.json({ ok: true, ...result.data });
 }

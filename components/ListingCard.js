@@ -38,7 +38,9 @@ export default function ListingCard({ l, t, lang }) {
         <span className="tag">{t.status[l.status]}</span>
       </div>
       <div className="body">
-        <div className="where">{l.type[lang]} · {l.city[lang]}</div>
+        <div className="where">
+          {l.code ? <b className="code">{t.code}: <span dir="ltr">{digits(l.code, lang)}</span></b> : l.type[lang]} · {l.city[lang]}
+        </div>
         <Price l={l} t={t} lang={lang} />
         {l.address && <div className="where ltr" dir="ltr" style={{ textAlign: 'start' }}>{l.address}</div>}
         <Specs l={l} t={t} lang={lang} />

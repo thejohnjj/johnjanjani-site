@@ -8,6 +8,7 @@ import Gallery from '@/components/Gallery';
 import ShowingButton from '@/components/ShowingButton';
 import LockIcon from '@/components/LockIcon';
 import { Price, Specs } from '@/components/ListingCard';
+import { digits } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }) {
   if (!l) return {};
   const lang = params.lang;
   const t = dictFor(lang);
-  const title = `${l.type[lang]} · ${l.city[lang]} · ${t.status[l.status]}`;
+  const title = `${l.code ? `${t.code} ${l.code} · ` : ''}${l.type[lang]} · ${l.city[lang]} · ${t.status[l.status]}`;
   return {
     title,
     description: l.description[lang].slice(0, 160),
@@ -42,6 +43,7 @@ export default async function ListingPage({ params }) {
         <div className="detail">
           <Gallery photos={l.photos} alt={`${l.type[lang]} · ${l.city[lang]}`} />
           <div className="info">
+            {l.code && <div className="code-badge">{t.code}: <span dir="ltr">{digits(l.code, lang)}</span></div>}
             <div className="eyebrow">{t.status[l.status]} · {l.city[lang]}</div>
             <h1>{l.type[lang]}</h1>
             <Price l={l} t={t} lang={lang} />

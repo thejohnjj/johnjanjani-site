@@ -49,7 +49,7 @@ export function LogoutButton() {
 }
 
 const EMPTY = {
-  mls_number: '', status: 'sale', kind: 'house', city_en: '', city_fa: '', type_en: '', type_fa: '', price: '', address: '',
+  code: '', mls_number: '', status: 'sale', kind: 'house', city_en: '', city_fa: '', type_en: '', type_fa: '', price: '', address: '',
   beds: '', baths: '', parking: '', sqft: '', description_en: '', description_fa: '', features_en: '', features_fa: '',
   photos: [], listing_brokerage: '', tour_url: '', active: true, sort_order: 0,
 };
@@ -159,6 +159,7 @@ export function ListingEditor({ initial }) {
   return (
     <form className="form" onSubmit={save} style={{ padding: 0 }}>
       <div className="admin-grid">
+        {F({ id: 'code', label: 'Code (same as your Instagram post, e.g. 12)', required: true })}
         {F({ id: 'mls_number', label: 'MLS® number' })}
         {F({ id: 'listing_brokerage', label: 'Listing brokerage (shown on the listing)', required: true, placeholder: 'e.g. HomeLife Landmark Realty Inc.' })}
         {F({ id: 'tour_url', label: 'Instagram home tour link (optional)', type: 'url', placeholder: 'https://www.instagram.com/reel/…' })}

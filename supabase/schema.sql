@@ -79,3 +79,7 @@ on conflict (id) do nothing;
 -- Added October 2026: listing brokerage (shown on every listing) and Instagram home tour link.
 alter table listings add column if not exists listing_brokerage text not null default '';
 alter table listings add column if not exists tour_url text;
+
+-- Added October 2026: listing code that matches the Instagram home tour post (e.g. 12).
+alter table listings add column if not exists code text;
+create unique index if not exists listings_code_key on listings (lower(code)) where code is not null and code <> '';

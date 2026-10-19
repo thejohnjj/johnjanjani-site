@@ -15,7 +15,7 @@ export default async function Admin() {
 
   const [members, listings, showings, views] = await Promise.all([
     client.from('members').select('id, name, email, phone, lang, first_listing, created_at, last_seen_at').order('created_at', { ascending: false }).limit(500),
-    client.from('listings').select('id, slug, mls_number, status, type_en, city_en, price, active, photos').order('sort_order').order('created_at', { ascending: false }),
+    client.from('listings').select('*').order('sort_order').order('created_at', { ascending: false }),
     client.from('showing_requests').select('id, created_at, members(name, phone, email), listings(address, mls_number)').order('created_at', { ascending: false }).limit(100),
     client.from('listing_views').select('member_id'),
   ]);
@@ -39,11 +39,12 @@ export default async function Admin() {
           </div>
           <div className="tablebox">
             <table>
-              <thead><tr><th>Photo</th><th>Listing</th><th>MLS®</th><th>Price</th><th>Shown</th><th></th></tr></thead>
+              <thead><tr><th>Photo</th><th>Code</th><th>Listing</th><th>MLS®</th><th>Price</th><th>Shown</th><th></th></tr></thead>
               <tbody>
                 {(listings.data || []).map((l) => (
                   <tr key={l.id}>
                     <td>{l.photos?.[0] ? <img src={l.photos[0]} alt="" width="72" height="54" style={{ objectFit: 'cover', borderRadius: 8 }} /> : '—'}</td>
+                    <td><b>{l.code || '—'}</b></td>
                     <td>{l.type_en} · {l.city_en}<br /><small>{l.status === 'rent' ? 'For rent' : 'For sale'}</small></td>
                     <td>{l.mls_number || '—'}</td>
                     <td>${Number(l.price).toLocaleString('en-US')}{l.status === 'rent' ? '/mo' : ''}</td>
@@ -51,7 +52,7 @@ export default async function Admin() {
                     <td><a href={`/admin/listing/${l.id}`}>Edit</a></td>
                   </tr>
                 ))}
-                {!listings.data?.length && <tr><td colSpan="6">No listings yet. Press “Add a listing”.</td></tr>}
+                {!listings.data?.length && <tr><td colSpan="7">No listings yet. Press “Add a listing”.</td></tr>}
               </tbody>
             </table>
           </div>

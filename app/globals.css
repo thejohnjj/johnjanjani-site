@@ -217,3 +217,12 @@ th { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: v
 .btn.tour { align-self: flex-start; color: var(--ink); border-color: var(--line); }
 .btn.tour::before { content: '▶'; font-size: 11px; margin-inline-end: 8px; color: var(--accent); }
 @media (max-width: 520px) { .feat { grid-template-columns: 1fr; } .thumbs button { width: 76px; height: 58px; } }
+
+/* Listing codes (match Instagram home tour posts) */
+.where .code { color: var(--ink); font-weight: 600; }
+.code-badge { align-self: flex-start; background: var(--accent); color: #0B2226; font-weight: 600; border-radius: 999px; padding: 6px 14px; font-size: 14px; letter-spacing: .04em; }
+.codefind { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 0 0 20px; padding: 16px 20px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
+.codefind label { font-weight: 600; }
+.codefind > div { display: flex; gap: 8px; flex: 1 1 260px; max-width: 360px; }
+.codefind input { flex: 1; min-width: 0; min-height: 44px; border: 1px solid var(--line); border-radius: 999px; padding: 0 16px; font: inherit; background: var(--bg); color: var(--ink); }
+.codefind p { flex-basis: 100%; margin: 0; color: var(--error); font-size: 14px; }
