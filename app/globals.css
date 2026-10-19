@@ -216,3 +216,4 @@ th { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: v
 .card .broker { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 2px; }
 .btn.tour { align-self: flex-start; color: var(--ink); border-color: var(--line); }
 .btn.tour::before { content: '▶'; font-size: 11px; margin-inline-end: 8px; color: var(--accent); }
+@media (max-width: 520px) { .feat { grid-template-columns: 1fr; } .thumbs button { width: 76px; height: 58px; } }
