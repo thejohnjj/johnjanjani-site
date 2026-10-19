@@ -40,7 +40,7 @@ async function copyOne(client, url) {
 export async function POST(req) {
   if (!isAdmin()) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const body = await req.json().catch(() => ({}));
-  const urls = (Array.isArray(body.urls) ? body.urls : []).map(safeUrl).filter(Boolean).slice(0, 40);
+  const urls = (Array.isArray(body.urls) ? body.urls : []).map(safeUrl).filter(Boolean).slice(0, 60);
   if (!urls.length) return NextResponse.json({ error: 'Paste at least one https photo link.' }, { status: 400 });
   const client = db();
   if (!client) return NextResponse.json({ error: 'server' }, { status: 500 });

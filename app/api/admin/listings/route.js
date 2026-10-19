@@ -41,7 +41,7 @@ export async function POST(req) {
     description_fa: String(b.description_fa || '').trim(),
     features_en: lines(b.features_en),
     features_fa: lines(b.features_fa),
-    photos: Array.isArray(b.photos) ? b.photos.filter((u) => typeof u === 'string' && u.startsWith('https://')).slice(0, 40) : [],
+    photos: Array.isArray(b.photos) ? b.photos.filter((u) => typeof u === 'string' && u.startsWith('https://')).slice(0, 60) : [],
     listing_brokerage: String(b.listing_brokerage || '').trim(),
     tour_url: /^https:\/\//.test(String(b.tour_url || '').trim()) ? String(b.tour_url).trim() : null,
     active: b.active !== false,
