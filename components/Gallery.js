@@ -12,7 +12,7 @@ export default function Gallery({ photos, alt }) {
         <div className="thumbs">
           {photos.map((p, n) => (
             <button key={p} type="button" aria-current={n === i} aria-label={`${n + 1}`} onClick={() => setI(n)}>
-              <img src={p} alt="" loading="lazy" />
+              <img src={p} alt="" loading={n < 8 ? "eager" : "lazy"} />
             </button>
           ))}
         </div>
