@@ -24,7 +24,7 @@ export function Specs({ l, t, lang }) {
       <span><b>{digits(l.beds, lang)}</b> {t.beds}</span>
       <span><b>{digits(l.baths, lang)}</b> {t.baths}</span>
       <span><b>{digits(l.parking, lang)}</b> {t.parking}</span>
-      {l.sqft && <span><b>{digits(l.sqft, lang)}</b> {t.sqft}</span>}
+      {l.sqft && <span><b dir="ltr">{digits(l.sqft, lang)}</b> {t.sqft}</span>}
     </div>
   );
 }
