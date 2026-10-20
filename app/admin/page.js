@@ -1,3 +1,4 @@
+import { sortByCode } from '@/lib/listings';
 import { isAdmin } from '@/lib/session';
 import { db } from '@/lib/supabase';
 import { LoginForm, LogoutButton } from './AdminClient';
@@ -41,7 +42,7 @@ export default async function Admin() {
             <table>
               <thead><tr><th>Photo</th><th>Code</th><th>Listing</th><th>MLS®</th><th>Price</th><th>Shown</th><th></th></tr></thead>
               <tbody>
-                {(listings.data || []).map((l) => (
+                {sortByCode(listings.data || []).map((l) => (
                   <tr key={l.id}>
                     <td>{l.photos?.[0] ? <img src={l.photos[0]} alt="" width="72" height="54" style={{ objectFit: 'cover', borderRadius: 8 }} /> : '—'}</td>
                     <td><b>{l.code || '—'}</b></td>
