@@ -87,3 +87,13 @@ export async function DELETE(req) {
   revalidatePath('/', 'layout');
   return NextResponse.json({ ok: true });
 }
+
+// Returns all listings with every field (admin only), for bulk edits.
+export async function GET() {
+  if (!isAdmin()) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  const client = db();
+  if (!client) return NextResponse.json({ error: 'server' }, { status: 500 });
+  const { data, error } = await client.from('listings').select('*').order('created_at');
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ listings: data });
+}

@@ -5,6 +5,8 @@ import { money, number } from '@/lib/format';
 import MembershipProvider, { JoinButton } from '@/components/Membership';
 import ListingsGrid from '@/components/ListingsGrid';
 import { Header, Footer } from '@/components/SiteChrome';
+import { Icons } from '@/components/ContactIcons';
+import { PHONE, PHONE_TEL, INSTAGRAM_EN, INSTAGRAM_FA, FACEBOOK_URL, OFFICE, OFFICE_MAP } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -101,19 +103,24 @@ export default async function Home({ params }) {
               <h2>{t.contactTitle}</h2>
               <p>{t.contactText}</p>
             </div>
-            <dl>
-              <dt>{t.contactLabels.phone}</dt>
-              <dd className="ltr"><a href="tel:+14376676652">437-667-6652</a></dd>
-              <dt>{t.contactLabels.web}</dt>
-              <dd className="ltr">johnjanjani.com</dd>
-              <dt>Instagram</dt>
-              <dd className="ltr">
-                <a href="https://instagram.com/john.janjani" rel="noopener">@john.janjani</a> ·{' '}
-                <a href="https://instagram.com/purya.janjani" rel="noopener">@purya.janjani</a>
-              </dd>
-              <dt>{t.contactLabels.office}</dt>
-              <dd className="ltr">1053 McNicoll Ave, Toronto, ON</dd>
-            </dl>
+            <div className="cbox">
+              <div className="cphone">
+                <span className="cl">{t.contactLabels.phone}</span>
+                <a className="num ltr" dir="ltr" href={`tel:${PHONE_TEL}`}>{PHONE}</a>
+                <div className="cbtns">
+                  <a className="btn btn-accent" href={`tel:${PHONE_TEL}`}><span className="ci">{Icons.phone}</span>{t.contactCall}</a>
+                  <a className="btn btn-ghost" href={`sms:${PHONE_TEL}`}><span className="ci">{Icons.sms}</span>{t.contactText2}</a>
+                </div>
+              </div>
+              <ul className="clinks">
+                <li><a href={`https://instagram.com/${INSTAGRAM_EN}`} target="_blank" rel="noopener noreferrer"><span className="ic">{Icons.instagram}</span><span><b>Instagram</b><small dir="ltr">@{INSTAGRAM_EN} · English</small></span></a></li>
+                <li><a href={`https://instagram.com/${INSTAGRAM_FA}`} target="_blank" rel="noopener noreferrer"><span className="ic">{Icons.instagram}</span><span><b>Instagram</b><small dir="ltr">@{INSTAGRAM_FA} · فارسی</small></span></a></li>
+                {FACEBOOK_URL && (
+                  <li><a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer"><span className="ic">{Icons.facebook}</span><span><b>Facebook</b><small>{t.contactFacebook}</small></span></a></li>
+                )}
+                <li><a href={OFFICE_MAP} target="_blank" rel="noopener noreferrer"><span className="ic">{Icons.pin}</span><span><b>{t.contactLabels.office}</b><small dir="ltr">{OFFICE}</small></span></a></li>
+              </ul>
+            </div>
           </div>
         </section>
       </main>
