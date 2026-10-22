@@ -1,9 +1,10 @@
 import Script from 'next/script';
+import { GA_ID, META_PIXEL_ID } from '@/lib/site';
 
 // Google Analytics 4 and the Meta Pixel. Each loads only when its ID is set in Vercel.
 export default function Analytics() {
-  const ga = process.env.NEXT_PUBLIC_GA_ID;
-  const pixel = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  const ga = process.env.NEXT_PUBLIC_GA_ID || GA_ID;
+  const pixel = process.env.NEXT_PUBLIC_META_PIXEL_ID || META_PIXEL_ID;
   return (
     <>
       {ga && /^G-[A-Z0-9]+$/i.test(ga) && (
