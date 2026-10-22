@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useMembership } from './Membership';
 import { Icons } from './ContactIcons';
 
@@ -13,16 +14,23 @@ const Burger = ({ open }) => (
 // Menu button for phones: opens a panel under the header with every section of the site.
 export default function MobileMenu({ lang, t, member, path = '' }) {
   const [open, setOpen] = useState(false);
+  const [top, setTop] = useState(0);
+  const btn = useRef(null);
   const m = useMembership();
 
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === 'Escape' && setOpen(false);
+    // Keep the panel right under the header, wherever the page is scrolled.
+    const place = () => setTop(Math.round(btn.current?.closest('header')?.getBoundingClientRect().bottom || 0));
+    place();
     document.addEventListener('keydown', onKey);
-    document.documentElement.classList.add('menu-open');
+    window.addEventListener('resize', place);
+    window.addEventListener('scroll', place, { passive: true });
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.documentElement.classList.remove('menu-open');
+      window.removeEventListener('resize', place);
+      window.removeEventListener('scroll', place);
     };
   }, [open]);
 
@@ -40,6 +48,7 @@ export default function MobileMenu({ lang, t, member, path = '' }) {
   return (
     <>
       <button
+        ref={btn}
         type="button"
         className="menu-btn"
         aria-expanded={open}
@@ -49,8 +58,8 @@ export default function MobileMenu({ lang, t, member, path = '' }) {
       >
         <Burger open={open} />
       </button>
-      {open && (
-        <div className="mmenu-scrim" onClick={close}>
+      {open && createPortal(
+        <div className="mmenu-scrim" style={{ top }} onClick={close}>
           <nav id="mmenu" className="mmenu" aria-label={t.menu} onClick={(e) => e.stopPropagation()}>
             <ul>
               {links.map(([href, label, icon]) => (
@@ -71,7 +80,8 @@ export default function MobileMenu({ lang, t, member, path = '' }) {
               )}
             </div>
           </nav>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
