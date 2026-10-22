@@ -404,3 +404,24 @@ html[lang='fa'] .reel-embed h2 { font-family: var(--fa-display); }
 .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
 .seg button { border: 0; border-radius: 999px; min-height: 42px; padding: 8px 12px; background: transparent; color: var(--ink); font: inherit; font-weight: 500; cursor: pointer; }
 .seg button[aria-pressed='true'] { background: var(--teal); color: var(--on-teal); }
+
+/* phone menu */
+.menu-btn { display: none; }
+.head-join { display: contents; }
+@media (max-width: 820px) {
+  .head-join { display: none; }
+  .menu-btn { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 14px; border: 1px solid rgba(246, 241, 231, .4); background: transparent; color: var(--on-teal); cursor: pointer; flex: none; }
+  .menu-btn[aria-expanded='true'] { background: var(--accent); border-color: var(--accent); color: #0B2226; }
+}
+.mmenu-scrim { position: absolute; top: 100%; left: 0; right: 0; height: 100vh; height: 100dvh; z-index: 45; background: rgba(3, 18, 20, .55); }
+.mmenu { max-height: calc(100dvh - 80px); }
+.mmenu { background: var(--teal); color: var(--on-teal); padding: 8px max(16px, env(safe-area-inset-right, 0px)) calc(18px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); border-top: 1px solid rgba(246, 241, 231, .12); max-height: 100%; overflow-y: auto; box-shadow: 0 20px 40px rgba(0, 0, 0, .3); }
+.mmenu ul { list-style: none; margin: 0; padding: 0; }
+.mmenu li a { display: flex; align-items: center; gap: 14px; padding: 14px 4px; color: var(--on-teal); text-decoration: none; font-size: 18px; border-bottom: 1px solid rgba(246, 241, 231, .1); }
+html[lang='fa'] .mmenu li a { font-family: var(--fa-display); font-weight: 700; font-size: 17px; }
+.mmenu li a:active { color: var(--accent); }
+.mi { display: inline-flex; width: 36px; height: 36px; padding: 8px; border-radius: 50%; background: rgba(246, 241, 231, .1); color: var(--accent); flex: none; }
+.mi svg { width: 100%; height: 100%; }
+.mmenu-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+html.menu-open, html.menu-open body { overflow: hidden; }
+@media (min-width: 821px) { .mmenu-scrim { display: none; } }

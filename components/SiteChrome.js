@@ -1,5 +1,6 @@
 import Logo from './Logo';
 import { JoinButton, SignOutButton } from './Membership';
+import MobileMenu from './MobileMenu';
 
 export function Header({ lang, t, member, path = '' }) {
   return (
@@ -20,7 +21,8 @@ export function Header({ lang, t, member, path = '' }) {
         <a className="lang" href={`/${t.otherLang}${path}`} hrefLang={t.otherLang} lang={t.otherLang}>
           {t.otherLangLabel}
         </a>
-        {member ? <SignOutButton label={t.signOut} /> : <JoinButton label={t.join} />}
+        <span className="head-join">{member ? <SignOutButton label={t.signOut} /> : <JoinButton label={t.join} />}</span>
+        <MobileMenu lang={lang} t={t} member={Boolean(member)} path={path} />
       </div>
     </header>
   );
