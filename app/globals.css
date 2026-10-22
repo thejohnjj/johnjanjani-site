@@ -317,7 +317,7 @@ html[lang='fa'] .form-sep { letter-spacing: 0; font-size: 15px; }
 .g-sec { padding-bottom: 30px; margin-bottom: 30px; border-bottom: 1px solid var(--line); }
 .g-sec h2 { font-size: clamp(26px, 3vw, 34px); margin-bottom: 12px; }
 .g-sec p { color: var(--ink); }
-.g-sec ul { padding-inline-start: 20px; display: grid; gap: 10px; color: #26393C; }
+.g-sec ul { padding-inline-start: 20px; display: grid; gap: 10px; color: var(--ink); }
 .g-sec li::marker { color: var(--accent); }
 .g-tip { background: var(--surface); border: 1px solid var(--line); border-inline-start: 4px solid var(--accent); border-radius: 12px; padding: 14px 18px; margin: 18px 0 0; }
 .g-table { overflow-x: auto; margin: 14px 0 16px; border: 1px solid var(--line); border-radius: 14px; }
@@ -425,3 +425,6 @@ html[lang='fa'] .mmenu li a { font-family: var(--fa-display); font-weight: 700; 
 .mmenu-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
 html.menu-open, html.menu-open body { overflow: hidden; }
 @media (min-width: 821px) { .mmenu-scrim { display: none; } }
+.g-table table { table-layout: fixed; min-width: 0; }
+.g-table th, .g-table td { overflow-wrap: anywhere; vertical-align: top; }
+@media (max-width: 520px) { .g-table th, .g-table td { padding: 9px 10px; font-size: 14px; } }
