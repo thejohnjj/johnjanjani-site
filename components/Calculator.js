@@ -14,7 +14,9 @@ export default function Calculator({ lang, t }) {
   const pct = (n, d = 1) => digits(Number(n).toFixed(d).replace(/\.0+$/, ''), lang) + (fa ? '٪' : '%');
 
   const [price, setPrice] = useState('900,000');
+  const [mode, setMode] = useState('down');
   const [downPct, setDownPct] = useState(10);
+  const [loan, setLoan] = useState('810,000');
   const [rate, setRate] = useState('4.5');
   const [years, setYears] = useState(25);
   const [ftb, setFtb] = useState(true);
@@ -22,10 +24,14 @@ export default function Calculator({ lang, t }) {
   const [other, setOther] = useState('3,000');
 
   const p = parse(price);
+  const loanNum = parse(loan);
+  const loanTooBig = mode === 'loan' && loanNum > p;
+  const down = mode === 'loan' ? Math.max(0, p - Math.min(loanNum, p)) : (p * downPct) / 100;
   const r = useMemo(
-    () => compute({ price: p, down: (p * downPct) / 100, rate: parse(rate), years, ftb, toronto, other: parse(other) }),
-    [p, downPct, rate, years, ftb, toronto, other]
+    () => compute({ price: p, down, rate: parse(rate), years, ftb, toronto, other: parse(other) }),
+    [p, down, rate, years, ftb, toronto, other]
   );
+  const actualPct = p ? (down / p) * 100 : 0;
   const minPct = p ? Math.ceil((minDownPayment(p) / p) * 1000) / 10 : 5;
 
   const money = (setter) => (e) => {
@@ -48,11 +54,36 @@ export default function Calculator({ lang, t }) {
           <div className="money-in" dir="ltr"><span>$</span><input id="cPrice" inputMode="numeric" value={price} onChange={money(setPrice)} /></div>
         </div>
         <div className="field">
-          <label htmlFor="cDown">{t.cDown}: <b>{pct(downPct)}</b> · <b>{cur((p * downPct) / 100)}</b></label>
-          <input id="cDown" type="range" min="5" max="50" step="0.5" value={downPct} onChange={(e) => setDownPct(Number(e.target.value))} dir="ltr" />
-          {r.belowMin && <p className="warn">{t.cMinDown.replace('{m}', `${cur(r.minDown)} (${pct(minPct)})`)}</p>}
-          {!r.insurable && downPct < 20 && <p className="warn">{t.cNoInsure}</p>}
+          <span className="flabel">{t.cMode}</span>
+          <div className="seg" role="group" aria-label={t.cMode}>
+            <button type="button" aria-pressed={mode === 'down'} onClick={() => setMode('down')}>{t.cModeDown}</button>
+            <button
+              type="button"
+              aria-pressed={mode === 'loan'}
+              onClick={() => {
+                setLoan(Math.round(p - down).toLocaleString('en-US'));
+                setMode('loan');
+              }}
+            >
+              {t.cModeLoan}
+            </button>
+          </div>
         </div>
+        {mode === 'down' ? (
+          <div className="field">
+            <label htmlFor="cDown">{t.cDown}: <b>{pct(downPct)}</b> · <b>{cur(down)}</b></label>
+            <input id="cDown" type="range" min="5" max="50" step="0.5" value={downPct} onChange={(e) => setDownPct(Number(e.target.value))} dir="ltr" />
+          </div>
+        ) : (
+          <div className="field">
+            <label htmlFor="cLoan">{t.cLoan}</label>
+            <div className="money-in" dir="ltr"><span>$</span><input id="cLoan" inputMode="numeric" value={loan} onChange={money(setLoan)} /></div>
+            <p className="hint" style={{ margin: 0 }}>{t.cLoanHint.replace('{d}', cur(down)).replace('{p}', pct(actualPct))}</p>
+            {loanTooBig && <p className="warn">{t.cLoanTooBig}</p>}
+          </div>
+        )}
+        {r.belowMin && <p className="warn" style={{ marginTop: -6 }}>{t.cMinDown.replace('{m}', `${cur(r.minDown)} (${pct(minPct)})`)}</p>}
+        {!r.insurable && actualPct < 20 && <p className="warn" style={{ marginTop: -6 }}>{t.cNoInsure}</p>}
         <div className="grid2">
           <div className="field">
             <label htmlFor="cRate">{t.cRate}</label>
