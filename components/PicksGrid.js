@@ -4,15 +4,17 @@ import { useState } from 'react';
 import ListingCard from './ListingCard';
 
 const STEP = 6;
+// "Richmond Hill (South Richvale)" → "Richmond Hill", so each city gets one tab.
+const cityOf = (p, lang) => p.city[lang].replace(/\s*[(（].*$/, '').trim();
 
 // Daily picks with area tabs; areas come from the picks themselves, busiest first.
 export default function PicksGrid({ picks, t, lang }) {
   const [area, setArea] = useState('all');
   const [limit, setLimit] = useState(STEP);
   const counts = {};
-  for (const p of picks) counts[p.city[lang]] = (counts[p.city[lang]] || 0) + 1;
+  for (const p of picks) counts[cityOf(p, lang)] = (counts[cityOf(p, lang)] || 0) + 1;
   const areas = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b, lang));
-  const shown = picks.filter((p) => area === 'all' || p.city[lang] === area);
+  const shown = picks.filter((p) => area === 'all' || cityOf(p, lang) === area);
 
   return (
     <>
