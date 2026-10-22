@@ -11,8 +11,9 @@ export function Header({ lang, t, member, path = '' }) {
         </a>
         <nav className="links" aria-label="Main">
           <a href={`/${lang}#listings`}>{t.nav.listings}</a>
-          <a href={`/${lang}#about`}>{t.nav.about}</a>
-          <a href={`/${lang}#market`}>{t.nav.market}</a>
+          <a href={`/${lang}/home-value`}>{t.navTools.homeValue}</a>
+          <a href={`/${lang}/calculator`}>{t.navTools.calculator}</a>
+          <a href={`/${lang}/guide`}>{t.navTools.guide}</a>
           <a href={`/${lang}#contact`}>{t.nav.contact}</a>
         </nav>
         {member && <span className="member-pill">{t.memberAs.replace('{n}', member.name.split(' ')[0])}</span>}
@@ -34,6 +35,9 @@ export function Footer({ lang, t }) {
           <span>{t.footerBrokerage}</span>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 18px' }}>
+          <a href={`/${lang}/home-value`}>{t.navTools.homeValue}</a>
+          <a href={`/${lang}/calculator`}>{t.navTools.calculator}</a>
+          <a href={`/${lang}/guide`}>{t.navTools.guide}</a>
           <a href={`/${lang}/privacy`}>{t.footerPrivacy}</a>
           <span>© {new Date().getFullYear()} johnjanjani.com</span>
         </div>

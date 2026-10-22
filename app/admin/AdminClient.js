@@ -256,3 +256,76 @@ export function ListingEditor({ initial }) {
     </form>
   );
 }
+
+export function ReviewsAdmin({ reviews }) {
+  const router = useRouter();
+  const [msg, setMsg] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function save(e) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const f = Object.fromEntries(new FormData(form));
+    setBusy(true);
+    setMsg('');
+    const res = await fetch('/api/admin/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(f) });
+    const data = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (!res.ok) return setMsg(data.error || 'Could not save.');
+    form.reset();
+    setMsg('Saved.');
+    router.refresh();
+  }
+
+  async function toggle(r) {
+    await fetch('/api/admin/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...r, active: !r.active }) });
+    router.refresh();
+  }
+
+  async function remove(r) {
+    if (!window.confirm(`Delete the review from ${r.name}?`)) return;
+    await fetch(`/api/admin/reviews?id=${r.id}`, { method: 'DELETE' });
+    router.refresh();
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 18 }}>
+      <form className="form" onSubmit={save} style={{ padding: 20, border: '1px solid var(--line)', borderRadius: 18, background: 'var(--surface)' }}>
+        <div className="admin-grid">
+          <div className="field"><label htmlFor="rvName">Client name (e.g. Sara M.)</label><input id="rvName" name="name" required /></div>
+          <div className="field"><label htmlFor="rvSource">Where it’s from (e.g. Google review)</label><input id="rvSource" name="source" /></div>
+          <div className="field">
+            <label htmlFor="rvRating">Stars</label>
+            <select id="rvRating" name="rating" defaultValue="5">{[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n}</option>)}</select>
+          </div>
+          <div className="field"><label htmlFor="rvOrder">Order (lower shows first)</label><input id="rvOrder" name="sort_order" inputMode="numeric" defaultValue="0" /></div>
+        </div>
+        <div className="field"><label htmlFor="rvEn">Review in English</label><textarea id="rvEn" name="text_en" rows="3" /></div>
+        <div className="field"><label htmlFor="rvFa">Review in Farsi</label><textarea id="rvFa" name="text_fa" rows="3" dir="rtl" /></div>
+        <p className="err" role="status" style={{ color: 'var(--muted)' }}>{msg}</p>
+        <button className="btn btn-accent" type="submit" disabled={busy} style={{ justifySelf: 'start' }}>Add review</button>
+      </form>
+      {reviews.length > 0 && (
+        <div className="tablebox">
+          <table>
+            <thead><tr><th>Name</th><th>Stars</th><th>Review</th><th>Shown</th><th></th></tr></thead>
+            <tbody>
+              {reviews.map((r) => (
+                <tr key={r.id}>
+                  <td>{r.name}<br /><small>{r.source}</small></td>
+                  <td>{'★'.repeat(r.rating)}</td>
+                  <td style={{ maxWidth: 420 }}>{r.text_en}{r.text_en && r.text_fa ? <br /> : null}<span dir="rtl">{r.text_fa}</span></td>
+                  <td>{r.active ? 'Yes' : 'Hidden'}</td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    <button type="button" className="linkbtn" onClick={() => toggle(r)}>{r.active ? 'Hide' : 'Show'}</button>{' · '}
+                    <button type="button" className="linkbtn" onClick={() => remove(r)} style={{ color: 'var(--error)' }}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}

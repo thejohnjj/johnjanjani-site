@@ -6,8 +6,9 @@ export const dynamic = 'force-dynamic';
 export default async function sitemap() {
   const site = SITE;
   const now = new Date();
-  const pages = ['', '/privacy'].flatMap((p) =>
-    ['en', 'fa'].map((lang) => ({ url: `${site}/${lang}${p}`, lastModified: now, changeFrequency: p ? 'yearly' : 'weekly', priority: p ? 0.3 : 1 }))
+  const pri = { '': 1, '/home-value': 0.9, '/guide': 0.8, '/calculator': 0.8, '/privacy': 0.3 };
+  const pages = Object.keys(pri).flatMap((p) =>
+    ['en', 'fa'].map((lang) => ({ url: `${site}/${lang}${p}`, lastModified: now, changeFrequency: p === '/privacy' ? 'yearly' : 'weekly', priority: pri[p] }))
   );
   const client = db();
   if (!client) return pages;

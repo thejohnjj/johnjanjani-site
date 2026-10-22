@@ -9,6 +9,15 @@ import ShowingButton from '@/components/ShowingButton';
 import LockIcon from '@/components/LockIcon';
 import { Price, Specs } from '@/components/ListingCard';
 import { digits } from '@/lib/format';
+import MobileBar from '@/components/MobileBar';
+
+// Turns an Instagram Reel or post link into its embeddable address.
+function reelEmbed(url) {
+  const m = String(url || '').match(/instagram\.com\/(?:[\w.]+\/)?(reel|reels|p|tv)\/([\w-]+)/i);
+  if (!m) return null;
+  const kind = m[1].toLowerCase() === 'p' ? 'p' : 'reel';
+  return `https://www.instagram.com/${kind}/${m[2]}/embed`;
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +50,15 @@ export default async function ListingPage({ params }) {
       <main className="wrap">
         <a className="back" href={`/${lang}#listings`}>{t.backToListings}</a>
         <div className="detail">
-          <Gallery photos={l.photos} alt={`${l.type[lang]} · ${l.city[lang]}`} />
+          <div className="media">
+            <Gallery photos={l.photos} alt={`${l.type[lang]} · ${l.city[lang]}`} />
+            {reelEmbed(l.tour) && (
+              <div className="reel-embed">
+                <h2>{t.reelTitle}</h2>
+                <iframe src={reelEmbed(l.tour)} title={t.reelTitle} loading="lazy" allow="encrypted-media; picture-in-picture" allowFullScreen />
+              </div>
+            )}
+          </div>
           <div className="info">
             {l.code && <div className="code-badge">{t.code}: <span dir="ltr">{digits(l.code, lang)}</span></div>}
             <div className="eyebrow">{t.status[l.status]} · {l.city[lang]}</div>
@@ -86,6 +103,7 @@ export default async function ListingPage({ params }) {
         </div>
       </main>
       <Footer lang={lang} t={t} />
+      <MobileBar lang={lang} t={t} member={Boolean(member)} />
     </MembershipProvider>
   );
 }

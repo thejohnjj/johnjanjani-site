@@ -6,6 +6,9 @@ import MembershipProvider, { JoinButton } from '@/components/Membership';
 import ListingsGrid from '@/components/ListingsGrid';
 import { Header, Footer } from '@/components/SiteChrome';
 import { Icons } from '@/components/ContactIcons';
+import MobileBar from '@/components/MobileBar';
+import { getReviews } from '@/lib/reviews';
+import { digits } from '@/lib/format';
 import { PHONE, PHONE_TEL, INSTAGRAM_EN, INSTAGRAM_FA, FACEBOOK_URL, OFFICE, OFFICE_MAP } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
@@ -14,7 +17,7 @@ export default async function Home({ params }) {
   const lang = params.lang;
   const t = dictFor(lang);
   const member = await getMember(getMemberId());
-  const listings = await getListings(Boolean(member));
+  const [listings, reviews] = await Promise.all([getListings(Boolean(member)), getReviews()]);
 
   return (
     <MembershipProvider lang={lang} t={t}>
@@ -53,6 +56,27 @@ export default async function Home({ params }) {
         <section className="block" id="listings">
           <div className="wrap">
             <ListingsGrid listings={listings} t={t} lang={lang} isMember={Boolean(member)} />
+          </div>
+        </section>
+
+        <section className="block tools" id="tools">
+          <div className="wrap">
+            <div className="sec-head">
+              <div>
+                <div className="eyebrow">{t.toolsEyebrow}</div>
+                <h2>{t.toolsTitle}</h2>
+              </div>
+            </div>
+            <div className="tool-cards">
+              {t.toolCards.map((c) => (
+                <a key={c.key} className={`tool-card tc-${c.key}`} href={`/${lang}/${c.key === 'homeValue' ? 'home-value' : c.key}`}>
+                  <span className="tc-icon">{Icons[c.icon]}</span>
+                  <h3>{c.title}</h3>
+                  <p>{c.text}</p>
+                  <span className="tc-cta">{c.cta} <span aria-hidden="true">{lang === 'fa' ? '←' : '→'}</span></span>
+                </a>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -96,6 +120,34 @@ export default async function Home({ params }) {
           </div>
         </section>
 
+        {reviews.length > 0 && (
+          <section className="block reviews" id="reviews">
+            <div className="wrap">
+              <div className="sec-head">
+                <div>
+                  <div className="eyebrow">{t.rEyebrow}</div>
+                  <h2>{t.rTitle}</h2>
+                </div>
+              </div>
+              <div className="review-grid">
+                {reviews.map((r) => {
+                  const text = (lang === 'fa' ? r.text_fa || r.text_en : r.text_en || r.text_fa) || '';
+                  const other = lang === 'fa' ? !r.text_fa : !r.text_en;
+                  return (
+                    <figure className="review" key={r.id}>
+                      <div className="stars" aria-label={`${r.rating}/5`}>
+                        {Array.from({ length: 5 }, (_, i) => <span key={i} className={i < r.rating ? 'on' : ''}>{Icons.star}</span>)}
+                      </div>
+                      <blockquote dir={other ? (lang === 'fa' ? 'ltr' : 'rtl') : undefined}>“{text}”</blockquote>
+                      <figcaption><b>{r.name}</b>{r.source && <span> · {r.source}</span>}</figcaption>
+                    </figure>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
         <section className="contact" id="contact">
           <div className="wrap">
             <div>
@@ -125,6 +177,7 @@ export default async function Home({ params }) {
         </section>
       </main>
       <Footer lang={lang} t={t} />
+      <MobileBar lang={lang} t={t} member={Boolean(member)} />
     </MembershipProvider>
   );
 }

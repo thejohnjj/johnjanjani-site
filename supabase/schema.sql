@@ -83,3 +83,30 @@ alter table listings add column if not exists tour_url text;
 -- Added October 2026: listing code that matches the Instagram home tour post (e.g. 12).
 alter table listings add column if not exists code text;
 create unique index if not exists listings_code_key on listings (lower(code)) where code is not null and code <> '';
+
+-- Added October 2026: home value requests, guide downloads and client reviews.
+create table if not exists leads (
+  id uuid primary key default gen_random_uuid(),
+  kind text not null check (kind in ('valuation', 'guide')),
+  name text not null,
+  email text not null,
+  phone text,
+  lang text not null default 'en',
+  details jsonb not null default '{}'::jsonb,
+  consent boolean not null default false,
+  created_at timestamptz not null default now()
+);
+alter table leads enable row level security;
+
+create table if not exists reviews (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  text_en text,
+  text_fa text,
+  rating int not null default 5 check (rating between 1 and 5),
+  source text,
+  active boolean not null default true,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+alter table reviews enable row level security;

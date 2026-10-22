@@ -21,13 +21,18 @@ const EN = (
     <ul>
       <li>When you become a member: your name, email address, phone number, preferred language, and the date you agreed to be contacted.</li>
       <li>While you are signed in: which listings you view and any showing requests you send.</li>
-      <li>A small cookie that keeps you signed in on this device. I do not use advertising cookies.</li>
+      <li>When you ask for a home value estimate: your property’s address and details, your timeline, and your name, email and phone number.</li>
+      <li>When you open the buyer guide: your name, email, and optionally your phone number and where you are in your home search.</li>
+      <li>Small cookies that keep you signed in and remember that you unlocked the guide.</li>
+      <li>Analytics and advertising cookies: this website uses Google Analytics to understand which pages are useful, and the Meta Pixel to measure and show ads on Facebook and Instagram to people who visited. They collect information such as the pages you view and your device type, not your name. You can block them in your browser settings or with an ad blocker.</li>
+      <li>Listing pages may show Instagram videos. Instagram (Meta) may set its own cookies when you play them.</li>
     </ul>
     <h2>Why I collect it</h2>
     <ul>
       <li>To show members the price and address of my listings.</li>
       <li>To contact you about listings, showings and real estate services you asked about.</li>
       <li>To send you new listings and market updates, if you agreed to receive them.</li>
+      <li>To prepare and send the home value estimate you asked for.</li>
     </ul>
     <h2>Who can see it</h2>
     <p>
@@ -65,13 +70,18 @@ const FA = (
     <ul>
       <li>هنگام عضویت: نام، ایمیل، شماره تلفن، زبان دلخواه و تاریخی که با تماس من موافقت کردید.</li>
       <li>وقتی وارد حساب هستید: لیستینگ‌هایی که می‌بینید و درخواست‌های بازدیدی که می‌فرستید.</li>
-      <li>یک کوکی کوچک که شما را روی همین دستگاه وارد نگه می‌دارد. از کوکی تبلیغاتی استفاده نمی‌کنم.</li>
+      <li>هنگام درخواست برآورد قیمت خانه: آدرس و مشخصات ملک، زمان‌بندی فروش و نام، ایمیل و شماره تلفن شما.</li>
+      <li>هنگام باز کردن راهنمای خرید: نام و ایمیل، و در صورت تمایل شماره تلفن و مرحله‌ای که در خرید خانه هستید.</li>
+      <li>کوکی‌های کوچکی که شما را وارد نگه می‌دارند و به یاد می‌سپارند که راهنما را باز کرده‌اید.</li>
+      <li>کوکی‌های آماری و تبلیغاتی: این سایت از Google Analytics برای فهمیدن اینکه کدام صفحه‌ها مفیدند، و از Meta Pixel برای سنجش و نمایش تبلیغ در فیس‌بوک و اینستاگرام به کسانی که از سایت بازدید کرده‌اند استفاده می‌کند. این ابزارها اطلاعاتی مثل صفحه‌های دیده‌شده و نوع دستگاه را جمع می‌کنند، نه نام شما را. می‌توانید آن‌ها را در تنظیمات مرورگر یا با مسدودکننده تبلیغات غیرفعال کنید.</li>
+      <li>صفحه لیستینگ‌ها ممکن است ویدیوی اینستاگرام نشان دهد. اینستاگرام (Meta) هنگام پخش ممکن است کوکی‌های خودش را ذخیره کند.</li>
     </ul>
     <h2>چرا جمع می‌کنم</h2>
     <ul>
       <li>برای نمایش قیمت و آدرس لیستینگ‌ها به اعضا.</li>
       <li>برای تماس با شما درباره لیستینگ‌ها، بازدیدها و خدماتی که درخواست کرده‌اید.</li>
       <li>برای فرستادن لیستینگ‌های جدید و خبرهای بازار، اگر با آن موافقت کرده باشید.</li>
+      <li>برای آماده کردن و فرستادن برآورد قیمتی که درخواست کرده‌اید.</li>
     </ul>
     <h2>چه کسی به آن دسترسی دارد</h2>
     <p>

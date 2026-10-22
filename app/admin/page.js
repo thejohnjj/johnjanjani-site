@@ -1,7 +1,7 @@
 import { sortByCode } from '@/lib/listings';
 import { isAdmin } from '@/lib/session';
 import { db } from '@/lib/supabase';
-import { LoginForm, LogoutButton } from './AdminClient';
+import { LoginForm, LogoutButton, ReviewsAdmin } from './AdminClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,12 +14,18 @@ export default async function Admin() {
     return <main className="wrap legal"><h1>Setup needed</h1><p>Add the Supabase keys in Vercel → Settings → Environment Variables, then redeploy.</p></main>;
   }
 
-  const [members, listings, showings, views] = await Promise.all([
+  const [members, listings, showings, views, leads, reviews] = await Promise.all([
     client.from('members').select('id, name, email, phone, lang, first_listing, created_at, last_seen_at').order('created_at', { ascending: false }).limit(500),
     client.from('listings').select('*').order('sort_order').order('created_at', { ascending: false }),
     client.from('showing_requests').select('id, created_at, members(name, phone, email), listings(address, mls_number)').order('created_at', { ascending: false }).limit(100),
     client.from('listing_views').select('member_id'),
+    client.from('leads').select('*').order('created_at', { ascending: false }).limit(500),
+    client.from('reviews').select('*').order('sort_order').order('created_at', { ascending: false }),
   ]);
+  const setupNeeded = Boolean(leads.error || reviews.error);
+  const valuations = (leads.data || []).filter((l) => l.kind === 'valuation');
+  const guides = (leads.data || []).filter((l) => l.kind === 'guide');
+  const TL = { '0-3': 'Within 3 months', '3-6': '3–6 months', '6-12': '6–12 months', curious: 'Just curious' };
   const viewCount = {};
   for (const v of views.data || []) viewCount[v.member_id] = (viewCount[v.member_id] || 0) + 1;
 
@@ -54,6 +60,35 @@ export default async function Admin() {
                   </tr>
                 ))}
                 {!listings.data?.length && <tr><td colSpan="7">No listings yet. Press “Add a listing”.</td></tr>}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {setupNeeded && (
+          <p className="banner" style={{ margin: 0 }}>
+            One step left: run the new SQL from supabase/schema.sql (the “leads” and “reviews” tables) in Supabase → SQL Editor, then refresh this page.
+          </p>
+        )}
+
+        <section>
+          <div className="sec-head"><div><div className="eyebrow">Home value requests</div><h2>{valuations.length} requests</h2></div></div>
+          <div className="tablebox">
+            <table>
+              <thead><tr><th>When</th><th>Name</th><th>Phone</th><th>Email</th><th>Property</th><th>Selling</th><th>Note</th></tr></thead>
+              <tbody>
+                {valuations.map((v) => (
+                  <tr key={v.id}>
+                    <td>{when(v.created_at)}</td>
+                    <td>{v.name}<br /><small>{v.lang === 'fa' ? 'Farsi' : 'English'}</small></td>
+                    <td>{v.phone}</td>
+                    <td>{v.email}</td>
+                    <td>{v.details?.address}{v.details?.city ? `, ${v.details.city}` : ''}<br /><small>{v.details?.type} · {v.details?.beds || '—'} bd · {v.details?.baths || '—'} ba</small></td>
+                    <td><b>{TL[v.details?.timeline] || '—'}</b></td>
+                    <td>{v.details?.note || '—'}</td>
+                  </tr>
+                ))}
+                {!valuations.length && <tr><td colSpan="7">No requests yet.</td></tr>}
               </tbody>
             </table>
           </div>
@@ -102,6 +137,33 @@ export default async function Admin() {
               </tbody>
             </table>
           </div>
+        </section>
+        <section>
+          <div className="sec-head"><div><div className="eyebrow">Buyer guide downloads</div><h2>{guides.length} downloads</h2></div></div>
+          <div className="tablebox">
+            <table>
+              <thead><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th><th>Language</th><th>Stage</th></tr></thead>
+              <tbody>
+                {guides.map((g) => (
+                  <tr key={g.id}>
+                    <td>{when(g.created_at)}</td>
+                    <td>{g.name}</td>
+                    <td>{g.email}</td>
+                    <td>{g.phone || '—'}</td>
+                    <td>{g.lang === 'fa' ? 'Farsi' : 'English'}</td>
+                    <td>{g.details?.stage || '—'}</td>
+                  </tr>
+                ))}
+                {!guides.length && <tr><td colSpan="6">No downloads yet.</td></tr>}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <div className="sec-head"><div><div className="eyebrow">Client reviews</div><h2>{reviews.data?.length || 0} reviews</h2></div></div>
+          <p style={{ marginTop: 0, color: 'var(--muted)' }}>Reviews appear on the homepage. Only add real reviews from your clients, with their permission.</p>
+          <ReviewsAdmin reviews={reviews.data || []} />
         </section>
       </main>
     </>

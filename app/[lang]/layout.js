@@ -1,6 +1,7 @@
 import { SITE } from '@/lib/site';
 import '../globals.css';
 import { notFound } from 'next/navigation';
+import Analytics from '@/components/Analytics';
 import { t as dictFor, isLang } from '@/lib/i18n';
 
 export const viewport = {
@@ -35,7 +36,10 @@ export default function LangLayout({ children, params }) {
   const t = dictFor(params.lang);
   return (
     <html lang={params.lang} dir={t.dir}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

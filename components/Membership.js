@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { track } from '@/lib/track';
 
 const Ctx = createContext(null);
 
@@ -63,6 +64,7 @@ export default function MembershipProvider({ lang, t, children }) {
         body: JSON.stringify({ name, email, phone, consent, lang, firstListing: firstListing.current }),
       });
       if (!res.ok) throw new Error();
+      track('sign_up', { method: 'member' });
       close();
       showToast(t.welcome.replace('{n}', name.split(' ')[0]));
       router.refresh();
