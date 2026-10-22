@@ -8,6 +8,6 @@ export async function GET(req, { params }) {
   const accept = req.headers.get('accept-language') || '';
   const lang = /^fa|,\s*fa/i.test(accept) ? 'fa' : 'en';
   const slug = await slugForCode(decodeURIComponent(params.code));
-  const url = new URL(slug ? `/${lang}/listings/${slug}` : `/${lang}#listings`, req.url);
+  const url = new URL(slug ? `/${lang}/listings/${slug}` : `/${lang}/listings`, req.url);
   return NextResponse.redirect(url, 307);
 }

@@ -36,8 +36,8 @@ export default function MobileMenu({ lang, t, member, path = '' }) {
 
   const close = () => setOpen(false);
   const links = [
-    [`/${lang}#listings`, t.nav.listings, Icons.grid],
-    [`/${lang}#picks`, t.navPicks, Icons.star],
+    [`/${lang}/listings`, t.nav.listings, Icons.grid],
+    [`/${lang}/picks`, t.navPicks, Icons.star],
     [`/${lang}/home-value`, t.navTools.homeValue, Icons.home],
     [`/${lang}/calculator`, t.navTools.calculator, Icons.calc],
     [`/${lang}/guide`, t.navTools.guide, Icons.book],

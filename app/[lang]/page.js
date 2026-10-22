@@ -41,7 +41,7 @@ export default async function Home({ params }) {
               </h1>
               <p className="lead">{t.heroLead}</p>
               <div className="ctas">
-                <a className="btn btn-accent" href="#listings">{t.heroCta}</a>
+                <a className="btn btn-accent" href={picks.length ? '#picks' : '#listings'}>{t.heroCta}</a>
                 {!member && <JoinButton className="btn btn-ghost" label={t.heroJoin} />}
               </div>
             </div>
@@ -55,19 +55,19 @@ export default async function Home({ params }) {
           </div>
         </section>
 
-        <section className="block" id="listings">
-          <div className="wrap">
-            <ListingsGrid listings={listings} t={t} lang={lang} isMember={Boolean(member)} />
-          </div>
-        </section>
-
         {picks.length > 0 && (
           <section className="block picks" id="picks">
             <div className="wrap">
-              <PicksGrid picks={picks} t={t} lang={lang} />
+              <PicksGrid picks={picks} t={t} lang={lang} preview />
             </div>
           </section>
         )}
+
+        <section className="block" id="listings">
+          <div className="wrap">
+            <ListingsGrid listings={listings} t={t} lang={lang} isMember={Boolean(member)} preview />
+          </div>
+        </section>
 
         <section className="block tools" id="tools">
           <div className="wrap">

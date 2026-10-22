@@ -433,7 +433,7 @@ html[lang='fa'] .mmenu li a { font-family: var(--fa-display); font-weight: 700; 
 .g-toc .g-other { margin-top: 10px; color: var(--accent-ink); font-weight: 600; }
 
 /* Daily picks */
-.picks { background: var(--teal); color: var(--on-teal); position: relative; }
+.picks { background: var(--teal-deep); color: var(--on-teal); position: relative; }
 .picks .eyebrow { color: var(--sand); }
 .picks .sec-head { margin-bottom: 18px; }
 .picks .sec-lead { max-width: 640px; margin: 12px 0 0; color: rgba(246, 241, 231, .82); font-size: 17px; }
@@ -442,7 +442,7 @@ html[lang='fa'] .mmenu li a { font-family: var(--fa-display); font-weight: 700; 
 .picks .chip[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: #0B2226; }
 .picks .card { color: var(--ink); }
 .picks .more { display: flex; justify-content: center; margin-top: 28px; }
-.picks .more .btn { background: transparent; color: var(--on-teal); border: 1px solid rgba(246, 241, 231, .55); }
+.picks .more button.btn { background: transparent; color: var(--on-teal); border: 1px solid rgba(246, 241, 231, .55); }
 .pick-note { margin: 0; font-style: italic; color: var(--ink); font-size: 15.5px; line-height: 1.5; border-inline-start: 3px solid var(--accent); padding-inline-start: 10px; }
 html[lang='fa'] .pick-note { font-style: normal; }
 .picked { font-size: 12.5px; color: var(--muted); margin-top: -4px; }
@@ -450,3 +450,13 @@ html[lang='fa'] .pick-note { font-style: normal; }
 .pick-why span { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-ink); font-weight: 600; }
 html[lang='fa'] .pick-why span { letter-spacing: 0; font-size: 14px; }
 .pick-why p { margin: 4px 0 0; font-size: 17px; }
+
+/* Homepage previews and full list pages */
+.see-all { display: flex; justify-content: center; margin-top: 28px; }
+.list-page { padding-top: 8px; min-height: 60vh; }
+.list-page .back { margin: 20px 0 18px; }
+.back.light { color: rgba(246, 241, 231, .75); }
+.sec-head h1 { font-size: clamp(36px, 4.6vw, 56px); margin-top: 10px; }
+.picks .banner { color: var(--ink); }
+.picks .empty { border-color: rgba(246, 241, 231, .35); color: rgba(246, 241, 231, .8); }
+.picks .empty h1 { font-size: clamp(30px, 4vw, 44px); margin-bottom: 8px; color: var(--on-teal); }

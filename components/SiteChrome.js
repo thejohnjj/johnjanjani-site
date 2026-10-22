@@ -11,7 +11,7 @@ export function Header({ lang, t, member, path = '' }) {
           <b>{t.brandName}</b>
         </a>
         <nav className="links" aria-label="Main">
-          <a href={`/${lang}#listings`}>{t.nav.listings}</a>
+          <a href={`/${lang}/listings`}>{t.nav.listings}</a>
           <a href={`/${lang}/home-value`}>{t.navTools.homeValue}</a>
           <a href={`/${lang}/calculator`}>{t.navTools.calculator}</a>
           <a href={`/${lang}/guide`}>{t.navTools.guide}</a>
@@ -38,7 +38,7 @@ export function Footer({ lang, t }) {
           <span>{t.footerBrokerage}</span>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 18px' }}>
-          <a href={`/${lang}#picks`}>{t.navPicks}</a>
+          <a href={`/${lang}/picks`}>{t.navPicks}</a>
           <a href={`/${lang}/home-value`}>{t.navTools.homeValue}</a>
           <a href={`/${lang}/calculator`}>{t.navTools.calculator}</a>
           <a href={`/${lang}/guide`}>{t.navTools.guide}</a>

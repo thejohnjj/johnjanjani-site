@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import ListingCard from './ListingCard';
 import { JoinButton } from './Membership';
+import { digits } from '@/lib/format';
 
 // Turns Persian/Arabic digits into 0-9 so codes typed on a Farsi keyboard still match.
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
 
-export default function ListingsGrid({ listings, t, lang, isMember }) {
+export default function ListingsGrid({ listings, t, lang, isMember, preview = false, heading = 'h2' }) {
+  const H = heading;
   const [filter, setFilter] = useState('all');
   const [code, setCode] = useState('');
   const [codeMsg, setCodeMsg] = useState('');
@@ -20,21 +22,23 @@ export default function ListingsGrid({ listings, t, lang, isMember }) {
     if (hit) window.location.href = `/${lang}/listings/${hit.slug}`;
     else setCodeMsg(t.codeNotFound.replace('{c}', code));
   }
-  const shown = listings.filter((l) => {
+  const filtered = listings.filter((l) => {
     if (filter === 'all') return true;
     if (filter === 'rent') return l.status === 'rent';
     if (filter === 'house') return l.status === 'sale' && (l.kind === 'house' || l.kind === 'townhouse');
     return l.status === 'sale' && l.kind === filter;
   });
+  // Homepage shows the 3 newest (highest codes), still in code order.
+  const shown = preview ? filtered.slice(-3) : filtered;
 
   return (
     <>
       <div className="sec-head">
         <div>
           <div className="eyebrow">{t.listEyebrow}</div>
-          <h2>{t.listTitle}</h2>
+          <H>{t.listTitle}</H>
         </div>
-        {listings.length > 0 && (
+        {!preview && listings.length > 0 && (
           <div className="chips" role="group" aria-label={t.nav.listings}>
             {['all', 'house', 'condo', 'rent'].map((f) => (
               <button key={f} type="button" className="chip" aria-pressed={filter === f} onClick={() => setFilter(f)}>
@@ -74,6 +78,11 @@ export default function ListingsGrid({ listings, t, lang, isMember }) {
           {shown.map((l) => (
             <ListingCard key={l.id} l={l} t={t} lang={lang} />
           ))}
+        </div>
+      )}
+      {preview && listings.length > shown.length && (
+        <div className="see-all">
+          <a className="btn btn-accent" href={`/${lang}/listings`}>{t.seeAllTours.replace('{n}', digits(listings.length, lang))} <span aria-hidden="true">{lang === 'fa' ? '←' : '→'}</span></a>
         </div>
       )}
     </>
