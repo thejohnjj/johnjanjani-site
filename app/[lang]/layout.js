@@ -2,6 +2,7 @@ import { SITE } from '@/lib/site';
 import '../globals.css';
 import { notFound } from 'next/navigation';
 import Analytics from '@/components/Analytics';
+import { AgentJsonLd } from '@/components/JsonLd';
 import { t as dictFor, isLang } from '@/lib/i18n';
 
 export const viewport = {
@@ -16,9 +17,9 @@ export function generateMetadata({ params }) {
   const site = SITE;
   return {
     metadataBase: new URL(site),
-    title: { default: t.metaTitle, template: `%s | ${t.brandName}` },
+    title: { default: t.metaTitle, template: `%s | ${t.seoName}` },
     description: t.metaDescription,
-    alternates: { canonical: `/${params.lang}`, languages: { en: '/en', fa: '/fa' } },
+    alternates: { canonical: `/${params.lang}`, languages: { en: '/en', fa: '/fa', 'x-default': '/en' } },
     openGraph: {
       title: t.metaTitle,
       description: t.metaDescription,
@@ -37,6 +38,7 @@ export default function LangLayout({ children, params }) {
   return (
     <html lang={params.lang} dir={t.dir}>
       <body>
+        <AgentJsonLd lang={params.lang} />
         {children}
         <Analytics />
       </body>

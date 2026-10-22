@@ -10,6 +10,8 @@ import LockIcon from '@/components/LockIcon';
 import { Price, Specs } from '@/components/ListingCard';
 import { digits } from '@/lib/format';
 import MobileBar from '@/components/MobileBar';
+import { ListingJsonLd } from '@/components/JsonLd';
+import { SITE } from '@/lib/site';
 
 // Turns an Instagram Reel or post link into its embeddable address.
 function reelEmbed(url) {
@@ -30,7 +32,7 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description: l.description[lang].slice(0, 160),
-    alternates: { canonical: `/${lang}/listings/${l.slug}`, languages: { en: `/en/listings/${l.slug}`, fa: `/fa/listings/${l.slug}` } },
+    alternates: { canonical: `/${lang}/listings/${l.slug}`, languages: { en: `/en/listings/${l.slug}`, fa: `/fa/listings/${l.slug}`, 'x-default': `/en/listings/${l.slug}` } },
     openGraph: { title, images: l.photos.slice(0, 1) },
   };
 }
@@ -47,6 +49,7 @@ export default async function ListingPage({ params }) {
   return (
     <MembershipProvider lang={lang} t={t}>
       <Header lang={lang} t={t} member={member} path={`/listings/${l.slug}`} />
+      <ListingJsonLd l={l} lang={lang} url={`${SITE}/${lang}/listings/${l.slug}`} />
       <main className="wrap">
         <a className="back" href={`/${lang}/${l.section === 'pick' ? 'picks' : 'listings'}`}>{l.section === 'pick' ? t.pkBack : t.backToListings}</a>
         <div className="detail">

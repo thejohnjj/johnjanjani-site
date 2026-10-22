@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export function generateMetadata({ params }) {
   const t = dictFor(params.lang);
   return {
-    title: t.hvTitle,
+    title: t.seo.hv,
     description: t.hvLead,
     alternates: { canonical: `/${params.lang}/home-value`, languages: { en: '/en/home-value', fa: '/fa/home-value' } },
   };

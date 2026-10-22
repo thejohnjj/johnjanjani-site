@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export function generateMetadata({ params }) {
   const t = dictFor(params.lang);
   return {
-    title: t.gTitle,
+    title: t.seo.guide,
     description: t.gLead,
     alternates: { canonical: `/${params.lang}/guide`, languages: { en: '/en/guide', fa: '/fa/guide' } },
   };

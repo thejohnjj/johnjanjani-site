@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 export function generateMetadata({ params }) {
   const t = dictFor(params.lang);
   return {
-    title: t.cTitle,
+    title: t.seo.calc,
     description: t.cLead,
     alternates: { canonical: `/${params.lang}/calculator`, languages: { en: '/en/calculator', fa: '/fa/calculator' } },
   };
