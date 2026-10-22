@@ -42,7 +42,10 @@ export default async function Admin() {
         <section>
           <div className="sec-head">
             <div><div className="eyebrow">Listings</div><h2>{listings.data?.length || 0} listings</h2></div>
-            <a className="btn btn-accent" href="/admin/listing/new">Add a listing</a>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <a className="btn btn-accent" href="/admin/listing/new">Add a toured home</a>
+              <a className="btn" style={{ border: '1px solid var(--line)' }} href="/admin/listing/new?section=pick">Add a daily pick</a>
+            </div>
           </div>
           <div className="tablebox">
             <table>
@@ -51,7 +54,7 @@ export default async function Admin() {
                 {sortByCode(listings.data || []).map((l) => (
                   <tr key={l.id}>
                     <td>{l.photos?.[0] ? <img src={l.photos[0]} alt="" width="72" height="54" style={{ objectFit: 'cover', borderRadius: 8 }} /> : '—'}</td>
-                    <td><b>{l.code || '—'}</b></td>
+                    <td>{l.section === 'pick' ? <small>Daily pick{l.expires_at ? <><br />until {String(l.expires_at).slice(0, 10)}</> : null}</small> : <b>{l.code || '—'}</b>}</td>
                     <td>{l.type_en} · {l.city_en}<br /><small>{l.status === 'rent' ? 'For rent' : 'For sale'}</small></td>
                     <td>{l.mls_number || '—'}</td>
                     <td>${Number(l.price).toLocaleString('en-US')}{l.status === 'rent' ? '/mo' : ''}</td>

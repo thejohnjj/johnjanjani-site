@@ -48,7 +48,7 @@ export default async function ListingPage({ params }) {
     <MembershipProvider lang={lang} t={t}>
       <Header lang={lang} t={t} member={member} path={`/listings/${l.slug}`} />
       <main className="wrap">
-        <a className="back" href={`/${lang}#listings`}>{t.backToListings}</a>
+        <a className="back" href={`/${lang}#${l.section === 'pick' ? 'picks' : 'listings'}`}>{l.section === 'pick' ? t.pkBack : t.backToListings}</a>
         <div className="detail">
           <div className="media">
             <Gallery photos={l.photos} alt={`${l.type[lang]} · ${l.city[lang]}`} />
@@ -76,6 +76,12 @@ export default async function ListingPage({ params }) {
               </div>
             )}
             <Specs l={l} t={t} lang={lang} />
+            {l.section === 'pick' && l.note[lang] && (
+              <div className="pick-why">
+                <span>{t.pkWhy}</span>
+                <p>{l.note[lang]}</p>
+              </div>
+            )}
             {l.description[lang] && <p style={{ whiteSpace: 'pre-line' }}>{l.description[lang]}</p>}
             {l.features[lang].length > 0 && (
               <div>

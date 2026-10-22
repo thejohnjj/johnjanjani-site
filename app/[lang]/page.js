@@ -1,6 +1,7 @@
 import { t as dictFor } from '@/lib/i18n';
 import { getMemberId } from '@/lib/session';
-import { getListings, getMember } from '@/lib/listings';
+import { getListings, getMember, splitListings } from '@/lib/listings';
+import PicksGrid from '@/components/PicksGrid';
 import { money, number } from '@/lib/format';
 import MembershipProvider, { JoinButton } from '@/components/Membership';
 import ListingsGrid from '@/components/ListingsGrid';
@@ -17,7 +18,8 @@ export default async function Home({ params }) {
   const lang = params.lang;
   const t = dictFor(lang);
   const member = await getMember(getMemberId());
-  const [listings, reviews] = await Promise.all([getListings(Boolean(member)), getReviews()]);
+  const [all, reviews] = await Promise.all([getListings(Boolean(member)), getReviews()]);
+  const { tours: listings, picks } = splitListings(all, lang);
 
   return (
     <MembershipProvider lang={lang} t={t}>
@@ -58,6 +60,14 @@ export default async function Home({ params }) {
             <ListingsGrid listings={listings} t={t} lang={lang} isMember={Boolean(member)} />
           </div>
         </section>
+
+        {picks.length > 0 && (
+          <section className="block picks" id="picks">
+            <div className="wrap">
+              <PicksGrid picks={picks} t={t} lang={lang} />
+            </div>
+          </section>
+        )}
 
         <section className="block tools" id="tools">
           <div className="wrap">

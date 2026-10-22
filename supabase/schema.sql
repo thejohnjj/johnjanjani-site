@@ -110,3 +110,9 @@ create table if not exists reviews (
   created_at timestamptz not null default now()
 );
 alter table reviews enable row level security;
+
+-- Daily picks: listings you like in different areas (no home tour)
+alter table listings add column if not exists section text not null default 'tour';
+alter table listings add column if not exists pick_note_en text not null default '';
+alter table listings add column if not exists pick_note_fa text not null default '';
+alter table listings add column if not exists expires_at timestamptz;

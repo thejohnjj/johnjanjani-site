@@ -48,6 +48,15 @@ export async function POST(req) {
     sort_order: parseInt(b.sort_order, 10) || 0,
     updated_at: new Date().toISOString(),
   };
+  // Daily picks: only sent when the admin form says which section (needs the new SQL columns).
+  if (b.section === 'pick' || b.section === 'tour') {
+    row.section = b.section;
+    row.pick_note_en = String(b.pick_note_en || '').trim().slice(0, 300);
+    row.pick_note_fa = String(b.pick_note_fa || '').trim().slice(0, 300);
+    const exp = b.expires_at ? new Date(b.expires_at) : null;
+    row.expires_at = b.section === 'pick' ? (exp && !isNaN(exp) ? exp.toISOString() : b.id ? null : new Date(Date.now() + 14 * 864e5).toISOString()) : null;
+    if (b.section === 'pick') row.code = cleanCode(b.code) || null;
+  }
   if (!row.city_en || !row.type_en || !row.address || !row.price || !row.listing_brokerage) {
     return NextResponse.json({ error: 'City, type, address, price and listing brokerage are required.' }, { status: 400 });
   }
@@ -70,6 +79,9 @@ export async function POST(req) {
   }
   if (result.error) {
     const dup = /listings_code_key|duplicate/i.test(result.error.message);
+    if (/section|pick_note|expires_at/.test(result.error.message)) {
+      return NextResponse.json({ error: 'One step left: run the new “Daily picks” SQL from supabase/schema.sql in Supabase → SQL Editor, then save again.' }, { status: 500 });
+    }
     return NextResponse.json({ error: dup ? `Code ${row.code} is already used by another listing.` : result.error.message }, { status: dup ? 409 : 500 });
   }
   revalidatePath('/', 'layout');

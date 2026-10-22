@@ -38,6 +38,7 @@ export function Footer({ lang, t }) {
           <span>{t.footerBrokerage}</span>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 18px' }}>
+          <a href={`/${lang}#picks`}>{t.navPicks}</a>
           <a href={`/${lang}/home-value`}>{t.navTools.homeValue}</a>
           <a href={`/${lang}/calculator`}>{t.navTools.calculator}</a>
           <a href={`/${lang}/guide`}>{t.navTools.guide}</a>

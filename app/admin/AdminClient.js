@@ -52,14 +52,22 @@ const EMPTY = {
   code: '', mls_number: '', status: 'sale', kind: 'house', city_en: '', city_fa: '', type_en: '', type_fa: '', price: '', address: '',
   beds: '', baths: '', parking: '', sqft: '', description_en: '', description_fa: '', features_en: '', features_fa: '',
   photos: [], listing_brokerage: '', tour_url: '', active: true, sort_order: 0,
+  section: 'tour', pick_note_en: '', pick_note_fa: '', expires_at: '',
 };
 
-export function ListingEditor({ initial }) {
+export function ListingEditor({ initial, defaultSection }) {
   const router = useRouter();
   const [v, setV] = useState(() =>
     initial
-      ? { ...EMPTY, ...initial, features_en: (initial.features_en || []).join('\n'), features_fa: (initial.features_fa || []).join('\n') }
-      : EMPTY
+      ? {
+          ...EMPTY,
+          ...initial,
+          section: initial.section || 'tour',
+          expires_at: initial.expires_at ? String(initial.expires_at).slice(0, 10) : '',
+          features_en: (initial.features_en || []).join('\n'),
+          features_fa: (initial.features_fa || []).join('\n'),
+        }
+      : { ...EMPTY, section: defaultSection === 'pick' ? 'pick' : 'tour' }
   );
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
@@ -126,10 +134,13 @@ export function ListingEditor({ initial }) {
     e.preventDefault();
     setBusy(true);
     setMsg('Saving…');
+    const body = { ...v };
+    // Before the Daily picks SQL is run, old listings have no section column: don't send it for them.
+    if (initial && initial.section === undefined && v.section !== 'pick') delete body.section;
     const res = await fetch('/api/admin/listings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(v),
+      body: JSON.stringify(body),
     });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
@@ -159,7 +170,16 @@ export function ListingEditor({ initial }) {
   return (
     <form className="form" onSubmit={save} style={{ padding: 0 }}>
       <div className="admin-grid">
-        {F({ id: 'code', label: 'Code (same as your Instagram post, e.g. 12)', required: true })}
+        <div className="field">
+          <label htmlFor="section">Section</label>
+          <select id="section" value={v.section} onChange={set('section')}>
+            <option value="tour">Realtor’s Picks: a home I toured (with code)</option>
+            <option value="pick">Daily pick: a listing I like</option>
+          </select>
+        </div>
+        {v.section === 'pick'
+          ? F({ id: 'expires_at', label: 'Hide after (leave empty on a new pick = 14 days)', type: 'date' })
+          : F({ id: 'code', label: 'Code (same as your Instagram post, e.g. 12)', required: true })}
         {F({ id: 'mls_number', label: 'MLS® number' })}
         {F({ id: 'listing_brokerage', label: 'Listing brokerage (shown on the listing)', required: true, placeholder: 'e.g. HomeLife Landmark Realty Inc.' })}
         {F({ id: 'tour_url', label: 'Instagram home tour link (optional)', type: 'url', placeholder: 'https://www.instagram.com/reel/…' })}
@@ -196,6 +216,18 @@ export function ListingEditor({ initial }) {
         {F({ id: 'sqft', label: 'Size (sq ft, e.g. 1,100–1,199)' })}
         {F({ id: 'sort_order', label: 'Order on page (lower shows first)', inputMode: 'numeric' })}
       </div>
+      {v.section === 'pick' && (
+        <div className="admin-grid">
+          <div className="field">
+            <label htmlFor="pick_note_en">Why I picked it, in English (one short line)</label>
+            <input id="pick_note_en" maxLength={300} value={v.pick_note_en} onChange={set('pick_note_en')} placeholder="e.g. Rare ravine lot under $1.5M" />
+          </div>
+          <div className="field">
+            <label htmlFor="pick_note_fa">Why I picked it, in Farsi</label>
+            <input id="pick_note_fa" dir="rtl" maxLength={300} value={v.pick_note_fa} onChange={set('pick_note_fa')} />
+          </div>
+        </div>
+      )}
       <div className="field">
         <label htmlFor="description_en">Description in English</label>
         <textarea id="description_en" rows="5" value={v.description_en} onChange={set('description_en')} />
