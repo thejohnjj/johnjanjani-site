@@ -15,6 +15,7 @@ export function Header({ lang, t, member, path = '' }) {
           <a href={`/${lang}/home-value`}>{t.navTools.homeValue}</a>
           <a href={`/${lang}/calculator`}>{t.navTools.calculator}</a>
           <a href={`/${lang}/guide`}>{t.navTools.guide}</a>
+          <a href={`/${lang}/seller-guide`}>{t.navTools.sellerGuide}</a>
           <a href={`/${lang}#contact`}>{t.nav.contact}</a>
         </nav>
         {member && <span className="member-pill">{t.memberAs.replace('{n}', member.name.split(' ')[0])}</span>}
@@ -40,6 +41,7 @@ export function Footer({ lang, t }) {
           <a href={`/${lang}/home-value`}>{t.navTools.homeValue}</a>
           <a href={`/${lang}/calculator`}>{t.navTools.calculator}</a>
           <a href={`/${lang}/guide`}>{t.navTools.guide}</a>
+          <a href={`/${lang}/seller-guide`}>{t.navTools.sellerGuide}</a>
           <a href={`/${lang}/privacy`}>{t.footerPrivacy}</a>
           <span>© {new Date().getFullYear()} johnjanjani.com</span>
         </div>

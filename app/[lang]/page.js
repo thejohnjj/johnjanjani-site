@@ -69,7 +69,7 @@ export default async function Home({ params }) {
             </div>
             <div className="tool-cards">
               {t.toolCards.map((c) => (
-                <a key={c.key} className={`tool-card tc-${c.key}`} href={`/${lang}/${c.key === 'homeValue' ? 'home-value' : c.key}`}>
+                <a key={c.key} className={`tool-card tc-${c.key}`} href={`/${lang}/${{ homeValue: 'home-value', sellerGuide: 'seller-guide' }[c.key] || c.key}`}>
                   <span className="tc-icon">{Icons[c.icon]}</span>
                   <h3>{c.title}</h3>
                   <p>{c.text}</p>

@@ -34,6 +34,9 @@ export const Icons = {
   play: (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" /></svg>
   ),
+  sign: (
+    <svg viewBox="0 0 24 24" {...P} aria-hidden="true"><path d="M5 21V3.5" /><path d="M5 5h13.5v8H5" /><path d="M9 9h6" /></svg>
+  ),
   grid: (
     <svg viewBox="0 0 24 24" {...P} aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5" /><rect x="13" y="4" width="7" height="7" rx="1.5" /><rect x="4" y="13" width="7" height="7" rx="1.5" /><rect x="13" y="13" width="7" height="7" rx="1.5" /></svg>
   ),

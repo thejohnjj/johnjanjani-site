@@ -139,14 +139,15 @@ export default async function Admin() {
           </div>
         </section>
         <section>
-          <div className="sec-head"><div><div className="eyebrow">Buyer guide downloads</div><h2>{guides.length} downloads</h2></div></div>
+          <div className="sec-head"><div><div className="eyebrow">Guide downloads</div><h2>{guides.length} downloads</h2></div></div>
           <div className="tablebox">
             <table>
-              <thead><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th><th>Language</th><th>Stage</th></tr></thead>
+              <thead><tr><th>When</th><th>Guide</th><th>Name</th><th>Email</th><th>Phone</th><th>Language</th><th>Stage</th></tr></thead>
               <tbody>
                 {guides.map((g) => (
                   <tr key={g.id}>
                     <td>{when(g.created_at)}</td>
+                    <td><b>{g.details?.guide === 'seller' ? 'Seller' : 'Buyer'}</b></td>
                     <td>{g.name}</td>
                     <td>{g.email}</td>
                     <td>{g.phone || '—'}</td>
@@ -154,7 +155,7 @@ export default async function Admin() {
                     <td>{g.details?.stage || '—'}</td>
                   </tr>
                 ))}
-                {!guides.length && <tr><td colSpan="6">No downloads yet.</td></tr>}
+                {!guides.length && <tr><td colSpan="7">No downloads yet.</td></tr>}
               </tbody>
             </table>
           </div>

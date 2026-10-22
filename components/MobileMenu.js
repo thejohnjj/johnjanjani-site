@@ -40,6 +40,7 @@ export default function MobileMenu({ lang, t, member, path = '' }) {
     [`/${lang}/home-value`, t.navTools.homeValue, Icons.home],
     [`/${lang}/calculator`, t.navTools.calculator, Icons.calc],
     [`/${lang}/guide`, t.navTools.guide, Icons.book],
+    [`/${lang}/seller-guide`, t.navTools.sellerGuide, Icons.sign],
     [`/${lang}#about`, t.nav.about, Icons.user],
     [`/${lang}#market`, t.nav.market, Icons.chart],
     [`/${lang}#contact`, t.nav.contact, Icons.phone],

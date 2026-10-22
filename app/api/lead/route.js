@@ -41,7 +41,7 @@ export async function POST(req) {
     };
     if (details.address.length < 5) return NextResponse.json({ error: 'address' }, { status: 400 });
   } else {
-    details = { stage: clip(b.stage, 40) };
+    details = { guide: b.guide === 'seller' ? 'seller' : 'buyer', stage: clip(b.stage, 60) };
   }
 
   const client = db();
@@ -68,11 +68,12 @@ export async function POST(req) {
       'Promised: an estimate within 24 hours. See all requests at johnjanjani.com/admin',
     ]);
   } else {
-    await notify(`Guide download: ${name}`, [
+    await notify(`${details.guide === 'seller' ? 'Seller' : 'Buyer'} guide download: ${name}`, [
       `Name: ${name}`,
       `Email: ${email}`,
       phone ? `Phone: ${phone}` : '',
       `Language: ${lang === 'fa' ? 'Farsi' : 'English'}`,
+      `Guide: ${details.guide === 'seller' ? 'Selling your home' : 'Buying your first home'}`,
       details.stage ? `Stage: ${details.stage}` : '',
       '',
       'See all leads at johnjanjani.com/admin',

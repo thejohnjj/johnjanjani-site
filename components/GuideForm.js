@@ -6,7 +6,8 @@ import { track } from '@/lib/track';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-export default function GuideForm({ lang, t }) {
+export default function GuideForm({ lang, t, which = 'buyer', stages }) {
+  const options = stages || t.gStages;
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -25,10 +26,10 @@ export default function GuideForm({ lang, t }) {
       const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...f, kind: 'guide', lang, consent: true }),
+        body: JSON.stringify({ ...f, kind: 'guide', guide: which, lang, consent: true }),
       });
       if (!res.ok) throw new Error();
-      track('generate_lead', { lead_type: 'guide' });
+      track('generate_lead', { lead_type: which === 'seller' ? 'seller_guide' : 'buyer_guide' });
       router.refresh();
     } catch {
       setError(t.errServer);
@@ -54,8 +55,8 @@ export default function GuideForm({ lang, t }) {
       </div>
       <div className="field">
         <label htmlFor="gStage">{t.gStage}</label>
-        <select id="gStage" name="stage" defaultValue={t.gStages[0]}>
-          {t.gStages.map((s) => <option key={s}>{s}</option>)}
+        <select id="gStage" name="stage" defaultValue={options[0]}>
+          {options.map((s) => <option key={s}>{s}</option>)}
         </select>
       </div>
       <label className="check" htmlFor="gConsent">
