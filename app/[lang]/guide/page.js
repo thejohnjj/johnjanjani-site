@@ -90,7 +90,7 @@ export default async function Guide({ params }) {
               </div>
               <p className="g-disc">{t.gDisclaimer}</p>
               <p className="g-disc print-only">
-                {lang === 'fa' ? 'پوریا جانجانی' : 'Purya (John) Janjani'} · {PHONE} · johnjanjani.com · {t.footerBrokerage}
+                {lang === 'fa' ? 'پوریا جان جانی' : 'Purya (John) Janjani'} · {PHONE} · johnjanjani.com · {t.footerBrokerage}
               </p>
             </article>
           </div>

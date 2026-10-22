@@ -44,7 +44,7 @@ export default async function Home({ params }) {
               </div>
             </div>
             <div className="portrait">
-              <img src="/images/john.jpg" alt={lang === 'fa' ? 'پوریا جانجانی' : 'Purya (John) Janjani'} width="640" height="640" />
+              <img src="/images/john.jpg" alt={lang === 'fa' ? 'پوریا جان جانی' : 'Purya (John) Janjani'} width="640" height="640" />
               <div className="badge">
                 <strong>{t.badgeTitle}</strong>
                 <span>{t.badgeSub}</span>

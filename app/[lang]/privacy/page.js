@@ -63,7 +63,7 @@ const FA = (
   <>
     <p>آخرین به‌روزرسانی: اکتبر ۲۰۲۶</p>
     <p>
-      این وب‌سایت توسط پوریا جانجانی، مشاور املاک در Century 21 Leading Edge Realty Inc., Brokerage به آدرس 1053 McNicoll Ave, Toronto, ON
+      این وب‌سایت توسط پوریا جان جانی، مشاور املاک در Century 21 Leading Edge Realty Inc., Brokerage به آدرس 1053 McNicoll Ave, Toronto, ON
       اداره می‌شود. در این صفحه توضیح می‌دهم چه اطلاعاتی در johnjanjani.com جمع می‌کنم و چطور از آن استفاده می‌کنم.
     </p>
     <h2>چه اطلاعاتی جمع می‌کنم</h2>

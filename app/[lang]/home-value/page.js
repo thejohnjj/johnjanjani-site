@@ -40,7 +40,7 @@ export default async function HomeValue({ params }) {
               <div className="tool-who">
                 <img src="/images/john.jpg" alt="" width="64" height="64" />
                 <div>
-                  <b>{lang === 'fa' ? 'پوریا جانجانی' : 'Purya (John) Janjani'}</b>
+                  <b>{lang === 'fa' ? 'پوریا جان جانی' : 'Purya (John) Janjani'}</b>
                   <span>{t.footerBrokerage}</span>
                 </div>
               </div>
