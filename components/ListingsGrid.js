@@ -28,8 +28,8 @@ export default function ListingsGrid({ listings, t, lang, isMember, preview = fa
     if (filter === 'house') return l.status === 'sale' && (l.kind === 'house' || l.kind === 'townhouse');
     return l.status === 'sale' && l.kind === filter;
   });
-  // Homepage shows the 3 newest (highest codes), still in code order.
-  const shown = preview ? filtered.slice(-3) : filtered;
+  // Newest codes come first; the homepage shows the 3 newest.
+  const shown = preview ? filtered.slice(0, 3) : filtered;
 
   return (
     <>
