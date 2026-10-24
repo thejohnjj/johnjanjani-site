@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { digits } from '@/lib/format';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
 const HOLD = 4800; // time spent at each home
@@ -50,7 +51,7 @@ function brandStyle(style) {
 
 // Homepage opening (map version): a camera flies over the real GTA streets in 3D and
 // stops at each home John toured, showing its photo and code.
-export default function HeroMap({ points, t, lang }) {
+export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'standard' }) {
   const box = useRef(null);
   const [ready, setReady] = useState(false);
   const [active, setActive] = useState(-1);
@@ -65,21 +66,29 @@ export default function HeroMap({ points, t, lang }) {
     let timer;
     const markers = [];
     (async () => {
-      const maplibregl = (await import('maplibre-gl')).default;
-      const style = brandStyle(await (await fetch(STYLE_URL)).json());
-      if (stop || !box.current) return;
       const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      map = new maplibregl.Map({
-        container: box.current,
-        style,
-        center: [-79.43, 43.76],
-        zoom: 10.3,
-        pitch: 35,
-        bearing: -12,
-        interactive: false,
-        attributionControl: false,
-        fadeDuration: 0,
-      });
+      const start = { center: [-79.43, 43.76], zoom: 10.3, pitch: 35, bearing: -12, interactive: false };
+      let maplibregl;
+      if (mapboxToken) {
+        // High-quality Mapbox map: realistic 3D buildings, trees and dusk lighting, or satellite photos.
+        maplibregl = (await import('mapbox-gl')).default;
+        maplibregl.accessToken = mapboxToken;
+        if (stop || !box.current) return;
+        map = new maplibregl.Map({
+          container: box.current,
+          style: look === 'satellite' ? 'mapbox://styles/mapbox/standard-satellite' : 'mapbox://styles/mapbox/standard',
+          config: { basemap: { lightPreset: look === 'day' ? 'day' : 'dusk', showPointOfInterestLabels: false, showTransitLabels: false } },
+          ...start,
+          attributionControl: true,
+          logoPosition: lang === 'fa' ? 'bottom-left' : 'bottom-right',
+        });
+      } else {
+        // Free fallback: OpenFreeMap streets repainted in the brand colours.
+        maplibregl = (await import('maplibre-gl')).default;
+        const style = brandStyle(await (await fetch(STYLE_URL)).json());
+        if (stop || !box.current) return;
+        map = new maplibregl.Map({ container: box.current, style, ...start, attributionControl: false, fadeDuration: 0 });
+      }
       points.forEach((p, k) => {
         const el = document.createElement('a');
         el.href = p.href;
@@ -199,7 +208,7 @@ export default function HeroMap({ points, t, lang }) {
               <span className="v">{t.heroView} <span aria-hidden="true">{lang === 'fa' ? '←' : '→'}</span></span>
             </span>
           </a>
-          <span className="hm-credit">© OpenStreetMap · OpenFreeMap</span>
+          {!mapboxToken && <span className="hm-credit">© OpenStreetMap · OpenFreeMap</span>}
         </div>
       </div>
     </section>

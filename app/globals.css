@@ -590,3 +590,5 @@ html[dir='rtl'] .heromap .h2-shade { background:
 @media (max-width: 760px) {
   .heromap .h2-shade { background: linear-gradient(180deg, rgba(7, 47, 51, .85) 0%, rgba(7, 47, 51, .6) 40%, rgba(7, 47, 51, 0) 52%, rgba(7, 47, 51, 0) 72%, rgba(7, 47, 51, .85) 86%) !important; }
 }
+.heromap .mapboxgl-ctrl-bottom-right, .heromap .mapboxgl-ctrl-bottom-left { z-index: 2; opacity: .75; }
+@media (max-width: 760px) { .heromap .mapboxgl-ctrl-bottom-right, .heromap .mapboxgl-ctrl-bottom-left { bottom: auto; top: 4px; } }

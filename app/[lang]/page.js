@@ -42,7 +42,7 @@ export default async function Home({ params, searchParams }) {
       <Header lang={lang} t={t} member={member} />
       <main>
         {useMap && points.length > 0 ? (
-          <HeroMap points={points} t={t} lang={lang} />
+          <HeroMap points={points} t={t} lang={lang} mapboxToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN || process.env.MAPBOX_TOKEN || ''} look={['satellite', 'day'].includes(searchParams?.look) ? searchParams.look : 'standard'} />
         ) : slides.length > 0 ? (
           <HeroStories slides={slides} t={t} lang={lang} />
         ) : (
