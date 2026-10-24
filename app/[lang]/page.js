@@ -2,6 +2,7 @@ import { t as dictFor } from '@/lib/i18n';
 import { getMemberId } from '@/lib/session';
 import { getListings, getMember, splitListings } from '@/lib/listings';
 import PicksGrid from '@/components/PicksGrid';
+import HeroStories from '@/components/HeroStories';
 import { money, number } from '@/lib/format';
 import MembershipProvider, { JoinButton } from '@/components/Membership';
 import ListingsGrid from '@/components/ListingsGrid';
@@ -20,40 +21,33 @@ export default async function Home({ params }) {
   const member = await getMember(getMemberId());
   const [all, reviews] = await Promise.all([getListings(Boolean(member)), getReviews()]);
   const { tours: listings, picks } = splitListings(all, lang);
+  // Opening slideshow: the newest toured homes that have a photo.
+  const slides = listings
+    .filter((l) => l.photos[0])
+    .slice(0, 6)
+    .map((l) => ({ img: l.photos[0], code: l.code, type: l.type[lang], city: l.city[lang], href: `/${lang}/listings/${l.slug}` }));
 
   return (
     <MembershipProvider lang={lang} t={t}>
       <Header lang={lang} t={t} member={member} />
       <main>
-        <section className="hero">
-          <svg className="hero-house" viewBox="-20 0 240 200" aria-hidden="true">
-            <path d="M10 104 L64 56 L118 104 V170 H10 Z M82 84 L138 32 L194 84 V190 H82 Z M-20 116 H220" fill="none" stroke="#F6F1E7" strokeWidth="2" />
-          </svg>
-          <div className="wrap">
-            <div>
-              <div className="eyebrow light">{t.heroEyebrow}</div>
-              <h1>
-                {t.heroTitleA}
-                <em>{t.heroTitleEm}</em>
-                {t.heroTitleB}
-                {t.heroTitleEm2 && <em>{t.heroTitleEm2}</em>}
-                {t.heroTitleC}
-              </h1>
-              <p className="lead">{t.heroLead}</p>
-              <div className="ctas">
-                <a className="btn btn-accent" href={picks.length ? '#picks' : '#listings'}>{t.heroCta}</a>
-                {!member && <JoinButton className="btn btn-ghost" label={t.heroJoin} />}
+        {slides.length > 0 ? (
+          <HeroStories slides={slides} t={t} lang={lang} />
+        ) : (
+          <section className="hero">
+            <div className="wrap">
+              <div>
+                <div className="eyebrow light">{t.heroEyebrow}</div>
+                <h1>{t.heroTitleA}<em>{t.heroTitleEm}</em>{t.heroTitleB}{t.heroTitleEm2 && <em>{t.heroTitleEm2}</em>}{t.heroTitleC}</h1>
+                <p className="lead">{t.heroLead}</p>
+                <div className="ctas">
+                  <a className="btn btn-accent" href={picks.length ? '#picks' : '#listings'}>{t.heroCta}</a>
+                  {!member && <JoinButton className="btn btn-ghost" label={t.heroJoin} />}
+                </div>
               </div>
             </div>
-            <div className="portrait">
-              <img src="/images/john.jpg" alt={lang === 'fa' ? 'پوریا جان جانی' : 'Purya (John) Janjani'} width="640" height="640" />
-              <div className="badge">
-                <strong>{t.badgeTitle}</strong>
-                <span>{t.badgeSub}</span>
-              </div>
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {picks.length > 0 && (
           <section className="block picks" id="picks">
