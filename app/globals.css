@@ -592,3 +592,4 @@ html[dir='rtl'] .heromap .h2-shade { background:
 }
 .heromap .mapboxgl-ctrl-bottom-right, .heromap .mapboxgl-ctrl-bottom-left { z-index: 2; opacity: .75; }
 @media (max-width: 760px) { .heromap .mapboxgl-ctrl-bottom-right, .heromap .mapboxgl-ctrl-bottom-left { bottom: auto; top: 4px; } }
+.heromap .mapboxgl-marker { opacity: 1 !important; }
