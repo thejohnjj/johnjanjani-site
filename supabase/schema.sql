@@ -116,3 +116,7 @@ alter table listings add column if not exists section text not null default 'tou
 alter table listings add column if not exists pick_note_en text not null default '';
 alter table listings add column if not exists pick_note_fa text not null default '';
 alter table listings add column if not exists expires_at timestamptz;
+
+-- Contact form messages
+alter table leads drop constraint if exists leads_kind_check;
+alter table leads add constraint leads_kind_check check (kind in ('valuation', 'guide', 'message'));

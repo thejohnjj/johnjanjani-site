@@ -3,6 +3,7 @@ import { getMemberId } from '@/lib/session';
 import { getListings, getMember, splitListings } from '@/lib/listings';
 import PicksGrid from '@/components/PicksGrid';
 import HeroStories from '@/components/HeroStories';
+import ContactForm from '@/components/ContactForm';
 import { money, number } from '@/lib/format';
 import MembershipProvider, { JoinButton } from '@/components/Membership';
 import ListingsGrid from '@/components/ListingsGrid';
@@ -158,6 +159,7 @@ export default async function Home({ params }) {
               <div className="eyebrow light">{t.contactEyebrow}</div>
               <h2>{t.contactTitle}</h2>
               <p>{t.contactText}</p>
+              <ContactForm lang={lang} t={t} />
             </div>
             <div className="cbox">
               <div className="cphone">

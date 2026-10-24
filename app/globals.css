@@ -544,3 +544,12 @@ html[dir='rtl'] .h2-nav button:first-child svg, html[dir='rtl'] .h2-nav button:l
   .h2-media img.on { animation: none; transform: none; }
   .h2-bars .now i { animation: none; transform: scaleX(1); }
 }
+
+/* Contact section message form */
+.contact .msg-form { margin-top: 28px; max-width: 560px; }
+.msg-form .cf-title { font-size: 26px; margin: 0; }
+.msg-form .msg-note { margin: 0; font-size: 13px; color: var(--muted) !important; }
+.msg-form .err { margin: 0; min-height: 0; }
+.msg-form .err:empty { display: none; }
+.contact .msg-form p { max-width: none; }
+.contact .msg-form.done p { color: var(--muted); }

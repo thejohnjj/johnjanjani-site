@@ -25,6 +25,7 @@ export default async function Admin() {
   const setupNeeded = Boolean(leads.error || reviews.error);
   const valuations = (leads.data || []).filter((l) => l.kind === 'valuation');
   const guides = (leads.data || []).filter((l) => l.kind === 'guide');
+  const messages = (leads.data || []).filter((l) => l.kind === 'message');
   const TL = { '0-3': 'Within 3 months', '3-6': '3–6 months', '6-12': '6–12 months', curious: 'Just curious' };
   const viewCount = {};
   for (const v of views.data || []) viewCount[v.member_id] = (viewCount[v.member_id] || 0) + 1;
@@ -73,6 +74,28 @@ export default async function Admin() {
             One step left: run the new SQL from supabase/schema.sql (the “leads” and “reviews” tables) in Supabase → SQL Editor, then refresh this page.
           </p>
         )}
+
+        <section>
+          <div className="sec-head"><div><div className="eyebrow">Messages</div><h2>{messages.length} messages</h2></div></div>
+          <div className="tablebox">
+            <table>
+              <thead><tr><th>When</th><th>Name</th><th>Phone</th><th>Email</th><th>Looking to</th><th>Message</th></tr></thead>
+              <tbody>
+                {messages.map((m) => (
+                  <tr key={m.id}>
+                    <td>{when(m.created_at)}</td>
+                    <td>{m.name}<br /><small>{m.lang === 'fa' ? 'Farsi' : 'English'}</small></td>
+                    <td>{m.phone || '—'}</td>
+                    <td>{m.email || '—'}</td>
+                    <td><b>{{ buy: 'Buy', sell: 'Sell', rent: 'Rent' }[m.details?.intent] || 'Other'}</b></td>
+                    <td>{m.details?.message || '—'}</td>
+                  </tr>
+                ))}
+                {!messages.length && <tr><td colSpan="6">No messages yet.</td></tr>}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         <section>
           <div className="sec-head"><div><div className="eyebrow">Home value requests</div><h2>{valuations.length} requests</h2></div></div>

@@ -15,8 +15,9 @@ const TIMELINES = ['0-3', '3-6', '6-12', 'curious'];
 export async function POST(req) {
   const b = await req.json().catch(() => null);
   if (!b) return NextResponse.json({ error: 'bad_request' }, { status: 400 });
-  const kind = b.kind === 'guide' ? 'guide' : b.kind === 'valuation' ? 'valuation' : null;
+  const kind = ['guide', 'valuation', 'message'].includes(b.kind) ? b.kind : null;
   if (!kind) return NextResponse.json({ error: 'bad_request' }, { status: 400 });
+  if (kind === 'message') return message(b);
 
   const name = clip(b.name, 120);
   const email = clip(b.email).toLowerCase();
@@ -83,4 +84,38 @@ export async function POST(req) {
   const res = NextResponse.json({ ok: true });
   if (kind === 'guide') setGuideCookie(res);
   return res;
+}
+
+const INTENTS = { buy: 'Buy', sell: 'Sell', rent: 'Rent', other: 'Something else' };
+
+// "Send me a message" from the contact section: phone or email is enough.
+async function message(b) {
+  const name = clip(b.name, 120);
+  const email = clip(b.email).toLowerCase();
+  const phone = clip(b.phone, 40);
+  const lang = b.lang === 'fa' ? 'fa' : 'en';
+  const intent = INTENTS[b.intent] ? b.intent : 'other';
+  const text = clip(b.message, 1000);
+  if (name.length < 2) return NextResponse.json({ error: 'name' }, { status: 400 });
+  if (!email && !phone) return NextResponse.json({ error: 'contact' }, { status: 400 });
+  if (email && !EMAIL.test(email)) return NextResponse.json({ error: 'email' }, { status: 400 });
+  if (phone && phone.replace(/\D/g, '').length < 10) return NextResponse.json({ error: 'phone' }, { status: 400 });
+
+  const client = db();
+  if (client) {
+    const { error } = await client.from('leads').insert({ kind: 'message', name, email: email || '', phone: phone || null, lang, details: { intent, message: text }, consent: false });
+    // Before the new SQL is run the table rejects kind 'message'; the email below still goes out.
+    if (error) console.error('message insert', error.message);
+  }
+  await notify(`New message (${INTENTS[intent]}): ${name}`, [
+    `Name: ${name}`,
+    phone ? `Phone: ${phone}` : '',
+    email ? `Email: ${email}` : '',
+    `Language: ${lang === 'fa' ? 'Farsi' : 'English'}`,
+    `Looking to: ${INTENTS[intent]}`,
+    text ? `Message: ${text}` : '',
+    '',
+    'Promised: a reply today. See all messages at johnjanjani.com/admin',
+  ]);
+  return NextResponse.json({ ok: true });
 }
