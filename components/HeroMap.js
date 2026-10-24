@@ -53,6 +53,7 @@ function brandStyle(style) {
 // stops at each home John toured, showing its photo and code.
 export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'standard' }) {
   const box = useRef(null);
+  const onScreen = useRef(true);
   const [ready, setReady] = useState(false);
   const [active, setActive] = useState(-1);
   const [code, setCode] = useState('');
@@ -66,6 +67,9 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
     let stop = false;
     let timer;
     const markers = [];
+    // Only fly while the opening is on screen, so the map isn't downloading for nobody.
+    const io = new IntersectionObserver(([e]) => { onScreen.current = e.isIntersecting; }, { threshold: 0.25 });
+    if (box.current) io.observe(box.current);
     (async () => {
       const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const start = { center: [-79.43, 43.76], zoom: 10.3, pitch: 35, bearing: -12, interactive: false };
@@ -148,7 +152,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
         let i = 0;
         const visit = () => {
           if (stop) return;
-          if (document.hidden) { timer = setTimeout(visit, 1000); return; }
+          if (document.hidden || !onScreen.current) { timer = setTimeout(visit, 1000); return; }
           const p = tours[i];
           setActive(-1);
           tours.forEach((x) => x._el?.classList.remove('on'));
@@ -159,11 +163,14 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
             p._el?.classList.add('on');
             map.easeTo({ bearing: map.getBearing() + 22, duration: HOLD, easing: (x) => x });
             timer = setTimeout(() => {
-              i = (i + 1) % tours.length;
-              if (i === 0) {
+              i += 1;
+              if (i >= tours.length) {
+                // One full tour, then rest on an overview of every pin (no more downloading).
                 setActive(-1);
-                map.flyTo({ center: [-79.43, 43.84], zoom: 11.2, pitch: 40, bearing: -10, padding: pad(), duration: 4200 });
-                map.once('moveend', () => { timer = setTimeout(visit, 1500); });
+                tours.forEach((x) => x._el?.classList.remove('on'));
+                const b = new maplibregl.LngLatBounds();
+                points.forEach((x) => b.extend([x.lng, x.lat]));
+                map.fitBounds(b, { padding: pad(), pitch: 45, bearing: -15, duration: 4200, maxZoom: 13.5 });
               } else visit();
             }, HOLD);
           });
@@ -175,6 +182,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
     })().catch(() => {});
     return () => {
       stop = true;
+      io.disconnect();
       clearTimeout(timer);
       markers.forEach((m) => m.remove());
       map?.remove();

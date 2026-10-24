@@ -29,8 +29,9 @@ export default async function Home({ params, searchParams }) {
     .filter((l) => l.photos[0])
     .slice(0, 6)
     .map((l) => ({ img: l.photos[0], code: l.code, type: l.type[lang], city: l.city[lang], href: `/${lang}/listings/${l.slug}` }));
-  // Map version of the opening (preview with ?hero=map): every listing with a known area.
-  const useMap = searchParams?.hero === 'map';
+  // Map opening (default when a Mapbox token is set); ?hero=photos shows the photo slideshow, ?hero=map forces the map.
+  const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || process.env.MAPBOX_TOKEN || '';
+  const useMap = searchParams?.hero === 'map' || (Boolean(mapboxToken) && searchParams?.hero !== 'photos');
   const points = useMap
     ? [...listings, ...picks]
         .filter((l) => GEO[l.mls] && l.photos[0])
@@ -42,7 +43,7 @@ export default async function Home({ params, searchParams }) {
       <Header lang={lang} t={t} member={member} />
       <main>
         {useMap && points.length > 0 ? (
-          <HeroMap points={points} t={t} lang={lang} mapboxToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN || process.env.MAPBOX_TOKEN || ''} look={['satellite', 'day'].includes(searchParams?.look) ? searchParams.look : 'standard'} />
+          <HeroMap points={points} t={t} lang={lang} mapboxToken={mapboxToken} look={['satellite', 'day'].includes(searchParams?.look) ? searchParams.look : 'standard'} />
         ) : slides.length > 0 ? (
           <HeroStories slides={slides} t={t} lang={lang} />
         ) : (
