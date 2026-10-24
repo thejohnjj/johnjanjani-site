@@ -56,6 +56,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
   const [ready, setReady] = useState(false);
   const [active, setActive] = useState(-1);
   const [code, setCode] = useState('');
+  const [usingMapbox, setUsingMapbox] = useState(Boolean(mapboxToken));
   const tours = points.filter((p) => p.code);
   const first = tours[0] || points[0];
   const sep = lang === 'fa' ? ' | ' : ' · ';
@@ -69,12 +70,19 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
       const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const start = { center: [-79.43, 43.76], zoom: 10.3, pitch: 35, bearing: -12, interactive: false };
       let maplibregl;
+      // Free fallback: OpenFreeMap streets repainted in the brand colours.
+      const freeMap = async () => {
+        maplibregl = (await import('maplibre-gl')).default;
+        const style = brandStyle(await (await fetch(STYLE_URL)).json());
+        if (stop || !box.current) return null;
+        return new maplibregl.Map({ container: box.current, style, ...start, attributionControl: false, fadeDuration: 0 });
+      };
       if (mapboxToken) {
         // High-quality Mapbox map: realistic 3D buildings, trees and dusk lighting, or satellite photos.
         maplibregl = (await import('mapbox-gl')).default;
         maplibregl.accessToken = mapboxToken;
         if (stop || !box.current) return;
-        map = new maplibregl.Map({
+        const mb = new maplibregl.Map({
           container: box.current,
           style: look === 'satellite' ? 'mapbox://styles/mapbox/standard-satellite' : 'mapbox://styles/mapbox/standard',
           config: { basemap: { lightPreset: look === 'day' ? 'day' : 'dusk', showPointOfInterestLabels: false, showTransitLabels: false } },
@@ -82,12 +90,25 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
           attributionControl: true,
           logoPosition: lang === 'fa' ? 'bottom-left' : 'bottom-right',
         });
+        // If Mapbox refuses (free views used up, bad token), switch to the free map instead.
+        map = await new Promise((resolve) => {
+          let settled = false;
+          mb.once('style.load', () => { if (!settled) { settled = true; resolve(mb); } });
+          mb.on('error', (e) => {
+            const st = e?.error?.status;
+            if (!settled && (st === 401 || st === 403 || st === 429 || !mb.isStyleLoaded())) {
+              settled = true;
+              try { mb.remove(); } catch {}
+              setUsingMapbox(false);
+              freeMap().then(resolve);
+            }
+          });
+          setTimeout(() => { if (!settled) { settled = true; try { mb.remove(); } catch {} setUsingMapbox(false); freeMap().then(resolve); } }, 12000);
+        });
+        if (!map || stop) return;
       } else {
-        // Free fallback: OpenFreeMap streets repainted in the brand colours.
-        maplibregl = (await import('maplibre-gl')).default;
-        const style = brandStyle(await (await fetch(STYLE_URL)).json());
-        if (stop || !box.current) return;
-        map = new maplibregl.Map({ container: box.current, style, ...start, attributionControl: false, fadeDuration: 0 });
+        map = await freeMap();
+        if (!map) return;
       }
       points.forEach((p, k) => {
         const el = document.createElement('a');
@@ -115,7 +136,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
         const side = copy ? Math.min(lang === 'fa' ? w - (copy.left) + 40 : copy.right + 40, w * 0.6) : w * 0.5;
         return lang === 'fa' ? { left: 40, right: side, top: 80, bottom: 140 } : { left: side, right: 40, top: 80, bottom: 140 };
       };
-      map.on('load', () => {
+      const onReady = () => {
         if (stop) return;
         setReady(true);
         if (!tours.length) return;
@@ -148,7 +169,9 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
           });
         };
         timer = setTimeout(visit, 900);
-      });
+      };
+      if (map.loaded()) onReady();
+      else map.on('load', onReady);
     })().catch(() => {});
     return () => {
       stop = true;
@@ -208,7 +231,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
               <span className="v">{t.heroView} <span aria-hidden="true">{lang === 'fa' ? '←' : '→'}</span></span>
             </span>
           </a>
-          {!mapboxToken && <span className="hm-credit">© OpenStreetMap · OpenFreeMap</span>}
+          {!usingMapbox && <span className="hm-credit">© OpenStreetMap · OpenFreeMap</span>}
         </div>
       </div>
     </section>
