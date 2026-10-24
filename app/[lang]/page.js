@@ -3,6 +3,8 @@ import { getMemberId } from '@/lib/session';
 import { getListings, getMember, splitListings } from '@/lib/listings';
 import PicksGrid from '@/components/PicksGrid';
 import HeroStories from '@/components/HeroStories';
+import HeroMap from '@/components/HeroMap';
+import { GEO } from '@/lib/geo';
 import ContactForm from '@/components/ContactForm';
 import { money, number } from '@/lib/format';
 import MembershipProvider, { JoinButton } from '@/components/Membership';
@@ -16,7 +18,7 @@ import { PHONE, PHONE_TEL, INSTAGRAM_EN, INSTAGRAM_FA, FACEBOOK_URL, OFFICE, OFF
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home({ params }) {
+export default async function Home({ params, searchParams }) {
   const lang = params.lang;
   const t = dictFor(lang);
   const member = await getMember(getMemberId());
@@ -27,12 +29,21 @@ export default async function Home({ params }) {
     .filter((l) => l.photos[0])
     .slice(0, 6)
     .map((l) => ({ img: l.photos[0], code: l.code, type: l.type[lang], city: l.city[lang], href: `/${lang}/listings/${l.slug}` }));
+  // Map version of the opening (preview with ?hero=map): every listing with a known area.
+  const useMap = searchParams?.hero === 'map';
+  const points = useMap
+    ? [...listings, ...picks]
+        .filter((l) => GEO[l.mls] && l.photos[0])
+        .map((l) => ({ lat: GEO[l.mls][0], lng: GEO[l.mls][1], img: l.photos[0], code: l.code, type: l.type[lang], city: l.city[lang], href: `/${lang}/listings/${l.slug}` }))
+    : [];
 
   return (
     <MembershipProvider lang={lang} t={t}>
       <Header lang={lang} t={t} member={member} />
       <main>
-        {slides.length > 0 ? (
+        {useMap && points.length > 0 ? (
+          <HeroMap points={points} t={t} lang={lang} />
+        ) : slides.length > 0 ? (
           <HeroStories slides={slides} t={t} lang={lang} />
         ) : (
           <section className="hero">
