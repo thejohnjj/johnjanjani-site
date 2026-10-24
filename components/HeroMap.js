@@ -85,7 +85,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
         const mb = new maplibregl.Map({
           container: box.current,
           style: look === 'satellite' ? 'mapbox://styles/mapbox/standard-satellite' : 'mapbox://styles/mapbox/standard',
-          config: { basemap: { lightPreset: look === 'day' ? 'day' : 'dusk', showPointOfInterestLabels: false, showTransitLabels: false } },
+          config: { basemap: { lightPreset: look === 'standard' ? 'dusk' : 'day', showPointOfInterestLabels: false, showTransitLabels: false } },
           ...start,
           attributionControl: true,
           logoPosition: lang === 'fa' ? 'bottom-left' : 'bottom-right',
