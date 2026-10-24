@@ -1,8 +1,10 @@
 import Script from 'next/script';
 import { GA_ID, META_PIXEL_ID } from '@/lib/site';
 
-// Google Analytics 4 and the Meta Pixel. Each loads only when its ID is set in Vercel.
+// Google Analytics 4 and the Meta Pixel. They load only on the live site (Vercel production),
+// so test runs and preview builds don't count as visitors.
 export default function Analytics() {
+  if (process.env.VERCEL_ENV !== 'production') return null;
   const ga = process.env.NEXT_PUBLIC_GA_ID || GA_ID;
   const pixel = process.env.NEXT_PUBLIC_META_PIXEL_ID || META_PIXEL_ID;
   return (
