@@ -8,7 +8,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
 const HOLD = 4800; // time spent at each home
-const ZOOM = 15.3; // camera height while touring
+// Camera height while touring: close enough for 3D houses, a little higher on phones (less to download).
+const zoomFor = () => (typeof window !== 'undefined' && window.innerWidth < 760 ? 14.8 : 15.1);
 const PITCH = 60;
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
 
@@ -78,7 +79,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
       const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       // Start close to the first home, so the first flight is short and needs fewer map tiles.
       const f0 = tours[0] || points[0];
-      const start = { center: f0 ? [f0.lng, f0.lat] : [-79.43, 43.86], zoom: f0 ? ZOOM : 12.5, pitch: PITCH, bearing: -30, interactive: false };
+      const start = { center: f0 ? [f0.lng, f0.lat] : [-79.43, 43.86], zoom: f0 ? zoomFor() : 12.5, pitch: PITCH, bearing: -30, interactive: false };
       const dpr = window.devicePixelRatio || 1;
       const sharp = Math.min(dpr, window.innerWidth < 760 ? 1.5 : 2);
       let maplibregl;
@@ -186,18 +187,18 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
           const from = map.getCenter();
           const km = Math.hypot((p.lat - from.lat) * 111, (p.lng - from.lng) * 80);
           setActive(-1);
-          map.easeTo({ center: [p.lng, p.lat], zoom: ZOOM, pitch: PITCH, bearing: map.getBearing() + 30, padding: pad(), duration: Math.min(7000, Math.max(3200, km * 900)), easing: (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2) });
+          map.easeTo({ center: [p.lng, p.lat], zoom: zoomFor(), pitch: PITCH, bearing: map.getBearing() + 30, padding: pad(), duration: Math.min(7000, Math.max(3200, km * 900)), easing: (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2) });
           map.once('moveend', () => { if (!stop) { arrive(i); orbit(); } });
         };
         timer = setTimeout(orbit, 400);
       };
       // Put the camera on the newest home right away, and fade the map in once that view is
-      // fully drawn (at most 5 s), so visitors never see a half-drawn map.
-      if (f0) map.jumpTo({ center: [f0.lng, f0.lat], zoom: ZOOM, pitch: PITCH, bearing: -30, padding: pad() });
+      // fully drawn (at most 9 s; the home's photo shows until then), so visitors never see a half-drawn map.
+      if (f0) map.jumpTo({ center: [f0.lng, f0.lat], zoom: zoomFor(), pitch: PITCH, bearing: -30, padding: pad() });
       let fired = false;
       const go = () => { if (!fired) { fired = true; onReady(); } };
       map.once('idle', go);
-      setTimeout(go, 5000);
+      setTimeout(go, 9000);
     })().catch(() => {});
     return () => {
       stop = true;
