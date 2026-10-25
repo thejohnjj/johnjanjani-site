@@ -173,14 +173,22 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
           mb.once('style.load', () => { if (!settled) { settled = true; styleReady = true; resolve(mb); } });
           mb.on('error', (e) => {
             const st = e?.error?.status;
-            if (!settled && (st === 401 || st === 403 || st === 429 || !mb.isStyleLoaded())) {
+            if (!settled && (st === 401 || st === 403 || st === 429)) {
               settled = true;
               try { mb.remove(); } catch {}
               setUsingMapbox(false);
               freeMap().then(resolve);
             }
           });
-          setTimeout(() => { if (!settled) { settled = true; try { mb.remove(); } catch {} setUsingMapbox(false); freeMap().then(resolve); } }, 12000);
+          // Last resort: if Mapbox still hasn't answered after 15 s of the page actually being on screen.
+          let waited = 0;
+          const watchdog = () => {
+            if (settled || stop) return;
+            if (!document.hidden) waited += 1000;
+            if (waited >= 15000) { settled = true; try { mb.remove(); } catch {} setUsingMapbox(false); freeMap().then(resolve); return; }
+            setTimeout(watchdog, 1000);
+          };
+          setTimeout(watchdog, 1000);
         });
         if (!map || stop) return;
       } else {
