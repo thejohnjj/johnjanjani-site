@@ -7,6 +7,10 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
+// Start downloading the map engine as soon as this file loads in the browser, not after the page settles.
+let enginePromise = null;
+const loadEngine = () => (enginePromise ||= import('mapbox-gl').then((m) => m.default));
+if (typeof window !== 'undefined') loadEngine();
 const HOLD = 4800; // time spent at each home
 // Camera height while touring: close enough for 3D houses, a little higher on phones (less to download).
 const zoomFor = () => (typeof window !== 'undefined' && window.innerWidth < 760 ? 14.8 : 15.1);
@@ -112,7 +116,6 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
   const [code, setCode] = useState('');
   const [usingMapbox, setUsingMapbox] = useState(Boolean(mapboxToken));
   const tours = points.filter((p) => p.code);
-  const first = tours[0] || points[0];
   const sep = lang === 'fa' ? ' | ' : ' · ';
   // Open the connection to the map servers while the page is still loading.
   if (mapboxToken) { preconnect('https://api.mapbox.com', { crossOrigin: 'anonymous' }); }
@@ -143,14 +146,16 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
       };
       if (mapboxToken) {
         // High-quality Mapbox map: realistic 3D buildings, trees and dusk lighting, or satellite photos.
-        maplibregl = (await import('mapbox-gl')).default;
-        maplibregl.accessToken = mapboxToken;
-        if (stop || !box.current) return;
         // 'fast' = Mapbox's detailed street map in brand colours (appears in about a second);
-        // otherwise the realistic 3D style (or satellite photos).
-        const fastStyle = look === 'fast'
-          ? brandMapbox(await (await fetch(`https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${mapboxToken}`)).json())
-          : null;
+        // otherwise the realistic 3D style (or satellite photos). Engine and style download together.
+        const [engine, fastStyle] = await Promise.all([
+          loadEngine(),
+          look === 'fast'
+            ? fetch(`https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${mapboxToken}`).then((r) => r.json()).then(brandMapbox)
+            : null,
+        ]);
+        maplibregl = engine;
+        maplibregl.accessToken = mapboxToken;
         if (stop || !box.current) return;
         const mb = new maplibregl.Map({
           container: box.current,
@@ -276,7 +281,6 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
   return (
     <section className={`hero2 heromap${ready ? ' is-ready' : ''}`} aria-label={t.heroToured}>
       <div className="h2-media" aria-hidden="true">
-        {first && <img src={first.img} alt="" className="on hm-poster" fetchPriority="high" />}
         <div ref={box} className="hm-map" />
       </div>
       <div className="h2-shade" aria-hidden="true" />

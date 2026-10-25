@@ -593,3 +593,5 @@ html[dir='rtl'] .heromap .h2-shade { background:
 .heromap .mapboxgl-ctrl-bottom-right, .heromap .mapboxgl-ctrl-bottom-left { z-index: 2; opacity: .75; }
 @media (max-width: 760px) { .heromap .mapboxgl-ctrl-bottom-right, .heromap .mapboxgl-ctrl-bottom-left { bottom: auto; top: 4px; } }
 .heromap .mapboxgl-marker { opacity: 1 !important; }
+/* Before the map is drawn: the same deep teal as the map, so it simply fades in. */
+.heromap .h2-media { background: radial-gradient(120% 90% at 70% 40%, #0F3D43 0%, #0A3338 55%, #072F33 100%); }
