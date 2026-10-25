@@ -8,7 +8,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
 const HOLD = 4800; // time spent at each home
-const ZOOM = 14.7; // camera height while touring
+const ZOOM = 15.3; // camera height while touring
 const PITCH = 60;
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
 
