@@ -256,7 +256,12 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
           const from = map.getCenter();
           const km = Math.hypot((p.lat - from.lat) * 111, (p.lng - from.lng) * 80);
           setActive(-1);
-          map.easeTo({ center: [p.lng, p.lat], zoom: zoomFor(), pitch: PITCH, bearing: map.getBearing() + 30, padding: pad(), duration: Math.min(7000, Math.max(3200, km * 900)), easing: (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2) });
+          if (km > 6) {
+            // Far away (e.g. Richmond Hill to downtown): rise up, travel, come back down.
+            map.flyTo({ center: [p.lng, p.lat], zoom: zoomFor(), pitch: PITCH, bearing: map.getBearing() + 30, padding: pad(), duration: 6500, curve: 1.6, essential: true });
+          } else {
+            map.easeTo({ center: [p.lng, p.lat], zoom: zoomFor(), pitch: PITCH, bearing: map.getBearing() + 30, padding: pad(), duration: Math.min(7000, Math.max(3200, km * 900)), easing: (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2) });
+          }
           map.once('moveend', () => { if (!stop) { arrive(i); orbit(); } });
         };
         timer = setTimeout(orbit, 400);
