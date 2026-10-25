@@ -52,6 +52,56 @@ function brandStyle(style) {
   return style;
 }
 
+// Mapbox's own detailed street map (fast to load), repainted in the brand colours with 3D buildings.
+function brandMapbox(style) {
+  const C = { bg: '#0A3338', land: '#0D3A40', park: '#11473C', water: '#04232C', minor: '#2B6369', mid: '#3F8086', major: '#D8C9A0', hwy: '#E07A3F', label: '#D8C9A0', halo: '#072F33' };
+  const layers = [];
+  for (const l of style.layers) {
+    const id = l.id;
+    if (l.type === 'symbol' && /poi|transit|airport|ferry|natural-point|water-point|road-number|road-exit|settlement-subdivision|golf/.test(id)) continue;
+    const p = { ...(l.paint || {}) };
+    if (l.type === 'background') p['background-color'] = C.bg;
+    else if (l.type === 'fill') {
+      if (/water/.test(id)) p['fill-color'] = C.water;
+      else if (/park|landcover|national|pitch|golf|grass|wood/.test(id)) { p['fill-color'] = C.park; p['fill-opacity'] = 0.9; }
+      else if (/building/.test(id)) { p['fill-color'] = '#164A50'; delete p['fill-outline-color']; }
+      else { p['fill-color'] = C.land; delete p['fill-pattern']; }
+    } else if (l.type === 'line') {
+      if (/case|shadow/.test(id)) p['line-opacity'] = 0;
+      else if (/water/.test(id)) p['line-color'] = C.water;
+      else if (/motorway/.test(id)) { p['line-color'] = C.hwy; p['line-opacity'] = 0.85; }
+      else if (/trunk|primary/.test(id)) { p['line-color'] = C.major; p['line-opacity'] = 0.6; }
+      else if (/secondary|tertiary/.test(id)) p['line-color'] = C.mid;
+      else if (/admin|boundary/.test(id)) { p['line-color'] = '#3D6E72'; p['line-opacity'] = 0.5; }
+      else if (/rail/.test(id)) { p['line-color'] = '#2A5E64'; p['line-opacity'] = 0.6; }
+      else p['line-color'] = C.minor;
+    } else if (l.type === 'symbol') {
+      p['text-color'] = /settlement|place/.test(id) ? '#F6F1E7' : C.label;
+      p['text-halo-color'] = C.halo;
+      p['text-halo-width'] = 1.3;
+    }
+    layers.push({ ...l, paint: p });
+  }
+  const firstSymbol = layers.findIndex((l) => l.type === 'symbol');
+  const extrude = {
+    id: 'jj-3d-buildings',
+    type: 'fill-extrusion',
+    source: 'composite',
+    'source-layer': 'building',
+    minzoom: 13,
+    filter: ['==', ['get', 'extrude'], 'true'],
+    paint: {
+      'fill-extrusion-color': ['interpolate', ['linear'], ['get', 'height'], 0, '#22656C', 20, '#2F7A82', 60, '#4B989E', 150, '#6DB3B6'],
+      'fill-extrusion-height': ['get', 'height'],
+      'fill-extrusion-base': ['get', 'min_height'],
+      'fill-extrusion-opacity': 0.92,
+      'fill-extrusion-vertical-gradient': true,
+    },
+  };
+  layers.splice(firstSymbol < 0 ? layers.length : firstSymbol, 0, extrude);
+  return { ...style, layers };
+}
+
 // Homepage opening (map version): a camera flies over the real GTA streets in 3D and
 // stops at each home John toured, showing its photo and code.
 export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'standard' }) {
@@ -96,9 +146,15 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
         maplibregl = (await import('mapbox-gl')).default;
         maplibregl.accessToken = mapboxToken;
         if (stop || !box.current) return;
+        // 'fast' = Mapbox's detailed street map in brand colours (appears in about a second);
+        // otherwise the realistic 3D style (or satellite photos).
+        const fastStyle = look === 'fast'
+          ? brandMapbox(await (await fetch(`https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${mapboxToken}`)).json())
+          : null;
+        if (stop || !box.current) return;
         const mb = new maplibregl.Map({
           container: box.current,
-          style: look === 'satellite' ? 'mapbox://styles/mapbox/standard-satellite' : 'mapbox://styles/mapbox/standard',
+          style: fastStyle || (look === 'satellite' ? 'mapbox://styles/mapbox/standard-satellite' : 'mapbox://styles/mapbox/standard'),
           config: { basemap: { lightPreset: look === 'standard' ? 'dusk' : 'day', showPointOfInterestLabels: false, showTransitLabels: false } },
           ...start,
           pixelRatio: sharp,
