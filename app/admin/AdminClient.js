@@ -188,6 +188,7 @@ export function ListingEditor({ initial, defaultSection }) {
           <select id="status" value={v.status} onChange={set('status')}>
             <option value="sale">For sale</option>
             <option value="rent">For rent</option>
+            <option value="sold">Sold (no price shown)</option>
           </select>
         </div>
         <div className="field">

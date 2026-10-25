@@ -10,6 +10,7 @@ import LockIcon from '@/components/LockIcon';
 import { Price, Specs } from '@/components/ListingCard';
 import { digits } from '@/lib/format';
 import MobileBar from '@/components/MobileBar';
+import { WHATSAPP, PHONE, PHONE_TEL } from '@/lib/site';
 import { ListingJsonLd } from '@/components/JsonLd';
 import { SITE } from '@/lib/site';
 
@@ -96,7 +97,12 @@ export default async function ListingPage({ params }) {
                 </ul>
               </div>
             )}
-            {member ? (
+            {l.status === 'sold' ? (
+              <div className="sold-actions">
+                <a className="btn btn-accent" href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`${t.code} ${l.code || l.mls}: ${t.soldAsk}`)}`} target="_blank" rel="noopener noreferrer">{t.soldAsk}</a>
+                <a className="btn btn-ghost tour" href={`tel:${PHONE_TEL}`} dir="ltr">{PHONE}</a>
+              </div>
+            ) : member ? (
               <ShowingButton listingId={l.id} label={t.showing} sentLabel={t.showingSent} errorLabel={t.errServer} />
             ) : (
               <JoinButton label={t.unlockBtn} listingLabel={label} />

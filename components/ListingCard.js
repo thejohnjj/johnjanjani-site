@@ -2,6 +2,7 @@ import LockIcon from './LockIcon';
 import { money, digits } from '@/lib/format';
 
 export function Price({ l, t, lang }) {
+  if (l.status === 'sold') return <div className="sold-note">{t.soldNote}</div>;
   if (l.price == null) {
     return (
       <div className="locked">
@@ -35,7 +36,7 @@ export default function ListingCard({ l, t, lang }) {
     <a className="card" href={`/${lang}/listings/${l.slug}`}>
       <div className="ph">
         {photo ? <img src={photo} alt={`${l.type[lang]} · ${l.city[lang]}`} loading="lazy" /> : <span className="noimg">{l.type[lang]}</span>}
-        <span className="tag">{t.status[l.status]}</span>
+        <span className={`tag${l.status === 'sold' ? ' sold' : ''}`}>{t.status[l.status]}</span>
       </div>
       <div className="body">
         <div className="where">

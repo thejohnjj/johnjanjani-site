@@ -120,3 +120,7 @@ alter table listings add column if not exists expires_at timestamptz;
 -- Contact form messages
 alter table leads drop constraint if exists leads_kind_check;
 alter table leads add constraint leads_kind_check check (kind in ('valuation', 'guide', 'message'));
+
+-- Sold homes
+alter table listings drop constraint if exists listings_status_check;
+alter table listings add constraint listings_status_check check (status in ('sale', 'rent', 'sold'));

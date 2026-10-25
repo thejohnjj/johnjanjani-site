@@ -595,3 +595,9 @@ html[dir='rtl'] .heromap .h2-shade { background:
 .heromap .mapboxgl-marker { opacity: 1 !important; }
 /* Before the map is drawn: the same deep teal as the map, so it simply fades in. */
 .heromap .h2-media { background: radial-gradient(120% 90% at 70% 40%, #0F3D43 0%, #0A3338 55%, #072F33 100%); }
+
+/* Sold homes */
+.tag.sold { background: var(--teal); color: var(--on-teal); }
+.sold-note { font-family: var(--display); font-size: 22px; color: var(--accent-ink); font-weight: 600; }
+html[lang='fa'] .sold-note { font-family: var(--fa-display); font-size: 19px; }
+.sold-actions { display: flex; gap: 10px; flex-wrap: wrap; }
