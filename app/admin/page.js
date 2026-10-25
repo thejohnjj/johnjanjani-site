@@ -58,7 +58,7 @@ export default async function Admin() {
                     <td>{l.section === 'pick' ? <small>Daily pick{l.expires_at ? <><br />until {String(l.expires_at).slice(0, 10)}</> : null}</small> : <b>{l.code || '—'}</b>}</td>
                     <td>{l.type_en} · {l.city_en}<br /><small>{{ rent: 'For rent', sold: 'Sold', off: 'Off market' }[l.status] || 'For sale'}</small></td>
                     <td>{l.mls_number || '—'}</td>
-                    <td>${Number(l.price).toLocaleString('en-US')}{l.status === 'rent' ? '/mo' : ''}</td>
+                    <td>{l.price ? `$${Number(l.price).toLocaleString('en-US')}${l.status === 'rent' ? '/mo' : ''}` : '—'}</td>
                     <td>{l.active ? 'Yes' : 'Hidden'}</td>
                     <td><a href={`/admin/listing/${l.id}`}>Edit</a></td>
                   </tr>

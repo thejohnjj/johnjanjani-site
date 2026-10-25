@@ -57,7 +57,8 @@ export async function POST(req) {
     row.expires_at = b.section === 'pick' ? (exp && !isNaN(exp) ? exp.toISOString() : b.id ? null : new Date(Date.now() + 14 * 864e5).toISOString()) : null;
     if (b.section === 'pick') row.code = cleanCode(b.code) || null;
   }
-  if (!row.city_en || !row.type_en || !row.address || !row.price || !row.listing_brokerage) {
+  // Sold / off-market homes don't need a price (it's never shown).
+  if (!row.city_en || !row.type_en || !row.address || (!row.price && !['sold', 'off'].includes(row.status)) || !row.listing_brokerage) {
     return NextResponse.json({ error: 'City, type, address, price and listing brokerage are required.' }, { status: 400 });
   }
 
