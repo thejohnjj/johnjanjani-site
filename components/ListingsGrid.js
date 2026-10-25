@@ -25,7 +25,7 @@ export default function ListingsGrid({ listings, t, lang, isMember, preview = fa
   const filtered = listings.filter((l) => {
     if (filter === 'all') return true;
     if (filter === 'rent') return l.status === 'rent';
-    if (filter === 'sold') return l.status === 'sold';
+    if (filter === 'sold') return l.status === 'sold' || l.status === 'off';
     if (filter === 'house') return l.status === 'sale' && (l.kind === 'house' || l.kind === 'townhouse');
     return l.status === 'sale' && l.kind === filter;
   });
@@ -41,7 +41,7 @@ export default function ListingsGrid({ listings, t, lang, isMember, preview = fa
         </div>
         {!preview && listings.length > 0 && (
           <div className="chips" role="group" aria-label={t.nav.listings}>
-            {['all', 'house', 'condo', 'rent', ...(listings.some((l) => l.status === 'sold') ? ['sold'] : [])].map((f) => (
+            {['all', 'house', 'condo', 'rent', ...(listings.some((l) => l.status === 'sold' || l.status === 'off') ? ['sold'] : [])].map((f) => (
               <button key={f} type="button" className="chip" aria-pressed={filter === f} onClick={() => setFilter(f)}>
                 {f === 'sold' ? t.soldFilter : t.filters[f]}
               </button>

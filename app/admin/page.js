@@ -56,7 +56,7 @@ export default async function Admin() {
                   <tr key={l.id}>
                     <td>{l.photos?.[0] ? <img src={l.photos[0]} alt="" width="72" height="54" style={{ objectFit: 'cover', borderRadius: 8 }} /> : '—'}</td>
                     <td>{l.section === 'pick' ? <small>Daily pick{l.expires_at ? <><br />until {String(l.expires_at).slice(0, 10)}</> : null}</small> : <b>{l.code || '—'}</b>}</td>
-                    <td>{l.type_en} · {l.city_en}<br /><small>{{ rent: 'For rent', sold: 'Sold' }[l.status] || 'For sale'}</small></td>
+                    <td>{l.type_en} · {l.city_en}<br /><small>{{ rent: 'For rent', sold: 'Sold', off: 'Off market' }[l.status] || 'For sale'}</small></td>
                     <td>{l.mls_number || '—'}</td>
                     <td>${Number(l.price).toLocaleString('en-US')}{l.status === 'rent' ? '/mo' : ''}</td>
                     <td>{l.active ? 'Yes' : 'Hidden'}</td>

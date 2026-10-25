@@ -2,7 +2,7 @@ import LockIcon from './LockIcon';
 import { money, digits } from '@/lib/format';
 
 export function Price({ l, t, lang }) {
-  if (l.status === 'sold') return <div className="sold-note">{t.soldNote}</div>;
+  if (l.status === 'sold' || l.status === 'off') return <div className="sold-note">{l.status === 'sold' ? t.soldNote : t.offNote}</div>;
   if (l.price == null) {
     return (
       <div className="locked">
@@ -22,9 +22,9 @@ export function Price({ l, t, lang }) {
 export function Specs({ l, t, lang }) {
   return (
     <div className="specs">
-      <span><b>{digits(l.beds, lang)}</b> {t.beds}</span>
-      <span><b>{digits(l.baths, lang)}</b> {t.baths}</span>
-      <span><b>{digits(l.parking, lang)}</b> {t.parking}</span>
+      {l.beds > 0 && <span><b>{digits(l.beds, lang)}</b> {t.beds}</span>}
+      {l.baths > 0 && <span><b>{digits(l.baths, lang)}</b> {t.baths}</span>}
+      {l.parking > 0 && <span><b>{digits(l.parking, lang)}</b> {t.parking}</span>}
       {l.sqft && <span><b dir="ltr">{digits(l.sqft, lang)}</b> {t.sqft}</span>}
     </div>
   );
@@ -36,7 +36,7 @@ export default function ListingCard({ l, t, lang }) {
     <a className="card" href={`/${lang}/listings/${l.slug}`}>
       <div className="ph">
         {photo ? <img src={photo} alt={`${l.type[lang]} · ${l.city[lang]}`} loading="lazy" /> : <span className="noimg">{l.type[lang]}</span>}
-        <span className={`tag${l.status === 'sold' ? ' sold' : ''}`}>{t.status[l.status]}</span>
+        <span className={`tag${l.status === 'sold' || l.status === 'off' ? ' sold' : ''}`}>{t.status[l.status]}</span>
       </div>
       <div className="body">
         <div className="where">

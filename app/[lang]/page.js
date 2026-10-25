@@ -26,7 +26,7 @@ export default async function Home({ params, searchParams }) {
   const { tours: listings, picks } = splitListings(all, lang);
   // Opening slideshow: the newest toured homes that have a photo.
   const slides = listings
-    .filter((l) => l.photos[0] && l.status !== 'sold')
+    .filter((l) => l.photos[0] && !['sold', 'off'].includes(l.status))
     .slice(0, 6)
     .map((l) => ({ img: l.photos[0], code: l.code, type: l.type[lang], city: l.city[lang], href: `/${lang}/listings/${l.slug}` }));
   // Map opening (default when a Mapbox token is set); ?hero=photos shows the photo slideshow, ?hero=map forces the map.
@@ -34,7 +34,7 @@ export default async function Home({ params, searchParams }) {
   const useMap = searchParams?.hero === 'map' || (Boolean(mapboxToken) && searchParams?.hero !== 'photos');
   const points = useMap
     ? [...listings, ...picks]
-        .filter((l) => GEO[l.mls] && l.photos[0] && l.status !== 'sold')
+        .filter((l) => GEO[l.mls] && l.photos[0] && !['sold', 'off'].includes(l.status))
         .map((l) => ({ lat: GEO[l.mls][0], lng: GEO[l.mls][1], img: l.photos[0], code: l.code, type: l.type[lang], city: l.city[lang], href: `/${lang}/listings/${l.slug}` }))
     : [];
 

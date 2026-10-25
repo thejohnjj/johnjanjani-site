@@ -25,7 +25,7 @@ export async function POST(req) {
   const row = {
     code: cleanCode(b.code) || null,
     mls_number: String(b.mls_number || '').trim() || null,
-    status: ['rent', 'sold'].includes(b.status) ? b.status : 'sale',
+    status: ['rent', 'sold', 'off'].includes(b.status) ? b.status : 'sale',
     kind: ['house', 'townhouse', 'condo'].includes(b.kind) ? b.kind : 'house',
     city_en: String(b.city_en || '').trim(),
     city_fa: String(b.city_fa || '').trim(),
@@ -80,7 +80,7 @@ export async function POST(req) {
   if (result.error) {
     const dup = /listings_code_key|duplicate/i.test(result.error.message);
     if (/status_check/.test(result.error.message)) {
-      return NextResponse.json({ error: 'One step left: run the new “Sold” SQL from supabase/schema.sql in Supabase → SQL Editor, then save again.' }, { status: 500 });
+      return NextResponse.json({ error: 'One step left: run the new “Sold / Off market” SQL from supabase/schema.sql in Supabase → SQL Editor, then save again.' }, { status: 500 });
     }
     if (/section|pick_note|expires_at/.test(result.error.message)) {
       return NextResponse.json({ error: 'One step left: run the new “Daily picks” SQL from supabase/schema.sql in Supabase → SQL Editor, then save again.' }, { status: 500 });

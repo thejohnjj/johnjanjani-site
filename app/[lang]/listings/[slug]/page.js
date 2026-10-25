@@ -97,9 +97,9 @@ export default async function ListingPage({ params }) {
                 </ul>
               </div>
             )}
-            {l.status === 'sold' ? (
+            {l.status === 'sold' || l.status === 'off' ? (
               <div className="sold-actions">
-                <a className="btn btn-accent" href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`${t.code} ${l.code || l.mls}: ${t.soldAsk}`)}`} target="_blank" rel="noopener noreferrer">{t.soldAsk}</a>
+                <a className="btn btn-accent" href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`${t.code} ${l.code || l.mls}: ${l.status === 'sold' ? t.soldAsk : t.offAsk}`)}`} target="_blank" rel="noopener noreferrer">{l.status === 'sold' ? t.soldAsk : t.offAsk}</a>
                 <a className="btn btn-ghost tour" href={`tel:${PHONE_TEL}`} dir="ltr">{PHONE}</a>
               </div>
             ) : member ? (
