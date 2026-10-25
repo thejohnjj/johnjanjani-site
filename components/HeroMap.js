@@ -186,8 +186,11 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
         };
         timer = setTimeout(visit, 300);
       };
-      if (map.loaded()) onReady();
-      else map.on('load', onReady);
+      // Show the map as soon as its base style is ready; buildings fill in while the camera moves.
+      let fired = false;
+      const go = () => { if (!fired) { fired = true; setTimeout(onReady, 350); } };
+      if (map.isStyleLoaded()) go();
+      else { map.once('style.load', go); map.once('load', go); }
     })().catch(() => {});
     return () => {
       stop = true;
