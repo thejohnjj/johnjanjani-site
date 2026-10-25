@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { db } from '@/lib/supabase';
 import { isAdmin } from '@/lib/session';
 
@@ -27,6 +27,7 @@ export async function POST(req) {
   const q = b.id ? client.from('reviews').update(row).eq('id', b.id) : client.from('reviews').insert(row);
   const { error } = await q;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  revalidateTag('reviews');
   revalidatePath('/', 'layout');
   return NextResponse.json({ ok: true });
 }
@@ -38,6 +39,7 @@ export async function DELETE(req) {
   if (!client || !id) return NextResponse.json({ error: 'bad_request' }, { status: 400 });
   const { error } = await client.from('reviews').delete().eq('id', id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  revalidateTag('reviews');
   revalidatePath('/', 'layout');
   return NextResponse.json({ ok: true });
 }

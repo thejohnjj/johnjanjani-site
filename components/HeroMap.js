@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { preconnect } from 'react-dom';
 import { digits } from '@/lib/format';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -61,6 +62,8 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
   const tours = points.filter((p) => p.code);
   const first = tours[0] || points[0];
   const sep = lang === 'fa' ? ' | ' : ' · ';
+  // Open the connection to the map servers while the page is still loading.
+  if (mapboxToken) { preconnect('https://api.mapbox.com', { crossOrigin: 'anonymous' }); }
 
   useEffect(() => {
     let map;
@@ -72,14 +75,18 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
     if (box.current) io.observe(box.current);
     (async () => {
       const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const start = { center: [-79.43, 43.76], zoom: 10.3, pitch: 35, bearing: -12, interactive: false };
+      // Start close to the first home, so the first flight is short and needs fewer map tiles.
+      const f0 = tours[0] || points[0];
+      const start = { center: f0 ? [f0.lng, f0.lat - 0.012] : [-79.43, 43.86], zoom: 12.8, pitch: 50, bearing: -25, interactive: false };
+      const dpr = window.devicePixelRatio || 1;
+      const sharp = Math.min(dpr, window.innerWidth < 760 ? 1.5 : 2);
       let maplibregl;
       // Free fallback: OpenFreeMap streets repainted in the brand colours.
       const freeMap = async () => {
         maplibregl = (await import('maplibre-gl')).default;
         const style = brandStyle(await (await fetch(STYLE_URL)).json());
         if (stop || !box.current) return null;
-        return new maplibregl.Map({ container: box.current, style, ...start, attributionControl: false, fadeDuration: 0 });
+        return new maplibregl.Map({ container: box.current, style, ...start, pixelRatio: sharp, attributionControl: false, fadeDuration: 0 });
       };
       if (mapboxToken) {
         // High-quality Mapbox map: realistic 3D buildings, trees and dusk lighting, or satellite photos.
@@ -91,6 +98,8 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
           style: look === 'satellite' ? 'mapbox://styles/mapbox/standard-satellite' : 'mapbox://styles/mapbox/standard',
           config: { basemap: { lightPreset: look === 'standard' ? 'dusk' : 'day', showPointOfInterestLabels: false, showTransitLabels: false } },
           ...start,
+          pixelRatio: sharp,
+          antialias: false,
           attributionControl: true,
           logoPosition: lang === 'fa' ? 'bottom-left' : 'bottom-right',
         });
@@ -175,7 +184,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
             }, HOLD);
           });
         };
-        timer = setTimeout(visit, 900);
+        timer = setTimeout(visit, 300);
       };
       if (map.loaded()) onReady();
       else map.on('load', onReady);

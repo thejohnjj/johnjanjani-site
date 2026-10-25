@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { db } from '@/lib/supabase';
 import { isAdmin } from '@/lib/session';
 import { slugify } from '@/lib/format';
@@ -84,6 +84,7 @@ export async function POST(req) {
     }
     return NextResponse.json({ error: dup ? `Code ${row.code} is already used by another listing.` : result.error.message }, { status: dup ? 409 : 500 });
   }
+  revalidateTag('listings');
   revalidatePath('/', 'layout');
   return NextResponse.json({ ok: true, ...result.data });
 }
@@ -96,6 +97,7 @@ export async function DELETE(req) {
   if (!client || !id) return NextResponse.json({ error: 'bad_request' }, { status: 400 });
   const { error } = await client.from('listings').delete().eq('id', id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  revalidateTag('listings');
   revalidatePath('/', 'layout');
   return NextResponse.json({ ok: true });
 }
