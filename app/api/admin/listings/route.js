@@ -81,7 +81,7 @@ export async function POST(req) {
   if (result.error) {
     const dup = /listings_code_key|duplicate/i.test(result.error.message);
     if (/status_check/.test(result.error.message)) {
-      return NextResponse.json({ error: 'One step left: run the new “Sold / Off market” SQL from supabase/schema.sql in Supabase → SQL Editor, then save again.' }, { status: 500 });
+      return NextResponse.json({ error: 'One step left: run the new “Sold / Terminated” SQL from supabase/schema.sql in Supabase → SQL Editor, then save again.' }, { status: 500 });
     }
     if (/section|pick_note|expires_at/.test(result.error.message)) {
       return NextResponse.json({ error: 'One step left: run the new “Daily picks” SQL from supabase/schema.sql in Supabase → SQL Editor, then save again.' }, { status: 500 });

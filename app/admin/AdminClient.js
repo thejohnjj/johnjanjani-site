@@ -189,7 +189,7 @@ export function ListingEditor({ initial, defaultSection }) {
             <option value="sale">For sale</option>
             <option value="rent">For rent</option>
             <option value="sold">Sold (no price shown)</option>
-            <option value="off">Off market / terminated (no price shown)</option>
+            <option value="off">Terminated (no price shown)</option>
           </select>
         </div>
         <div className="field">
