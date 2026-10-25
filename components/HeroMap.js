@@ -8,7 +8,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
 const HOLD = 4800; // time spent at each home
-const FLY = 5200; // flight between homes
+const ZOOM = 14.7; // camera height while touring
+const PITCH = 60;
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
 
 // Repaints the OpenFreeMap street style in the brand's night teal, with orange highways
@@ -77,7 +78,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
       const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       // Start close to the first home, so the first flight is short and needs fewer map tiles.
       const f0 = tours[0] || points[0];
-      const start = { center: f0 ? [f0.lng, f0.lat - 0.012] : [-79.43, 43.86], zoom: 12.8, pitch: 50, bearing: -25, interactive: false };
+      const start = { center: f0 ? [f0.lng, f0.lat] : [-79.43, 43.86], zoom: f0 ? ZOOM : 12.5, pitch: PITCH, bearing: -30, interactive: false };
       const dpr = window.devicePixelRatio || 1;
       const sharp = Math.min(dpr, window.innerWidth < 760 ? 1.5 : 2);
       let maplibregl;
@@ -92,7 +93,6 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
       if (mapboxToken) {
         // High-quality Mapbox map: realistic 3D buildings, trees and dusk lighting, or satellite photos.
         maplibregl = (await import('mapbox-gl')).default;
-        window.__hm = { imported: Math.round(performance.now()) };
         maplibregl.accessToken = mapboxToken;
         if (stop || !box.current) return;
         const mb = new maplibregl.Map({
@@ -108,8 +108,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
         // If Mapbox refuses (free views used up, bad token), switch to the free map instead.
         map = await new Promise((resolve) => {
           let settled = false;
-          mb.on('error', (e) => { (window.__hm.errors ||= []).push([Math.round(performance.now()), e?.error?.status, String(e?.error?.message || e?.error || '').slice(0, 120)]); });
-          mb.once('style.load', () => { window.__hm.style = Math.round(performance.now()); if (!settled) { settled = true; styleReady = true; resolve(mb); } });
+          mb.once('style.load', () => { if (!settled) { settled = true; styleReady = true; resolve(mb); } });
           mb.on('error', (e) => {
             const st = e?.error?.status;
             if (!settled && (st === 401 || st === 403 || st === 429 || !mb.isStyleLoaded())) {
@@ -152,49 +151,53 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
         const side = copy ? Math.min(lang === 'fa' ? w - (copy.left) + 40 : copy.right + 40, w * 0.6) : w * 0.5;
         return lang === 'fa' ? { left: 40, right: side, top: 80, bottom: 140 } : { left: side, right: 40, top: 80, bottom: 140 };
       };
+      const arrive = (k) => {
+        setActive(k);
+        tours.forEach((x) => x._el?.classList.remove('on'));
+        tours[k]._el?.classList.add('on');
+      };
       const onReady = () => {
         if (stop) return;
-        if (window.__hm) window.__hm.ready = Math.round(performance.now());
         setReady(true);
         if (!tours.length) return;
-        if (still) {
-          map.jumpTo({ center: [tours[0].lng, tours[0].lat], zoom: 14.6, pitch: 55, bearing: -20, padding: pad() });
-          setActive(0);
-          return;
-        }
+        arrive(0);
+        if (still) return;
         let i = 0;
-        const visit = () => {
+        // Slow orbit at the current home, then glide (same height) to the next one.
+        const orbit = () => {
           if (stop) return;
-          if (document.hidden || !onScreen.current) { timer = setTimeout(visit, 1000); return; }
-          const p = tours[i];
-          setActive(-1);
-          tours.forEach((x) => x._el?.classList.remove('on'));
-          map.flyTo({ center: [p.lng, p.lat], zoom: 15.4, pitch: 62, bearing: -40 + ((i * 37) % 80), padding: pad(), duration: FLY, curve: 1.5, essential: true });
-          map.once('moveend', () => {
-            if (stop) return;
-            setActive(i);
-            p._el?.classList.add('on');
-            map.easeTo({ bearing: map.getBearing() + 22, duration: HOLD, easing: (x) => x });
-            timer = setTimeout(() => {
-              i += 1;
-              if (i >= tours.length) {
-                // One full tour, then rest on an overview of every pin (no more downloading).
-                setActive(-1);
-                tours.forEach((x) => x._el?.classList.remove('on'));
-                const b = new maplibregl.LngLatBounds();
-                points.forEach((x) => b.extend([x.lng, x.lat]));
-                map.fitBounds(b, { padding: pad(), pitch: 45, bearing: -15, duration: 4200, maxZoom: 13.5 });
-              } else visit();
-            }, HOLD);
-          });
+          map.easeTo({ bearing: map.getBearing() + 24, duration: HOLD, easing: (x) => x });
+          timer = setTimeout(next, HOLD);
         };
-        timer = setTimeout(visit, 300);
+        const next = () => {
+          if (stop) return;
+          if (document.hidden || !onScreen.current) { timer = setTimeout(next, 1000); return; }
+          i += 1;
+          if (i >= tours.length) {
+            // One full tour, then rest on an overview of every pin (no more downloading).
+            setActive(-1);
+            tours.forEach((x) => x._el?.classList.remove('on'));
+            const b = new maplibregl.LngLatBounds();
+            points.forEach((x) => b.extend([x.lng, x.lat]));
+            map.fitBounds(b, { padding: pad(), pitch: 45, bearing: -15, duration: 4500, maxZoom: 13.5 });
+            return;
+          }
+          const p = tours[i];
+          const from = map.getCenter();
+          const km = Math.hypot((p.lat - from.lat) * 111, (p.lng - from.lng) * 80);
+          setActive(-1);
+          map.easeTo({ center: [p.lng, p.lat], zoom: ZOOM, pitch: PITCH, bearing: map.getBearing() + 30, padding: pad(), duration: Math.min(7000, Math.max(3200, km * 900)), easing: (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2) });
+          map.once('moveend', () => { if (!stop) { arrive(i); orbit(); } });
+        };
+        timer = setTimeout(orbit, 400);
       };
-      // Show the map as soon as its base style is ready; buildings fill in while the camera moves.
+      // Put the camera on the newest home right away, and fade the map in once that view is
+      // fully drawn (at most 5 s), so visitors never see a half-drawn map.
+      if (f0) map.jumpTo({ center: [f0.lng, f0.lat], zoom: ZOOM, pitch: PITCH, bearing: -30, padding: pad() });
       let fired = false;
-      const go = () => { if (!fired) { fired = true; setTimeout(onReady, 350); } };
-      if (styleReady || map.isStyleLoaded()) go();
-      else { map.once('style.load', go); map.once('load', go); }
+      const go = () => { if (!fired) { fired = true; onReady(); } };
+      map.once('idle', go);
+      setTimeout(go, 5000);
     })().catch(() => {});
     return () => {
       stop = true;
