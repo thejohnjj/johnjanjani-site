@@ -81,6 +81,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
       const dpr = window.devicePixelRatio || 1;
       const sharp = Math.min(dpr, window.innerWidth < 760 ? 1.5 : 2);
       let maplibregl;
+      let styleReady = false;
       // Free fallback: OpenFreeMap streets repainted in the brand colours.
       const freeMap = async () => {
         maplibregl = (await import('maplibre-gl')).default;
@@ -106,7 +107,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
         // If Mapbox refuses (free views used up, bad token), switch to the free map instead.
         map = await new Promise((resolve) => {
           let settled = false;
-          mb.once('style.load', () => { if (!settled) { settled = true; resolve(mb); } });
+          mb.once('style.load', () => { if (!settled) { settled = true; styleReady = true; resolve(mb); } });
           mb.on('error', (e) => {
             const st = e?.error?.status;
             if (!settled && (st === 401 || st === 403 || st === 429 || !mb.isStyleLoaded())) {
@@ -189,7 +190,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
       // Show the map as soon as its base style is ready; buildings fill in while the camera moves.
       let fired = false;
       const go = () => { if (!fired) { fired = true; setTimeout(onReady, 350); } };
-      if (map.isStyleLoaded()) go();
+      if (styleReady || map.isStyleLoaded()) go();
       else { map.once('style.load', go); map.once('load', go); }
     })().catch(() => {});
     return () => {
