@@ -92,6 +92,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
       if (mapboxToken) {
         // High-quality Mapbox map: realistic 3D buildings, trees and dusk lighting, or satellite photos.
         maplibregl = (await import('mapbox-gl')).default;
+        window.__hm = { imported: Math.round(performance.now()) };
         maplibregl.accessToken = mapboxToken;
         if (stop || !box.current) return;
         const mb = new maplibregl.Map({
@@ -107,7 +108,8 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
         // If Mapbox refuses (free views used up, bad token), switch to the free map instead.
         map = await new Promise((resolve) => {
           let settled = false;
-          mb.once('style.load', () => { if (!settled) { settled = true; styleReady = true; resolve(mb); } });
+          mb.on('error', (e) => { (window.__hm.errors ||= []).push([Math.round(performance.now()), e?.error?.status, String(e?.error?.message || e?.error || '').slice(0, 120)]); });
+          mb.once('style.load', () => { window.__hm.style = Math.round(performance.now()); if (!settled) { settled = true; styleReady = true; resolve(mb); } });
           mb.on('error', (e) => {
             const st = e?.error?.status;
             if (!settled && (st === 401 || st === 403 || st === 429 || !mb.isStyleLoaded())) {
@@ -152,6 +154,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
       };
       const onReady = () => {
         if (stop) return;
+        if (window.__hm) window.__hm.ready = Math.round(performance.now());
         setReady(true);
         if (!tours.length) return;
         if (still) {
