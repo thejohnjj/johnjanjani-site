@@ -757,3 +757,4 @@ html[dir='rtl'] .hv-seg select { background-position: left 2px center; }
   .hv-reel .hv-shade, html[dir='rtl'] .hv-reel .hv-shade { background: none; }
 }
 
+@media (max-width: 640px) { .hv-reel .hv-lead { display: none; } .hv-reel .hv-eyebrow { margin-top: 0; } }
