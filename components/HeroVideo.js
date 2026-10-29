@@ -38,7 +38,7 @@ export default function HeroVideo({ t, lang, stats }) {
       return;
     }
     const tall = window.matchMedia('(max-aspect-ratio: 4/5)').matches;
-    v.src = tall ? '/video/hero-tall.mp4' : '/video/hero-wide.mp4';
+    v.src = tall ? '/video/tour-tall-2.mp4' : '/video/tour-wide-2.mp4';
     v.play().catch(() => setPlaying(false));
     const onVis = () => (document.hidden ? v.pause() : playing && v.play().catch(() => {}));
     document.addEventListener('visibilitychange', onVis);
@@ -50,7 +50,7 @@ export default function HeroVideo({ t, lang, stats }) {
     const v = video.current;
     if (!v) return;
     if (v.paused) {
-      if (!v.src) v.src = window.matchMedia('(max-aspect-ratio: 4/5)').matches ? '/video/hero-tall.mp4' : '/video/hero-wide.mp4';
+      if (!v.src) v.src = window.matchMedia('(max-aspect-ratio: 4/5)').matches ? '/video/tour-tall-2.mp4' : '/video/tour-wide-2.mp4';
       v.play().then(() => setPlaying(true)).catch(() => {});
     } else {
       v.pause();
@@ -82,8 +82,8 @@ export default function HeroVideo({ t, lang, stats }) {
     <section className="hv" aria-label={h.eyebrow}>
       <div className="hv-media" aria-hidden="true">
         <picture>
-          <source media="(max-aspect-ratio: 4/5)" srcSet="/video/hero-tall.jpg" />
-          <img src="/video/hero-wide.jpg" alt="" fetchPriority="high" />
+          <source media="(max-aspect-ratio: 4/5)" srcSet="/video/tour-tall-2.jpg" />
+          <img src="/video/tour-wide-2.jpg" alt="" fetchPriority="high" />
         </picture>
         <video ref={video} muted loop playsInline preload="none" className={shown ? 'on' : ''} onPlaying={() => setShown(true)} />
       </div>
