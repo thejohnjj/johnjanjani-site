@@ -33,7 +33,7 @@ export default async function Home({ params, searchParams }) {
   // Map opening (default when a Mapbox token is set); ?hero=photos shows the photo slideshow, ?hero=map forces the map.
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || process.env.MAPBOX_TOKEN || '';
   // Default opening: video hero. ?hero=map and ?hero=photos keep the older openings for comparison.
-  const heroMode = ['map', 'photos'].includes(searchParams?.hero) ? searchParams.hero : 'video';
+  const heroMode = ['map', 'photos', 'reel'].includes(searchParams?.hero) ? searchParams.hero : 'video';
   const useMap = heroMode === 'map' && Boolean(mapboxToken);
   const rated = reviews.filter((r) => r.rating);
   const stats = {
@@ -51,8 +51,8 @@ export default async function Home({ params, searchParams }) {
     <MembershipProvider lang={lang} t={t}>
       <Header lang={lang} t={t} member={member} />
       <main>
-        {heroMode === 'video' ? (
-          <HeroVideo t={t} lang={lang} stats={stats} />
+        {heroMode === 'video' || heroMode === 'reel' ? (
+          <HeroVideo t={t} lang={lang} stats={stats} reel={heroMode === 'reel'} />
         ) : useMap && points.length > 0 ? (
           <HeroMap points={points} t={t} lang={lang} mapboxToken={mapboxToken} look={{ real: 'standard', satellite: 'satellite', day: 'day' }[searchParams?.look] || 'fast'} />
         ) : slides.length > 0 ? (

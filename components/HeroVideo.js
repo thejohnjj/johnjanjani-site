@@ -14,8 +14,13 @@ function searchUrl(lang, f) {
   return `/${lang}/search${s ? `?${s}` : ''}`;
 }
 
+function clipFor(reel) {
+  if (reel) return '/video/reel-1.mp4';
+  return window.matchMedia('(max-aspect-ratio: 4/5)').matches ? '/video/tours-tall-3.mp4' : '/video/tours-wide-3.mp4';
+}
+
 // Opening screen: a looping clip from John's own home tours behind a portal-style search.
-export default function HeroVideo({ t, lang, stats }) {
+export default function HeroVideo({ t, lang, stats, reel = false }) {
   const h = t.hv;
   const types = mlsT(lang).types;
   const video = useRef(null);
@@ -37,8 +42,7 @@ export default function HeroVideo({ t, lang, stats }) {
       setPlaying(false);
       return;
     }
-    const tall = window.matchMedia('(max-aspect-ratio: 4/5)').matches;
-    v.src = tall ? '/video/tours-tall-3.mp4' : '/video/tours-wide-3.mp4';
+    v.src = clipFor(reel);
     v.play().catch(() => setPlaying(false));
     const onVis = () => (document.hidden ? v.pause() : playing && v.play().catch(() => {}));
     document.addEventListener('visibilitychange', onVis);
@@ -50,7 +54,7 @@ export default function HeroVideo({ t, lang, stats }) {
     const v = video.current;
     if (!v) return;
     if (v.paused) {
-      if (!v.src) v.src = window.matchMedia('(max-aspect-ratio: 4/5)').matches ? '/video/tours-tall-3.mp4' : '/video/tours-wide-3.mp4';
+      if (!v.src) v.src = clipFor(reel);
       v.play().then(() => setPlaying(true)).catch(() => {});
     } else {
       v.pause();
@@ -79,17 +83,24 @@ export default function HeroVideo({ t, lang, stats }) {
   }
 
   return (
-    <section className="hv" aria-label={h.eyebrow}>
-      <div className="hv-media" aria-hidden="true">
-        <picture>
-          <source media="(max-aspect-ratio: 4/5)" srcSet="/video/tours-tall-3.jpg" />
-          <img src="/video/tours-wide-3.jpg" alt="" fetchPriority="high" />
-        </picture>
-        <video ref={video} muted loop playsInline preload="none" className={shown ? 'on' : ''} onPlaying={() => setShown(true)} />
-      </div>
+    <section className={`hv${reel ? ' hv-reel' : ''}`} aria-label={h.eyebrow}>
+      {reel ? (
+        <div className="hv-media hv-backdrop" aria-hidden="true">
+          <img src="/video/reel-1-blur.jpg" alt="" />
+        </div>
+      ) : (
+        <div className="hv-media" aria-hidden="true">
+          <picture>
+            <source media="(max-aspect-ratio: 4/5)" srcSet="/video/tours-tall-3.jpg" />
+            <img src="/video/tours-wide-3.jpg" alt="" fetchPriority="high" />
+          </picture>
+          <video ref={video} muted loop playsInline preload="none" className={shown ? 'on' : ''} onPlaying={() => setShown(true)} />
+        </div>
+      )}
       <div className="hv-shade" aria-hidden="true" />
 
       <div className="wrap hv-inner">
+        <div className="hv-copy">
         <div className="hv-agent">
           <img src="/images/john.jpg" alt="" width="48" height="48" />
           <div>
@@ -189,6 +200,14 @@ export default function HeroVideo({ t, lang, stats }) {
             <a key={label} href={searchUrl(lang, q)}>{label}</a>
           ))}
         </div>
+        </div>
+        {reel && (
+          <figure className="hv-reelcard" aria-hidden="true">
+            <img src="/video/reel-1.jpg" alt="" fetchPriority="high" />
+            <video ref={video} muted loop playsInline preload="none" className={shown ? 'on' : ''} onPlaying={() => setShown(true)} />
+            <figcaption><span className="dot" />{h.reelCaption}</figcaption>
+          </figure>
+        )}
       </div>
 
       <div className="hv-trust">
