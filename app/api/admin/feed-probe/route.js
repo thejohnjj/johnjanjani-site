@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { isAdmin } from '@/lib/session';
-import { readFilters, searchListings, getFeedListing } from '@/lib/proptx';
+import { readFilters, searchListings, getFeedListing, searchPath, feedGet, buildFilter } from '@/lib/proptx';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -12,6 +12,25 @@ export async function GET(req) {
   if (!isAdmin()) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const sp = Object.fromEntries(new URL(req.url).searchParams);
   const f = readFilters(sp);
+  if (sp.steps) {
+    const flt = encodeURIComponent(buildFilter(f));
+    const full = searchPath(f);
+    const variants = {
+      filterOnly: `Property?$top=2&$filter=${flt}&$select=ListingKey`,
+      withCount: `Property?$count=true&$top=2&$filter=${flt}&$select=ListingKey`,
+      withOrder: `Property?$top=2&$filter=${flt}&$select=ListingKey&$orderby=${encodeURIComponent('OriginalEntryTimestamp desc,ListingKey desc')}`,
+      expandPlain: `Property?$top=2&$filter=${flt}&$select=ListingKey&$expand=Media`,
+      expandSelect: `Property?$top=2&$filter=${flt}&$select=ListingKey&$expand=Media($select=MediaURL,Order)`,
+      full,
+    };
+    const res = {};
+    for (const [k, v] of Object.entries(variants)) {
+      const r = await feedGet(v, { revalidate: 0 });
+      res[k] = { ok: r.ok, status: r.status, error: r.error, rows: r.ok ? (r.data.value || []).length : null,
+        mediaPerRow: r.ok ? (r.data.value || []).map((x) => (x.Media ? x.Media.length : null)) : null };
+    }
+    return NextResponse.json(res);
+  }
   const t0 = Date.now();
   const s = await searchListings(f);
   const ms = Date.now() - t0;
