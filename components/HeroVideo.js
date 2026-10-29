@@ -102,7 +102,7 @@ export default function HeroVideo({ t, lang, stats, reel = false }) {
       <div className="wrap hv-inner">
         <div className="hv-copy">
         <div className="hv-agent">
-          <img src="/images/john.jpg" alt="" width="48" height="48" />
+          <img src="/images/john.jpg" alt="" width="84" height="84" />
           <div>
             <b>{lang === 'fa' ? 'پوریا جان جانی' : 'Purya (John) Janjani'}</b>
             <span>{t.heroAgentRole}</span>

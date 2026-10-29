@@ -758,3 +758,8 @@ html[dir='rtl'] .hv-seg select { background-position: left 2px center; }
 }
 
 @media (max-width: 640px) { .hv-reel .hv-lead { display: none; } .hv-reel .hv-eyebrow { margin-top: 0; } }
+.hv-agent { gap: 16px; }
+.hv-agent img { width: 84px; height: 84px; border-width: 3px; box-shadow: 0 8px 24px rgba(0, 0, 0, .3); }
+.hv-agent b { font-size: 19px; }
+.hv-agent span { font-size: 14px; }
+@media (max-width: 640px) { .hv-agent img { width: 68px; height: 68px; } .hv-agent b { font-size: 17px; } .hv-agent span { font-size: 13px; } }
