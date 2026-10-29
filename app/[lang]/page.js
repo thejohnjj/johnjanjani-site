@@ -4,6 +4,7 @@ import { getListings, getMember, splitListings } from '@/lib/listings';
 import PicksGrid from '@/components/PicksGrid';
 import HeroStories from '@/components/HeroStories';
 import HeroMap from '@/components/HeroMap';
+import HeroVideo from '@/components/HeroVideo';
 import { GEO } from '@/lib/geo';
 import ContactForm from '@/components/ContactForm';
 import { money, number } from '@/lib/format';
@@ -31,7 +32,15 @@ export default async function Home({ params, searchParams }) {
     .map((l) => ({ img: l.photos[0], code: l.code, type: l.type[lang], city: l.city[lang], href: `/${lang}/listings/${l.slug}` }));
   // Map opening (default when a Mapbox token is set); ?hero=photos shows the photo slideshow, ?hero=map forces the map.
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || process.env.MAPBOX_TOKEN || '';
-  const useMap = searchParams?.hero === 'map' || (Boolean(mapboxToken) && searchParams?.hero !== 'photos');
+  // Default opening: video hero. ?hero=map and ?hero=photos keep the older openings for comparison.
+  const heroMode = ['map', 'photos'].includes(searchParams?.hero) ? searchParams.hero : 'video';
+  const useMap = heroMode === 'map' && Boolean(mapboxToken);
+  const rated = reviews.filter((r) => r.rating);
+  const stats = {
+    reviews: reviews.length,
+    rating: rated.length ? (rated.reduce((a, r) => a + r.rating, 0) / rated.length).toFixed(1) : '5.0',
+    toured: listings.filter((l) => l.code).length,
+  };
   const points = useMap
     ? [...listings, ...picks]
         .filter((l) => GEO[l.mls] && l.photos[0] && !['sold', 'off'].includes(l.status))
@@ -42,7 +51,9 @@ export default async function Home({ params, searchParams }) {
     <MembershipProvider lang={lang} t={t}>
       <Header lang={lang} t={t} member={member} />
       <main>
-        {useMap && points.length > 0 ? (
+        {heroMode === 'video' ? (
+          <HeroVideo t={t} lang={lang} stats={stats} />
+        ) : useMap && points.length > 0 ? (
           <HeroMap points={points} t={t} lang={lang} mapboxToken={mapboxToken} look={{ real: 'standard', satellite: 'satellite', day: 'day' }[searchParams?.look] || 'fast'} />
         ) : slides.length > 0 ? (
           <HeroStories slides={slides} t={t} lang={lang} />
