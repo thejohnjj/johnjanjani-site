@@ -15,18 +15,21 @@ export async function GET(req) {
   if (sp.steps) {
     const flt = encodeURIComponent(buildFilter(f));
     const full = searchPath(f);
+    const base = `Property?$top=2&$filter=${flt}&$select=ListingKey`;
     const variants = {
-      filterOnly: `Property?$top=2&$filter=${flt}&$select=ListingKey`,
-      withCount: `Property?$count=true&$top=2&$filter=${flt}&$select=ListingKey`,
-      withOrder: `Property?$top=2&$filter=${flt}&$select=ListingKey&$orderby=${encodeURIComponent('OriginalEntryTimestamp desc,ListingKey desc')}`,
-      expandPlain: `Property?$top=2&$filter=${flt}&$select=ListingKey&$expand=Media`,
-      expandSelect: `Property?$top=2&$filter=${flt}&$select=ListingKey&$expand=Media($select=MediaURL,Order)`,
-      full,
+      expEnc: base + '&$expand=' + encodeURIComponent('Media($select=MediaURL,Order)'),
+      expFilterEnc: base + '&$expand=' + encodeURIComponent("Media($filter=ImageSizeDescription eq 'Medium')"),
+      expAll: base + '&$expand=' + encodeURIComponent("Media($select=MediaURL,Order;$filter=ImageSizeDescription eq 'Medium';$orderby=Order;$top=1)"),
+      mediaCountMedium: `Media?$count=true&$top=0&$filter=${encodeURIComponent("ResourceName eq 'Property' and ImageSizeDescription eq 'Medium'")}`,
+      mediaPreferred: `Media?$count=true&$top=0&$filter=${encodeURIComponent("ResourceName eq 'Property' and ImageSizeDescription eq 'Medium' and PreferredPhotoYN eq true")}`,
+      mediaOrder0: `Media?$count=true&$top=0&$filter=${encodeURIComponent("ResourceName eq 'Property' and ImageSizeDescription eq 'Medium' and Order eq 0")}`,
+      mediaOrder1: `Media?$count=true&$top=0&$filter=${encodeURIComponent("ResourceName eq 'Property' and ImageSizeDescription eq 'Medium' and Order eq 1")}`,
+      mediaActive: `Media?$count=true&$top=0&$filter=${encodeURIComponent("ResourceName eq 'Property' and ImageSizeDescription eq 'Medium' and MediaStatus eq 'Active'")}`,
     };
     const res = {};
     for (const [k, v] of Object.entries(variants)) {
       const r = await feedGet(v, { revalidate: 0 });
-      res[k] = { ok: r.ok, status: r.status, error: r.error, rows: r.ok ? (r.data.value || []).length : null,
+      res[k] = { ok: r.ok, status: r.status, error: r.error, rows: r.ok ? (r.data.value || []).length : null, count: r.ok ? r.data['@odata.count'] : null,
         mediaPerRow: r.ok ? (r.data.value || []).map((x) => (x.Media ? x.Media.length : null)) : null };
     }
     return NextResponse.json(res);
