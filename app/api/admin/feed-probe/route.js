@@ -16,21 +16,23 @@ export async function GET(req) {
     const flt = encodeURIComponent(buildFilter(f));
     const full = searchPath(f);
     const base = `Property?$top=2&$filter=${flt}&$select=ListingKey`;
+    const M = "ImageSizeDescription eq 'Medium' and MediaStatus eq 'Active'";
     const variants = {
-      expEnc: base + '&$expand=' + encodeURIComponent('Media($select=MediaURL,Order)'),
-      expFilterEnc: base + '&$expand=' + encodeURIComponent("Media($filter=ImageSizeDescription eq 'Medium')"),
-      expAll: base + '&$expand=' + encodeURIComponent("Media($select=MediaURL,Order;$filter=ImageSizeDescription eq 'Medium';$orderby=Order;$top=1)"),
-      mediaCountMedium: `Media?$count=true&$top=0&$filter=${encodeURIComponent("ResourceName eq 'Property' and ImageSizeDescription eq 'Medium'")}`,
-      mediaPreferred: `Media?$count=true&$top=0&$filter=${encodeURIComponent("ResourceName eq 'Property' and ImageSizeDescription eq 'Medium' and PreferredPhotoYN eq true")}`,
-      mediaOrder0: `Media?$count=true&$top=0&$filter=${encodeURIComponent("ResourceName eq 'Property' and ImageSizeDescription eq 'Medium' and Order eq 0")}`,
-      mediaOrder1: `Media?$count=true&$top=0&$filter=${encodeURIComponent("ResourceName eq 'Property' and ImageSizeDescription eq 'Medium' and Order eq 1")}`,
-      mediaActive: `Media?$count=true&$top=0&$filter=${encodeURIComponent("ResourceName eq 'Property' and ImageSizeDescription eq 'Medium' and MediaStatus eq 'Active'")}`,
+      fActive: base + '&$expand=' + encodeURIComponent(`Media($filter=${M})`),
+      fPreferred: base + '&$expand=' + encodeURIComponent(`Media($filter=${M} and PreferredPhotoYN eq true)`),
+      fTop: base + '&$expand=' + encodeURIComponent(`Media($filter=${M};$top=1)`),
+      fOrder: base + '&$expand=' + encodeURIComponent(`Media($filter=${M};$orderby=Order)`),
+      fLargeActive: base + '&$expand=' + encodeURIComponent("Media($filter=ImageSizeDescription eq 'Large' and MediaStatus eq 'Active')"),
+      fLargestActive: base + '&$expand=' + encodeURIComponent("Media($filter=ImageSizeDescription eq 'Largest' and MediaStatus eq 'Active')"),
+      top24: `Property?$top=24&$filter=${flt}&$select=ListingKey&$expand=` + encodeURIComponent(`Media($filter=${M} and PreferredPhotoYN eq true)`),
     };
     const res = {};
     for (const [k, v] of Object.entries(variants)) {
       const r = await feedGet(v, { revalidate: 0 });
       res[k] = { ok: r.ok, status: r.status, error: r.error, rows: r.ok ? (r.data.value || []).length : null, count: r.ok ? r.data['@odata.count'] : null,
-        mediaPerRow: r.ok ? (r.data.value || []).map((x) => (x.Media ? x.Media.length : null)) : null };
+        mediaPerRow: r.ok ? (r.data.value || []).map((x) => (x.Media ? x.Media.length : null)) : null,
+        orders: r.ok ? (r.data.value || []).slice(0, 2).map((x) => (x.Media || []).slice(0, 12).map((m) => m.Order)) : null,
+        preferredFlags: r.ok ? (r.data.value || []).slice(0, 2).map((x) => (x.Media || []).filter((m) => m.PreferredPhotoYN).length) : null };
     }
     return NextResponse.json(res);
   }
