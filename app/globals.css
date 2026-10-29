@@ -628,7 +628,7 @@ html[lang='fa'] .mls-specs { justify-content: flex-end; }
 .mls-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; margin: 0; }
 .mls-facts div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 8px 0; font-size: 15px; }
 .mls-facts dt { color: var(--muted); }
-.mls-facts dd { margin: 0; text-align: end; }
+.mls-facts dd { margin: 0; }
 .mls-contact { margin-top: 26px; border-radius: 18px; padding: 22px; background: var(--teal-deep); color: #fff; display: grid; gap: 10px; }
 .mls-contact h2 { margin: 0; font-size: 22px; color: #fff; }
 .mls-contact p { margin: 0; color: rgba(255,255,255,.85); }
