@@ -721,7 +721,7 @@ html[dir='rtl'] .hv-seg select { background-position: left 2px center; }
 }
 @media (max-width: 640px) {
   .hv { min-height: calc(100svh - 64px); }
-  .hv-shade, html[dir='rtl'] .hv-shade { background: linear-gradient(0deg, rgba(7, 47, 51, .96) 0%, rgba(7, 47, 51, .86) 52%, rgba(7, 47, 51, .35) 78%, rgba(7, 47, 51, .15) 100%); }
+  .hv-shade, html[dir='rtl'] .hv-shade { background: linear-gradient(0deg, rgba(7, 47, 51, .96) 0%, rgba(7, 47, 51, .84) 50%, rgba(7, 47, 51, .2) 76%, rgba(7, 47, 51, 0) 100%); }
   .hv-inner { padding-top: 120px; gap: 10px; }
   .hv h1 { font-size: clamp(36px, 10.5vw, 48px); }
   html[lang='fa'] .hv h1 { font-size: clamp(28px, 8.4vw, 38px); }
