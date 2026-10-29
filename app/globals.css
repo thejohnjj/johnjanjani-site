@@ -637,3 +637,8 @@ html[lang='fa'] .mls-specs { justify-content: flex-end; }
 @media (max-width: 980px) { .mls-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .mls-search { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .mls-grid, .mls-facts { grid-template-columns: minmax(0, 1fr); } .mls-search { grid-template-columns: minmax(0, 1fr); } .mls-search .wide, .mls-deal, .mls-search .actions { grid-column: auto; } }
 .btn-line { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.h2-search { max-width: 620px; }
+.h2-search input { font-size: 17px; letter-spacing: 0; }
+.h2-search .h2-deal { display: flex; gap: 6px; margin: 0 4px 10px; }
+.h2-search .h2-deal button { font: inherit; font-size: 14px; padding: 6px 16px; border-radius: 999px; border: 1px solid rgba(246, 241, 231, .4); background: transparent; color: var(--on-teal); cursor: pointer; }
+.h2-search .h2-deal button[aria-pressed='true'] { background: #FFFDF8; color: #12282B; border-color: #FFFDF8; }

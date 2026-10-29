@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { heroSearchUrl } from '@/lib/hero-search';
 import { preconnect } from 'react-dom';
 import { digits } from '@/lib/format';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -114,6 +115,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
   const [ready, setReady] = useState(false);
   const [active, setActive] = useState(-1);
   const [code, setCode] = useState('');
+  const [deal, setDeal] = useState('sale');
   const [usingMapbox, setUsingMapbox] = useState(Boolean(mapboxToken));
   const tours = points.filter((p) => p.code);
   const sep = lang === 'fa' ? ' | ' : ' · ';
@@ -286,8 +288,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
 
   function find(e) {
     e.preventDefault();
-    const c = toLatin(code).trim().replace(/^#/, '');
-    if (c) window.location.href = `/${lang}/c/${encodeURIComponent(c)}`;
+    window.location.href = heroSearchUrl(lang, code, deal);
   }
 
   const s = active >= 0 ? tours[active] : null;
@@ -314,11 +315,15 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
             {t.heroTitleC}
           </h1>
           <p className="lead">{t.heroLead}</p>
-          <form className="h2-code" onSubmit={find}>
-            <label htmlFor="hero-code">{t.heroCodeLabel}</label>
+          <form className="h2-code h2-search" onSubmit={find} role="search">
+            <label htmlFor="hero-code">{t.heroSearchLabel}</label>
+            <div className="h2-deal" role="radiogroup">
+              <button type="button" aria-pressed={deal === 'sale'} onClick={() => setDeal('sale')}>{t.heroBuy}</button>
+              <button type="button" aria-pressed={deal === 'lease'} onClick={() => setDeal('lease')}>{t.heroRent}</button>
+            </div>
             <div>
-              <input id="hero-code" inputMode="numeric" autoComplete="off" dir="ltr" placeholder={t.heroCodePh} value={code} onChange={(e) => setCode(e.target.value)} />
-              <button type="submit" className="btn btn-accent">{t.findCodeGo}</button>
+              <input id="hero-code" type="search" autoComplete="off" dir="auto" placeholder={t.heroSearchPh} value={code} onChange={(e) => setCode(e.target.value)} />
+              <button type="submit" className="btn btn-accent">{t.heroSearchGo}</button>
             </div>
           </form>
         </div>
