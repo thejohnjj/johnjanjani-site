@@ -637,8 +637,16 @@ html[lang='fa'] .mls-specs { justify-content: flex-end; }
 @media (max-width: 980px) { .mls-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .mls-search { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .mls-grid, .mls-facts { grid-template-columns: minmax(0, 1fr); } .mls-search { grid-template-columns: minmax(0, 1fr); } .mls-search .wide, .mls-deal, .mls-search .actions { grid-column: auto; } }
 .btn-line { background: transparent; color: var(--ink); border: 1px solid var(--line); }
-.h2-search { max-width: 620px; }
-.h2-search input { font-size: 17px; letter-spacing: 0; }
-.h2-search .h2-deal { display: flex; gap: 6px; margin: 0 4px 10px; }
+.h2-search { max-width: 640px; display: grid; gap: 10px; }
+.h2-search .h2-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 0 4px; }
+.h2-search .h2-label { font-size: 15px; color: var(--on-teal); }
+.h2-search .h2-deal { display: flex; gap: 6px; }
 .h2-search .h2-deal button { font: inherit; font-size: 14px; padding: 6px 16px; border-radius: 999px; border: 1px solid rgba(246, 241, 231, .4); background: transparent; color: var(--on-teal); cursor: pointer; }
 .h2-search .h2-deal button[aria-pressed='true'] { background: #FFFDF8; color: #12282B; border-color: #FFFDF8; }
+.h2-search .h2-row { display: flex; }
+.h2-search input { font-size: 16px; letter-spacing: 0; padding: 12px 18px; }
+.h2-search .h2-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.h2-search select { font: inherit; font-size: 14px; min-width: 0; width: 100%; padding: 10px 12px; border-radius: 12px; border: 0; background: #FFFDF8; color: #12282B; }
+.h2-search select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.h2-search .h2-go { width: 100%; }
+@media (max-width: 520px) { .h2-search .h2-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

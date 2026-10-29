@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { heroSearchUrl } from '@/lib/hero-search';
+import HeroSearch from '@/components/HeroSearch';
 import { preconnect } from 'react-dom';
 import { digits } from '@/lib/format';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -16,7 +16,6 @@ const HOLD = 4800; // time spent at each home
 // Camera height while touring: close enough for 3D houses, a little higher on phones (less to download).
 const zoomFor = () => (typeof window !== 'undefined' && window.innerWidth < 760 ? 14.8 : 15.1);
 const PITCH = 60;
-const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
 
 // Repaints the OpenFreeMap street style in the brand's night teal, with orange highways
 // and lit 3D buildings, and hides the clutter (shops, shields, one-way arrows).
@@ -114,8 +113,6 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
   const onScreen = useRef(true);
   const [ready, setReady] = useState(false);
   const [active, setActive] = useState(-1);
-  const [code, setCode] = useState('');
-  const [deal, setDeal] = useState('sale');
   const [usingMapbox, setUsingMapbox] = useState(Boolean(mapboxToken));
   const tours = points.filter((p) => p.code);
   const sep = lang === 'fa' ? ' | ' : ' · ';
@@ -286,10 +283,6 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function find(e) {
-    e.preventDefault();
-    window.location.href = heroSearchUrl(lang, code, deal);
-  }
 
   const s = active >= 0 ? tours[active] : null;
   return (
@@ -315,17 +308,7 @@ export default function HeroMap({ points, t, lang, mapboxToken = '', look = 'sta
             {t.heroTitleC}
           </h1>
           <p className="lead">{t.heroLead}</p>
-          <form className="h2-code h2-search" onSubmit={find} role="search">
-            <label htmlFor="hero-code">{t.heroSearchLabel}</label>
-            <div className="h2-deal" role="radiogroup">
-              <button type="button" aria-pressed={deal === 'sale'} onClick={() => setDeal('sale')}>{t.heroBuy}</button>
-              <button type="button" aria-pressed={deal === 'lease'} onClick={() => setDeal('lease')}>{t.heroRent}</button>
-            </div>
-            <div>
-              <input id="hero-code" type="search" autoComplete="off" dir="auto" placeholder={t.heroSearchPh} value={code} onChange={(e) => setCode(e.target.value)} />
-              <button type="submit" className="btn btn-accent">{t.heroSearchGo}</button>
-            </div>
-          </form>
+          <HeroSearch lang={lang} t={t} />
         </div>
         <div className="h2-foot">
           <a className={`h2-slide hm-card${s ? ' show' : ''}`} href={s ? s.href : '#listings'} aria-live="polite" tabIndex={s ? 0 : -1}>

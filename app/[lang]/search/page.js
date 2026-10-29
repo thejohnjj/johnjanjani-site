@@ -2,7 +2,8 @@ import { t as dictFor } from '@/lib/i18n';
 import { mlsT, FEED_LIVE } from '@/lib/i18n-mls';
 import { getMemberId } from '@/lib/session';
 import { getMember } from '@/lib/listings';
-import { AREAS, PAGE_SIZE, MAX_RESULTS, readFilters, searchListings } from '@/lib/proptx';
+import { PAGE_SIZE, MAX_RESULTS, readFilters, searchListings } from '@/lib/proptx';
+import { AREAS, PRICES_SALE, PRICES_LEASE, shortPrice as short } from '@/lib/mls-options';
 import { guardFeedView } from '@/lib/feed-guard';
 import MembershipProvider from '@/components/Membership';
 import { Header, Footer } from '@/components/SiteChrome';
@@ -20,10 +21,6 @@ export function generateMetadata({ params }) {
     alternates: { canonical: `/${params.lang}/search`, languages: { en: '/en/search', fa: '/fa/search' } },
   };
 }
-
-const PRICES_SALE = [400000, 500000, 600000, 700000, 800000, 900000, 1000000, 1250000, 1500000, 1750000, 2000000, 2500000, 3000000, 4000000, 5000000];
-const PRICES_LEASE = [1500, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 8000, 10000];
-const short = (n) => (n >= 1000000 ? `$${n / 1000000}M` : n >= 1000 && n % 1000 === 0 && n >= 100000 ? `$${n / 1000}K` : `$${n.toLocaleString('en-US')}`);
 
 function qs(f, over = {}) {
   const v = { ...f, ...over };

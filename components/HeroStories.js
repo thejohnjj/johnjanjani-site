@@ -1,12 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { heroSearchUrl } from '@/lib/hero-search';
+import HeroSearch from '@/components/HeroSearch';
 import { digits } from '@/lib/format';
 
 const DURATION = 6500;
 // Persian/Arabic digits → 0-9, so codes typed on a Farsi keyboard still work.
-const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
 
 // Homepage opening: the homes John toured, shown full-screen like Instagram stories,
 // with the Instagram code search right on top.
@@ -15,8 +14,6 @@ export default function HeroStories({ slides, t, lang }) {
   const [hold, setHold] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [still, setStill] = useState(false);
-  const [code, setCode] = useState('');
-  const [deal, setDeal] = useState('sale');
   const touch = useRef(null);
   const n = slides.length;
   const paused = hold || hidden || still || n < 2;
@@ -39,10 +36,6 @@ export default function HeroStories({ slides, t, lang }) {
   const go = (d) => setI((x) => (x + d + n) % n);
   const fwd = lang === 'fa' ? -1 : 1;
 
-  function find(e) {
-    e.preventDefault();
-    window.location.href = heroSearchUrl(lang, code, deal);
-  }
 
   const s = slides[i];
   return (
@@ -101,17 +94,7 @@ export default function HeroStories({ slides, t, lang }) {
             {t.heroTitleC}
           </h1>
           <p className="lead">{t.heroLead}</p>
-          <form className="h2-code h2-search" onSubmit={find} role="search">
-            <label htmlFor="hero-code">{t.heroSearchLabel}</label>
-            <div className="h2-deal" role="radiogroup">
-              <button type="button" aria-pressed={deal === 'sale'} onClick={() => setDeal('sale')}>{t.heroBuy}</button>
-              <button type="button" aria-pressed={deal === 'lease'} onClick={() => setDeal('lease')}>{t.heroRent}</button>
-            </div>
-            <div>
-              <input id="hero-code" type="search" autoComplete="off" dir="auto" placeholder={t.heroSearchPh} value={code} onChange={(e) => setCode(e.target.value)} onFocus={() => setHold(true)} onBlur={() => setHold(false)} />
-              <button type="submit" className="btn btn-accent">{t.heroSearchGo}</button>
-            </div>
-          </form>
+          <HeroSearch lang={lang} t={t} onFocus={() => setHold(true)} onBlur={() => setHold(false)} />
         </div>
 
         {s && (
