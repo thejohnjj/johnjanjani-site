@@ -17,11 +17,11 @@ export async function GET(req) {
   });
   if (!res.ok) return NextResponse.json({ status: res.status });
   const xml = await res.text();
-  const types = [...xml.matchAll(/<EntityType Name="([^"]+)"/g)].map((m) => m[1]);
+  const types = [...xml.matchAll(/<EntityType\b[^>]*Name="([^"]+)"/g)].map((m) => m[1]);
   const sets = [...xml.matchAll(/<EntitySet Name="([^"]+)"/g)].map((m) => m[1]);
   const out = { status: res.status, types, sets, size: xml.length, fields: {} };
   for (const t of want) {
-    const m = xml.match(new RegExp(`<EntityType Name="${t}"[\\s\\S]*?</EntityType>`));
+    const m = xml.match(new RegExp(`<EntityType\\b[^>]*Name="${t}"[\\s\\S]*?</EntityType>`));
     if (!m) continue;
     out.fields[t] = [...m[0].matchAll(/<(?:Property|NavigationProperty)\b[^>]*>/g)].map((p) => {
       const name = (p[0].match(/Name="([^"]+)"/) || [])[1];
