@@ -18,6 +18,11 @@ export async function GET(req) {
     const r = await feedGet(`Lookup?$filter=${encodeURIComponent(`LookupName eq '${n}'`)}&$select=LookupValue&$top=500`, { kind, revalidate: 0 });
     out[n] = r.ok ? (r.data.value || []).map((v) => v.LookupValue) : { status: r.status };
   }
+  // Optional: test filters and get back only the number of matching records.
+  for (const f of sp.getAll('count')) {
+    const r = await feedGet(`Property?$count=true&$top=0&$filter=${encodeURIComponent(f)}`, { kind, revalidate: 0 });
+    (out._counts ||= {})[f] = r.ok ? r.data['@odata.count'] : { status: r.status };
+  }
   const m = await feedGet('Media?$count=true&$top=0', { kind, revalidate: 0 });
   out._mediaCount = m.ok ? m.data['@odata.count'] : { status: m.status };
   return NextResponse.json(out);
