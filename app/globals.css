@@ -748,9 +748,12 @@ html[dir='rtl'] .hv-seg select { background-position: left 2px center; }
 .hv-reelcard figcaption { position: absolute; inset-inline-start: 14px; bottom: 14px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #FFFDF8; background: rgba(7, 47, 51, .62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 7px 12px; border-radius: 999px; }
 .hv-reelcard .dot { width: 8px; height: 8px; border-radius: 50%; background: #E8864C; box-shadow: 0 0 0 4px rgba(232, 134, 76, .25); }
 @media (max-width: 900px) {
-  .hv-reel .hv-inner { grid-template-columns: minmax(0, 1fr); padding-top: 140px; }
-  .hv-reel .hv-reelcard { position: absolute; inset: 0; width: auto; aspect-ratio: auto; border-radius: 0; box-shadow: none; z-index: -2; }
-  .hv-reel .hv-reelcard figcaption { display: none; }
+  .hv-reel { justify-content: flex-start; }
+  .hv-reel .hv-inner { grid-template-columns: minmax(0, 1fr); padding-top: 0; row-gap: 18px; }
+  .hv-reel .hv-reelcard { order: -1; width: auto; margin: 0 -16px; height: min(52svh, 520px); aspect-ratio: auto; border-radius: 0 0 26px 26px; box-shadow: none; }
+  .hv-reel .hv-reelcard::after { content: ''; position: absolute; inset: auto 0 0 0; height: 30%; background: linear-gradient(0deg, rgba(7, 47, 51, .55), rgba(7, 47, 51, 0)); pointer-events: none; }
+  .hv-reel .hv-reelcard figcaption { z-index: 1; }
   .hv-reel .hv-backdrop { display: none; }
-  .hv-reel .hv-shade, html[dir='rtl'] .hv-reel .hv-shade { background: linear-gradient(0deg, rgba(7, 47, 51, .97) 0%, rgba(7, 47, 51, .86) 48%, rgba(7, 47, 51, .15) 74%, rgba(7, 47, 51, 0) 100%); }
+  .hv-reel .hv-shade, html[dir='rtl'] .hv-reel .hv-shade { background: none; }
 }
+
