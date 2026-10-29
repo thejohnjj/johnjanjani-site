@@ -18,7 +18,7 @@ export async function GET(req) {
   const n = s.items.length || 1;
   const share = (fn) => Math.round((s.items.filter(fn).length / n) * 100) + '%';
   const out = {
-    search: { ok: s.ok, status: s.status, ms, total: s.total, returned: s.items.length,
+    search: { ok: s.ok, status: s.status, error: s.error, ms, total: s.total, returned: s.items.length,
       withPhoto: share((i) => i.photo), withLatLng: share((i) => i.lat && i.lng), withBrokerage: share((i) => i.brokerage),
       photoHosts: [...new Set(s.items.map((i) => i.photo && new URL(i.photo).host).filter(Boolean))] },
   };

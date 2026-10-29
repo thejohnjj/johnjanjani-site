@@ -128,3 +128,18 @@ alter table listings add constraint listings_status_check check (status in ('sal
 -- Off market (terminated) homes
 alter table listings drop constraint if exists listings_status_check;
 alter table listings add constraint listings_status_check check (status in ('sale', 'rent', 'sold', 'off'));
+
+-- MLS feed (PropTx IDX/VOW): audit trail of visitor activity, also used to block scrapers
+create table if not exists feed_audit (
+  id bigint generated always as identity primary key,
+  at timestamptz not null default now(),
+  ip_hash text not null,
+  kind text not null default 'idx',
+  action text not null,
+  listing_key text,
+  member_id uuid,
+  user_agent text
+);
+create index if not exists feed_audit_ip_at on feed_audit (ip_hash, at desc);
+create index if not exists feed_audit_at on feed_audit (at desc);
+alter table feed_audit enable row level security;
