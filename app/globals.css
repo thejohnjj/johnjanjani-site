@@ -601,3 +601,39 @@ html[dir='rtl'] .heromap .h2-shade { background:
 .sold-note { font-family: var(--display); font-size: 22px; color: var(--accent-ink); font-weight: 600; }
 html[lang='fa'] .sold-note { font-family: var(--fa-display); font-size: 19px; }
 .sold-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* MLS® feed pages. Brokerage line must match the other details' font and size. */
+.mls-card .mls-body { gap: 6px; }
+.mls-line, .mls-specs { font-size: 15px; color: var(--ink); line-height: 1.45; }
+.mls-specs { display: flex; gap: 14px; flex-wrap: wrap; }
+.mls-specs b { font-weight: 600; }
+html[lang='fa'] .mls-specs { justify-content: flex-end; }
+.mls-search { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin: 18px 0 26px; }
+.mls-search label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); min-width: 0; }
+.mls-search input, .mls-search select { font: inherit; font-size: 15px; color: var(--ink); padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg, #fff); min-width: 0; width: 100%; }
+.mls-search .wide { grid-column: span 2; }
+.mls-deal { display: flex; gap: 8px; grid-column: span 2; align-items: end; }
+.mls-deal label { flex-direction: row; align-items: center; gap: 8px; font-size: 15px; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; cursor: pointer; }
+.mls-deal input { width: auto; }
+.mls-search .actions { display: flex; gap: 10px; align-items: end; grid-column: span 2; }
+.mls-search .actions .btn { flex: 1; text-align: center; }
+.mls-count { font-size: 15px; color: var(--muted); margin: 0 0 14px; }
+.mls-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.mls-pages { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 28px 0 8px; }
+.mls-pages a, .mls-pages span { padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; font-size: 14px; }
+.mls-pages span[aria-current] { background: var(--teal-deep); color: #fff; border-color: var(--teal-deep); }
+.mls-disclaimer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); margin-top: 36px; padding-top: 16px; display: grid; gap: 8px; }
+.mls-disclaimer p { margin: 0; }
+.mls-remarks { white-space: pre-line; }
+.mls-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; margin: 0; }
+.mls-facts div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 8px 0; font-size: 15px; }
+.mls-facts dt { color: var(--muted); }
+.mls-facts dd { margin: 0; text-align: end; }
+.mls-contact { margin-top: 26px; border-radius: 18px; padding: 22px; background: var(--teal-deep); color: #fff; display: grid; gap: 10px; }
+.mls-contact h2 { margin: 0; font-size: 22px; color: #fff; }
+.mls-contact p { margin: 0; color: rgba(255,255,255,.85); }
+.mls-contact small { color: rgba(255,255,255,.7); }
+.mls-contact .row { display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 980px) { .mls-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .mls-search { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .mls-grid, .mls-facts { grid-template-columns: minmax(0, 1fr); } .mls-search { grid-template-columns: minmax(0, 1fr); } .mls-search .wide, .mls-deal, .mls-search .actions { grid-column: auto; } }
+.btn-line { background: transparent; color: var(--ink); border: 1px solid var(--line); }
