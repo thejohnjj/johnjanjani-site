@@ -46,7 +46,7 @@ export default function ListingCard({ l, t, lang }) {
         {l.address && <div className="where ltr" dir="ltr" style={{ textAlign: 'start' }}>{l.address}</div>}
         <Specs l={l} t={t} lang={lang} />
         {l.section === 'pick' && l.note?.[lang] && <p className="pick-note">“{l.note[lang]}”</p>}
-        {l.brokerage && <div className="broker">{t.brokerage}: <span dir="ltr">{l.brokerage}</span></div>}
+        {l.brokerage && <div className="broker">{t.brokerage}: <span dir="ltr">{l.brokerage}</span> · {t.source}: <span dir="ltr">REALTOR.ca</span></div>}
         {l.section === 'pick' && l.pickedLabel && <div className="picked">{t.pkPicked.replace('{d}', l.pickedLabel)}</div>}
       </div>
     </a>

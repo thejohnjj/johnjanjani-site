@@ -211,7 +211,7 @@ th { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: v
 .admin-photos button { flex: 1; min-height: 36px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 8px; cursor: pointer; }
 
 /* Listing brokerage line and home tour link */
-.broker { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.broker { font-size: 15px; color: var(--ink); line-height: 1.5; }
 .broker p { margin: 0; }
 .card .broker { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 2px; }
 .btn.tour { align-self: flex-start; color: var(--ink); border-color: var(--line); }

@@ -112,6 +112,7 @@ export default async function ListingPage({ params }) {
             )}
             <div className="broker">
               {l.brokerage && <p>{t.brokerage}: <b dir="ltr">{l.brokerage}</b></p>}
+              {l.brokerage && <p>{t.source}: <span dir="ltr">REALTOR.ca</span></p>}
               {l.mls && <p className="ltr" dir="ltr">{t.mls} {l.mls}</p>}
             </div>
           </div>
