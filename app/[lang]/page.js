@@ -32,8 +32,8 @@ export default async function Home({ params, searchParams }) {
     .map((l) => ({ img: l.photos[0], code: l.code, type: l.type[lang], city: l.city[lang], href: `/${lang}/listings/${l.slug}` }));
   // Map opening (default when a Mapbox token is set); ?hero=photos shows the photo slideshow, ?hero=map forces the map.
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || process.env.MAPBOX_TOKEN || '';
-  // Default opening: video hero. ?hero=map and ?hero=photos keep the older openings for comparison.
-  const heroMode = ['map', 'photos', 'reel'].includes(searchParams?.hero) ? searchParams.hero : 'video';
+  // Default opening: tour video in a reel frame. ?hero=video (full-screen video), ?hero=map and ?hero=photos keep older openings.
+  const heroMode = ['map', 'photos', 'video'].includes(searchParams?.hero) ? searchParams.hero : 'reel';
   const useMap = heroMode === 'map' && Boolean(mapboxToken);
   const rated = reviews.filter((r) => r.rating);
   const stats = {
