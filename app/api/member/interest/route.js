@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/supabase';
 import { notify } from '@/lib/notify';
+import { pushLeadSoon } from '@/lib/zoho';
 import { checkLink, INTERESTS } from '@/lib/member-mail';
 import { SITE } from '@/lib/site';
 
@@ -33,6 +34,7 @@ export async function GET(req) {
           '',
           'See all members at johnjanjani.com/admin',
         ]);
+        await pushLeadSoon({ name: data.name, email: data.email, phone: data.phone, lang, interest: v, noteTitle: 'Welcome email answer', note: `Answered "What are you looking for?": ${LABEL[v]}` });
       }
     }
   }

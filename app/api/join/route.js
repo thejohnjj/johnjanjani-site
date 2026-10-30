@@ -3,6 +3,7 @@ import { db } from '@/lib/supabase';
 import { setMemberCookie } from '@/lib/session';
 import { notify } from '@/lib/notify';
 import { welcomeEmail, sendMemberEmail } from '@/lib/member-mail';
+import { pushLeadSoon } from '@/lib/zoho';
 
 export const runtime = 'nodejs';
 
@@ -59,6 +60,10 @@ export async function POST(req) {
     const mail = welcomeEmail({ id, name, lang });
     const sent = await sendMemberEmail({ to: email, ...mail, memberId: id });
     if (sent) await client.from('members').update({ welcome_sent_at: new Date().toISOString() }).eq('id', id);
+    await pushLeadSoon({
+      name, email, phone, lang,
+      description: `Joined johnjanjani.com as a member (${lang === 'fa' ? 'Farsi' : 'English'}).${firstListing ? ` First home viewed: ${firstListing}.` : ''}`,
+    });
   }
 
   const res = NextResponse.json({ ok: true, name });

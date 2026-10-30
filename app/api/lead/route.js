@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/supabase';
 import { setGuideCookie } from '@/lib/session';
 import { notify } from '@/lib/notify';
+import { pushLeadSoon } from '@/lib/zoho';
 
 export const runtime = 'nodejs';
 
@@ -68,6 +69,12 @@ export async function POST(req) {
       '',
       'Promised: an estimate within 24 hours. See all requests at johnjanjani.com/admin',
     ]);
+    await pushLeadSoon({
+      name, email, phone, lang, interest: 'sell', tags: ['Home value request'],
+      description: `Home value request on johnjanjani.com: ${details.address}`,
+      noteTitle: `Home value request: ${details.address}`,
+      note: [`Address: ${details.address}${details.city ? `, ${details.city}` : ''}`, `Type: ${details.type} · Beds: ${details.beds || '—'} · Baths: ${details.baths || '—'}`, `Thinking of selling: ${timelineLabel[details.timeline]}`, details.note ? `Note: ${details.note}` : ''].filter(Boolean).join('\n'),
+    });
   } else {
     await notify(`${details.guide === 'seller' ? 'Seller' : 'Buyer'} guide download: ${name}`, [
       `Name: ${name}`,
@@ -79,6 +86,12 @@ export async function POST(req) {
       '',
       'See all leads at johnjanjani.com/admin',
     ]);
+    await pushLeadSoon({
+      name, email, phone, lang, interest: details.guide === 'seller' ? 'sell' : 'buy', tags: [details.guide === 'seller' ? 'Seller guide' : 'Buyer guide'],
+      description: `Downloaded the ${details.guide === 'seller' ? 'seller' : 'buyer'} guide on johnjanjani.com.`,
+      noteTitle: `${details.guide === 'seller' ? 'Seller' : 'Buyer'} guide download`,
+      note: details.stage ? `Stage: ${details.stage}` : `Downloaded the ${details.guide} guide.`,
+    });
   }
 
   const res = NextResponse.json({ ok: true });
@@ -117,5 +130,12 @@ async function message(b) {
     '',
     'Promised: a reply today. See all messages at johnjanjani.com/admin',
   ]);
+  const intentKey = { buy: 'buy', sell: 'sell', rent: 'rent' }[intent];
+  await pushLeadSoon({
+    name, email, phone, lang, interest: intentKey, tags: ['Website message'],
+    description: `Sent a message on johnjanjani.com (looking to: ${INTENTS[intent]}).`,
+    noteTitle: `Website message (${INTENTS[intent]})`,
+    note: text || `Looking to: ${INTENTS[intent]}`,
+  });
   return NextResponse.json({ ok: true });
 }

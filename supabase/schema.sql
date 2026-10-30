@@ -150,3 +150,11 @@ alter table members add column if not exists interest_at timestamptz;
 alter table members add column if not exists email_opt_out boolean not null default false;
 alter table members add column if not exists email_opt_out_at timestamptz;
 alter table members add column if not exists welcome_sent_at timestamptz;
+
+-- Connections to other apps (e.g. Zoho CRM). Values are encrypted by the website.
+create table if not exists integrations (
+  key text primary key,
+  value text not null,
+  updated_at timestamptz not null default now()
+);
+alter table integrations enable row level security;

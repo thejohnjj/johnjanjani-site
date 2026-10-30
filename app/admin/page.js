@@ -2,12 +2,13 @@ import { sortByCode } from '@/lib/listings';
 import { isAdmin } from '@/lib/session';
 import { db } from '@/lib/supabase';
 import { LoginForm, LogoutButton, ReviewsAdmin } from './AdminClient';
+import { zohoStatus } from '@/lib/zoho';
 
 export const dynamic = 'force-dynamic';
 
 const when = (d) => new Date(d).toLocaleString('en-CA', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Toronto' });
 
-export default async function Admin() {
+export default async function Admin({ searchParams }) {
   if (!isAdmin()) return <LoginForm />;
   const client = db();
   if (!client) {
@@ -40,6 +41,7 @@ export default async function Admin() {
         </div>
       </header>
       <main className="wrap" style={{ paddingBlock: '32px 72px', display: 'grid', gap: 40 }}>
+        <ZohoBox status={await zohoStatus()} sp={searchParams || {}} />
         <section>
           <div className="sec-head">
             <div><div className="eyebrow">Listings</div><h2>{listings.data?.length || 0} listings</h2></div>
@@ -196,5 +198,44 @@ export default async function Admin() {
         </section>
       </main>
     </>
+  );
+}
+
+const ZOHO_MSG = {
+  connected: 'Zoho CRM is connected. New members and leads now go to Zoho automatically.',
+  synced: 'Existing members copied to Zoho.',
+  denied: 'You cancelled the Zoho approval. Click Connect Zoho to try again.',
+  expired: 'That link expired. Click Connect Zoho again.',
+  failed: 'Zoho did not accept the connection.',
+  'missing-keys': 'Add ZOHO_CLIENT_ID and ZOHO_CLIENT_SECRET in Vercel first, then redeploy.',
+};
+
+function ZohoBox({ status, sp }) {
+  const msg = ZOHO_MSG[sp.zoho];
+  return (
+    <section style={{ border: '1px solid var(--line)', borderRadius: 18, padding: 20, background: 'var(--surface)' }}>
+      <div className="sec-head" style={{ margin: 0 }}>
+        <div>
+          <div className="eyebrow">Zoho CRM</div>
+          <h2 style={{ margin: '4px 0 0' }}>{status.connected ? 'Connected' : status.configured ? 'Ready to connect' : 'Not set up'}</h2>
+          <p style={{ margin: '6px 0 0', color: 'var(--muted)' }}>
+            {status.connected
+              ? `New members, welcome-email answers, home value requests, messages and showing requests go to Zoho Leads (tagged Website). Connected ${new Date(status.connectedAt).toLocaleDateString('en-CA')}.`
+              : status.configured
+                ? 'Click Connect Zoho and approve once.'
+                : 'Add ZOHO_CLIENT_ID and ZOHO_CLIENT_SECRET in Vercel, then come back here.'}
+          </p>
+          {msg && <p style={{ margin: '8px 0 0', fontWeight: 600 }}>{msg}{sp.zoho === 'synced' ? ` ${sp.ok || 0} added or matched${Number(sp.failed) ? `, ${sp.failed} failed` : ''}.` : ''}{sp.zoho === 'failed' && sp.why ? ` (${sp.why})` : ''}</p>}
+        </div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          {status.configured && <a className="btn btn-accent" href="/api/admin/zoho/connect">{status.connected ? 'Reconnect Zoho' : 'Connect Zoho'}</a>}
+          {status.connected && (
+            <form method="post" action="/api/admin/zoho/sync">
+              <button className="btn" style={{ border: '1px solid var(--line)' }} type="submit">Copy existing members to Zoho</button>
+            </form>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/supabase';
 import { getMemberId } from '@/lib/session';
 import { notify } from '@/lib/notify';
+import { pushLeadSoon } from '@/lib/zoho';
 
 export const runtime = 'nodejs';
 
@@ -17,7 +18,7 @@ export async function POST(req) {
   const client = db();
   if (!client) return NextResponse.json({ error: 'server' }, { status: 500 });
   const [{ data: member }, { data: listing }] = await Promise.all([
-    client.from('members').select('id, name, email, phone').eq('id', memberId).maybeSingle(),
+    client.from('members').select('id, name, email, phone, lang').eq('id', memberId).maybeSingle(),
     client.from('listings').select('id, address, mls_number, type_en, city_en').eq('id', String(body.listingId || '')).maybeSingle(),
   ]);
   if (!member || !listing) return NextResponse.json({ error: 'not_found' }, { status: 404 });
@@ -27,5 +28,10 @@ export async function POST(req) {
     `Phone: ${member.phone}`,
     `Email: ${member.email}`,
   ]);
+  await pushLeadSoon({
+    name: member.name, email: member.email, phone: member.phone, lang: member.lang, tags: ['Showing request'],
+    noteTitle: `Showing request: ${listing.address}`,
+    note: `Wants to see ${listing.type_en} at ${listing.address}${listing.mls_number ? ` (MLS ${listing.mls_number})` : ''}.`,
+  });
   return NextResponse.json({ ok: true });
 }
