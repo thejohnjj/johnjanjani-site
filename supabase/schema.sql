@@ -143,3 +143,10 @@ create table if not exists feed_audit (
 create index if not exists feed_audit_ip_at on feed_audit (ip_hash, at desc);
 create index if not exists feed_audit_at on feed_audit (at desc);
 alter table feed_audit enable row level security;
+
+-- Member emails: welcome answer, unsubscribe, which emails were sent
+alter table members add column if not exists interest text;
+alter table members add column if not exists interest_at timestamptz;
+alter table members add column if not exists email_opt_out boolean not null default false;
+alter table members add column if not exists email_opt_out_at timestamptz;
+alter table members add column if not exists welcome_sent_at timestamptz;

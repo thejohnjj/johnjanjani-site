@@ -15,7 +15,7 @@ export default async function Admin() {
   }
 
   const [members, listings, showings, views, leads, reviews] = await Promise.all([
-    client.from('members').select('id, name, email, phone, lang, first_listing, created_at, last_seen_at').order('created_at', { ascending: false }).limit(500),
+    client.from('members').select('*').order('created_at', { ascending: false }).limit(500),
     client.from('listings').select('*').order('sort_order').order('created_at', { ascending: false }),
     client.from('showing_requests').select('id, created_at, members(name, phone, email), listings(address, mls_number)').order('created_at', { ascending: false }).limit(100),
     client.from('listing_views').select('member_id'),
@@ -145,7 +145,7 @@ export default async function Admin() {
           <div className="sec-head"><div><div className="eyebrow">Members (your leads)</div><h2>{members.data?.length || 0} members</h2></div></div>
           <div className="tablebox">
             <table>
-              <thead><tr><th>Joined</th><th>Name</th><th>Phone</th><th>Email</th><th>Language</th><th>First listing viewed</th><th>Views</th><th>Last visit</th></tr></thead>
+              <thead><tr><th>Joined</th><th>Name</th><th>Phone</th><th>Email</th><th>Language</th><th>Looking for</th><th>Emails</th><th>First listing viewed</th><th>Views</th><th>Last visit</th></tr></thead>
               <tbody>
                 {(members.data || []).map((m) => (
                   <tr key={m.id}>
@@ -154,12 +154,14 @@ export default async function Admin() {
                     <td>{m.phone}</td>
                     <td>{m.email}</td>
                     <td>{m.lang === 'fa' ? 'Farsi' : 'English'}</td>
+                    <td>{{ buy: 'Buying', sell: 'Selling', rent: 'Renting', browse: 'Just looking' }[m.interest] || '—'}</td>
+                    <td>{m.email_opt_out ? 'Unsubscribed' : m.welcome_sent_at ? 'Welcome sent' : '—'}</td>
                     <td>{m.first_listing || '—'}</td>
                     <td>{viewCount[m.id] || 0}</td>
                     <td>{when(m.last_seen_at)}</td>
                   </tr>
                 ))}
-                {!members.data?.length && <tr><td colSpan="8">No members yet.</td></tr>}
+                {!members.data?.length && <tr><td colSpan="10">No members yet.</td></tr>}
               </tbody>
             </table>
           </div>

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/supabase';
 import { setMemberCookie } from '@/lib/session';
 import { notify } from '@/lib/notify';
+import { welcomeEmail, sendMemberEmail } from '@/lib/member-mail';
 
 export const runtime = 'nodejs';
 
@@ -54,6 +55,10 @@ export async function POST(req) {
       '',
       'See all members at johnjanjani.com/admin',
     ]);
+    // Welcome email in the language they joined in.
+    const mail = welcomeEmail({ id, name, lang });
+    const sent = await sendMemberEmail({ to: email, ...mail, memberId: id });
+    if (sent) await client.from('members').update({ welcome_sent_at: new Date().toISOString() }).eq('id', id);
   }
 
   const res = NextResponse.json({ ok: true, name });
