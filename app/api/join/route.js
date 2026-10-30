@@ -61,7 +61,7 @@ export async function POST(req) {
     const sent = await sendMemberEmail({ to: email, ...mail, memberId: id });
     if (sent) await client.from('members').update({ welcome_sent_at: new Date().toISOString() }).eq('id', id);
     await pushLeadSoon({
-      name, email, phone, lang,
+      name, email, phone, lang, tags: ['Member'],
       description: `Joined johnjanjani.com as a member (${lang === 'fa' ? 'Farsi' : 'English'}).${firstListing ? ` First home viewed: ${firstListing}.` : ''}`,
     });
   }

@@ -23,6 +23,7 @@ export async function POST() {
       lang: m.lang,
       interest: m.interest,
       optOut: m.email_opt_out === true,
+      tags: ['Member'],
       description: `Joined johnjanjani.com on ${new Date(m.created_at).toLocaleDateString('en-CA', { timeZone: 'America/Toronto' })} (${m.lang === 'fa' ? 'Farsi' : 'English'}).${m.first_listing ? ` First home viewed: ${m.first_listing}.` : ''}`,
     });
     if (r.ok) ok++;

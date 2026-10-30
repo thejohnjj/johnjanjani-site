@@ -220,7 +220,7 @@ function ZohoBox({ status, sp }) {
           <h2 style={{ margin: '4px 0 0' }}>{status.connected ? 'Connected' : status.configured ? 'Ready to connect' : 'Not set up'}</h2>
           <p style={{ margin: '6px 0 0', color: 'var(--muted)' }}>
             {status.connected
-              ? `New members, welcome-email answers, home value requests, messages and showing requests go to Zoho Leads (tagged Website). Connected ${new Date(status.connectedAt).toLocaleDateString('en-CA')}.`
+              ? `New members, welcome-email answers, home value requests, messages and showing requests go to Zoho Leads (marked “Website” at the top of each lead’s Description). Connected ${new Date(status.connectedAt).toLocaleDateString('en-CA')}.`
               : status.configured
                 ? 'Click Connect Zoho and approve once.'
                 : 'Add ZOHO_CLIENT_ID and ZOHO_CLIENT_SECRET in Vercel, then come back here.'}
