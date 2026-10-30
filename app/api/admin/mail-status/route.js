@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { isAdmin } from '@/lib/session';
 import { memberFrom } from '@/lib/member-mail';
+import { db } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,5 +16,8 @@ export async function GET() {
     if (r?.ok) domains = ((await r.json()).data || []).map((d) => ({ name: d.name, status: d.status }));
     else domains = { status: r?.status ?? 'failed' };
   }
-  return NextResponse.json({ resendKey: Boolean(process.env.RESEND_API_KEY), senderDomain: domain, resendDomains: domains });
+  const client = db();
+  const cols = client ? await client.from('members').select('interest, email_opt_out, welcome_sent_at').limit(1) : null;
+  const columnsReady = cols ? !cols.error : null;
+  return NextResponse.json({ columnsReady, resendKey: Boolean(process.env.RESEND_API_KEY), senderDomain: domain, resendDomains: domains });
 }
