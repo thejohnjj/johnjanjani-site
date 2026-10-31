@@ -9,6 +9,14 @@ export const maxDuration = 60;
 // Health check for the sold-data code. Returns only counts, ratios, timings and true/false —
 // never prices, addresses, keys or any other listing content.
 export async function GET(req) {
+  try {
+    return await run(req);
+  } catch (e) {
+    return NextResponse.json({ crash: String(e?.message || e).slice(0, 300), where: String(e?.stack || '').split('\n').slice(0, 4).join(' | ').slice(0, 400) });
+  }
+}
+
+async function run(req) {
   if (!isAdmin()) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const sp = Object.fromEntries(new URL(req.url).searchParams);
   const f = readSoldFilters(sp);
