@@ -10,7 +10,7 @@ export async function sendVerify(member, lang, next = '') {
   const sig = signToken(member.id, 'verify', expires);
   const url = `${SITE}/api/vow/verify?m=${member.id}&e=${expires}&s=${sig}&l=${lang === 'fa' ? 'fa' : 'en'}${safeNext(next) ? `&n=${encodeURIComponent(safeNext(next))}` : ''}`;
   const mail = accountEmail({ kind: 'verify', name: member.name, lang, url });
-  return sendMemberEmail({ to: member.email, ...mail });
+  return sendMemberEmail({ to: member.email, ...mail, replyTo: null });
 }
 
 export async function sendReset(member, lang) {
@@ -19,5 +19,5 @@ export async function sendReset(member, lang) {
   const sig = signToken(member.id, 'reset', expires, bind);
   const url = `${SITE}/${lang === 'fa' ? 'fa' : 'en'}/account/reset?m=${member.id}&e=${expires}&s=${sig}`;
   const mail = accountEmail({ kind: 'reset', name: member.name, lang, url });
-  return sendMemberEmail({ to: member.email, ...mail });
+  return sendMemberEmail({ to: member.email, ...mail, replyTo: null });
 }
