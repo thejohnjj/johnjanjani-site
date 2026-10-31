@@ -1,3 +1,4 @@
+import { VOW_LIVE, vowT } from '@/lib/i18n-vow';
 import Logo from './Logo';
 import { JoinButton, SignOutButton } from './Membership';
 import MobileMenu from './MobileMenu';
@@ -12,6 +13,7 @@ export function Header({ lang, t, member, path = '' }) {
         </a>
         <nav className="links" aria-label="Main">
           <a href={`/${lang}/listings`}>{t.nav.listings}</a>
+          {VOW_LIVE && <a href={`/${lang}/sold`}>{vowT(lang).sold.title}</a>}
           <a href={`/${lang}/home-value`}>{t.navTools.homeValue}</a>
           <a href={`/${lang}/calculator`}>{t.navTools.calculator}</a>
           <a href={`/${lang}/guide`}>{t.navTools.guide}</a>

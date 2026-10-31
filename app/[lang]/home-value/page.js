@@ -1,3 +1,4 @@
+import { VOW_LIVE, vowT } from '@/lib/i18n-vow';
 import { t as dictFor } from '@/lib/i18n';
 import { getMemberId } from '@/lib/session';
 import { getMember } from '@/lib/listings';
@@ -34,6 +35,11 @@ export default async function HomeValue({ params }) {
               <div className="eyebrow light">{t.hvEyebrow}</div>
               <h1>{t.hvTitle}</h1>
               <p className="lead">{t.hvLead}</p>
+              {VOW_LIVE && (
+                <a className="est-cta" href={`/${lang}/estimate`} style={{ margin: '14px 0' }}>
+                  <b>{vowT(lang).est.title}</b><span>{vowT(lang).est.lead}</span><span aria-hidden="true">{lang === 'fa' ? '←' : '→'}</span>
+                </a>
+              )}
               <ul className="ticks">
                 {t.hvPoints.map((p) => <li key={p}>{p}</li>)}
               </ul>
