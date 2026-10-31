@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { isAdmin } from '@/lib/session';
-import { readEstimateInput, estimateValue } from '@/lib/estimate';
+import { readEstimateInput, estimateValue, buildReport } from '@/lib/estimate';
 import { readSoldFilters, searchSold, marketSnapshot, getVowListing, getAddressHistory, getPriceChanges } from '@/lib/vow-data';
 
 export const runtime = 'nodejs';
@@ -22,8 +22,18 @@ async function run(req) {
   const sp = Object.fromEntries(new URL(req.url).searchParams);
   if (sp.est) {
     const t0 = Date.now();
-    const r = await estimateValue(readEstimateInput(sp));
-    return NextResponse.json({ ms: Date.now() - t0, ok: r.ok, reason: r.reason, level: r.level, months: r.months, count: r.count, confidence: r.confidence,
+    const inp = readEstimateInput(sp);
+    const r = await estimateValue(inp);
+    let rep = null;
+    if (r.ok) {
+      const t1 = Date.now();
+      const x = await buildReport(inp, r);
+      rep = { ms: Date.now() - t1, methods: x.methods.map((m) => m.key), trendMonthsWithData: x.trend?.months.filter((m) => m.median).length, trendLevel: x.trend?.level, hasYoy: x.trend?.yoy != null,
+        market: x.market?.market, hasMoi: x.market?.monthsOfInventory != null, rentCount: x.rent?.count ?? 0, rentPlausible: x.rent ? x.rent.median > 800 && x.rent.median < 15000 : null,
+        yieldPlausible: x.rent ? x.rent.yield > 1 && x.rent.yield < 12 : null, lastSale: Boolean(x.lastSale), adjustedComps: (x.comps || []).filter((c) => c.adjPrice).length,
+        conditionOrdered: x.condition.needsWork <= x.condition.good && x.condition.good <= x.condition.renovated, blendedInRange: x.low <= x.value && x.value <= x.high };
+    }
+    return NextResponse.json({ report: rep, ms: Date.now() - t0, ok: r.ok, reason: r.reason, level: r.level, months: r.months, count: r.count, confidence: r.confidence,
       comps: r.comps?.length, hasValue: Boolean(r.value), rangeOk: r.ok ? r.low <= r.value && r.value <= r.high : null, located: Boolean(r.location?.community), streetFound: r.location?.streetFound });
   }
   const f = readSoldFilters(sp);

@@ -4,7 +4,8 @@ import { vowT } from '@/lib/i18n-vow';
 import { getMemberId } from '@/lib/session';
 import { getMember } from '@/lib/listings';
 import { getVowAccess } from '@/lib/vow';
-import { readEstimateInput, inputComplete, estimateValue, SIZES } from '@/lib/estimate';
+import { readEstimateInput, inputComplete, estimateValue, buildReport, SIZES } from '@/lib/estimate';
+import TrendChart from '@/components/TrendChart';
 import { recordEstimateLead } from '@/lib/estimate-lead';
 import { AREAS } from '@/lib/mls-options';
 import { guardFeedView } from '@/lib/feed-guard';
@@ -89,6 +90,7 @@ export default async function EstimatePage({ params, searchParams }) {
     allowed = await guardFeedView({ action: 'estimate', kind: 'vow', memberId: access.member.id });
     if (allowed) {
       result = await estimateValue(i);
+      if (result.ok) result.report = await buildReport(i, result).catch((err) => { console.error('report', err?.message); return null; });
       if (result.ok || result.reason === 'few') await recordEstimateLead(access.member, i, lang).catch(() => {});
     }
   }
@@ -126,43 +128,7 @@ export default async function EstimatePage({ params, searchParams }) {
                 <details style={{ marginTop: 16 }}><summary>{e.edit}</summary><EstimateForm lang={lang} e={e} i={i} /></details>
               </div>
             )}
-            {step === 2 && result?.ok && (
-              <>
-                <div className="est-result">
-                  <div className="est-top">
-                    <div>
-                      <span className="est-label">{e.result}</span>
-                      <b className="est-value" dir="ltr">{feedPrice(result.value)}</b>
-                      <span className={`est-conf ${result.confidence}`}>{e.conf[result.confidence]}</span>
-                    </div>
-                    <div className="est-range">
-                      <span className="est-label">{e.range}</span>
-                      <div className="bar"><i /></div>
-                      <div className="ends" dir="ltr"><span>{feedPrice(result.low)}</span><span>{feedPrice(result.high)}</span></div>
-                    </div>
-                  </div>
-                  <p className="mls-line" dir="auto">
-                    <b dir="ltr">{`${i.unit ? `${i.unit} - ` : ''}${i.addr}, ${i.area}`}</b> · {e.basedOn.replace('{n}', result.count).replace('{w}', where).replace('{m}', result.months)}
-                  </p>
-                  <details><summary>{e.edit}</summary><EstimateForm lang={lang} e={e} i={i} /></details>
-                </div>
-
-                <aside className="mls-contact" style={{ marginBottom: 26 }}>
-                  <h2>{e.exactTitle}</h2>
-                  <p>{e.exactText}</p>
-                  <div className="row">
-                    <a className="btn btn-accent" href={wa} target="_blank" rel="noopener noreferrer">{e.exactBtn}</a>
-                    <a className="btn btn-ghost" href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(lang === 'fa' ? 'سلام پوریا، می‌خواهم یک تماس رایگان ۱۵ دقیقه‌ای رزرو کنم.' : 'Hi John, I’d like to book a free 15-minute call.')}`} target="_blank" rel="noopener noreferrer">{e.call}</a>
-                  </div>
-                </aside>
-
-                <h2 style={{ fontSize: 26 }}>{e.compsTitle}</h2>
-                <div className="mls-grid" style={{ marginTop: 14 }}>
-                  {result.comps.map((l) => <SoldCard key={l.key} l={l} s={s} m={m} lang={lang} />)}
-                </div>
-              </>
-            )}
-
+            {step === 2 && result?.ok && <Report lang={lang} e={e} s={s} m={m} i={i} result={result} where={where} wa={wa} />}
             <p className="est-disclaimer">{e.disclaimer}</p>
             <MlsDisclaimer m={m} />
             {vow && <VowCopyright s={s} />}
@@ -172,5 +138,194 @@ export default async function EstimatePage({ params, searchParams }) {
       <Footer lang={lang} t={t} />
       <MobileBar lang={lang} t={t} member={Boolean(member)} />
     </MembershipProvider>
+  );
+}
+
+
+const money = (n) => feedPrice(n);
+const fill = (str, map) => Object.entries(map).reduce((a, [k, v]) => a.split(`{${k}}`).join(v), str);
+
+function Report({ lang, e, s, m, i, result, where, wa }) {
+  const r = result.report;
+  const R = e.report;
+  const value = r?.value ?? result.value;
+  const low = r?.low ?? result.low;
+  const high = r?.high ?? result.high;
+  const span = high - low || 1;
+  const pos = Math.min(95, Math.max(5, ((value - low) / span) * 100));
+  const address = `${i.unit ? `${i.unit} - ` : ''}${i.addr}, ${i.area}`;
+  const typeLabel = e.types[i.type];
+  const placeT = r?.trend?.level === 'community' && result.location.community ? result.location.community : result.location.city || i.area;
+  const placeM = r?.market?.level === 'community' && result.location.community ? result.location.community : result.location.city || i.area;
+  const today = new Date().toISOString().slice(0, 10);
+  const wsum = r ? r.methods.reduce((a, x) => a + x.weight, 0) : 1;
+
+  return (
+    <div className="report">
+      <section className="est-result rep-head">
+        <div className="rep-for">
+          <span className="est-label">{R.title}</span>
+          <span>{fill(R.prepared, { d: today })} <b dir="ltr">{address}</b> · {typeLabel} · {i.beds} {m.bd}{i.baths ? ` · ${i.baths} ${m.ba}` : ''}</span>
+        </div>
+        <div className="est-top">
+          <div>
+            <span className="est-label">{R.blended}</span>
+            <b className="est-value" dir="ltr">{money(value)}</b>
+            <span className={`est-conf ${result.confidence}`}>{e.conf[result.confidence]}</span>
+          </div>
+          <div className="est-range">
+            <span className="est-label">{e.range}</span>
+            <div className="bar" dir="ltr"><i /><em style={{ left: `${pos}%` }} /></div>
+            <div className="ends" dir="ltr"><span>{money(low)}</span><span>{money(high)}</span></div>
+          </div>
+        </div>
+        <p className="mls-line" dir="auto">{e.basedOn.replace('{n}', result.count).replace('{w}', where).replace('{m}', result.months)}</p>
+        <details><summary>{e.edit}</summary><EstimateForm lang={lang} e={e} i={i} /></details>
+      </section>
+
+      {r && (
+        <section className="rep-card">
+          <h2>{R.methodsTitle}</h2>
+          <p className="rep-sub">{R.methodsSub}</p>
+          <div className="rep-methods">
+            {r.methods.map((x) => {
+              const [title, desc] = R.methods[x.key];
+              const d = fill(desc, {
+                n: x.n,
+                p: x.key === 'ppsf' ? `$${x.ppsf}` : money(r.lastSale?.price),
+                d: r.lastSale?.date || '',
+              });
+              return (
+                <div key={x.key} className="rep-method">
+                  <div className="rm-top"><b>{title}</b><span className="rm-w">{Math.round((x.weight / wsum) * 100)}% {R.weight}</span></div>
+                  <b className="rm-v" dir="ltr">{money(x.value)}</b>
+                  <span className="rm-d" dir="auto">{d}</span>
+                </div>
+              );
+            })}
+            <div className="rep-method total">
+              <div className="rm-top"><b>{R.blended}</b></div>
+              <b className="rm-v" dir="ltr">{money(value)}</b>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {r && (
+        <section className="rep-card">
+          <h2>{R.conditionTitle}</h2>
+          <p className="rep-sub">{R.conditionSub}</p>
+          <div className="rep-cond">
+            {['needsWork', 'good', 'renovated'].map((k) => (
+              <div key={k} className={k === 'good' ? 'on' : ''}>
+                <span>{R.condition[k]}</span>
+                <b dir="ltr">{money(r.condition[k])}</b>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {r?.trend && (
+        <section className="rep-card">
+          <div className="rep-h">
+            <h2>{R.trendTitle}</h2>
+            {r.trend.yoy != null && <span className={`rep-badge ${r.trend.yoy >= 0 ? 'up' : 'down'}`} dir="ltr">{r.trend.yoy > 0 ? '+' : ''}{fill(R.yoy, { v: r.trend.yoy })}</span>}
+          </div>
+          <p className="rep-sub">{fill(R.trendSub, { t: typeLabel, w: placeT })}</p>
+          {r.trend.months.filter((x) => x.median).length >= 4 ? (
+            <TrendChart points={r.trend.months} title={R.trendTitle} labels={{ tableView: R.tableView, month: R.month, median: s.median, sales: R.sales }} />
+          ) : (
+            <p className="mls-line">{R.trendThin}</p>
+          )}
+        </section>
+      )}
+
+      <div className="rep-two">
+        {r?.market && (
+          <section className="rep-card">
+            <h2>{R.marketTitle}</h2>
+            <p className="rep-sub">{fill(R.marketSub, { t: typeLabel, w: placeM })}</p>
+            {r.market.market && (
+              <div className={`rep-market ${r.market.market}`}>
+                <b>{R.market[r.market.market]}</b>
+                <div className="gauge" dir="ltr"><i style={{ left: `${Math.min(96, Math.max(4, (Math.min(r.market.monthsOfInventory, 9) / 9) * 100))}%` }} /></div>
+                <div className="gauge-l" dir="ltr"><span>{R.market.seller}</span><span>{R.market.balanced}</span><span>{R.market.buyer}</span></div>
+                <span className="rep-sub">{R.marketText[r.market.market]}</span>
+              </div>
+            )}
+            <dl className="rep-stats">
+              {r.market.monthsOfInventory != null && <div><dt>{R.moi}</dt><dd dir="ltr">{r.market.monthsOfInventory}</dd></div>}
+              <div><dt>{R.active}</dt><dd dir="ltr">{r.market.active}</dd></div>
+              <div><dt>{R.soldPm}</dt><dd dir="ltr">{r.market.soldPerMonth}</dd></div>
+              {r.market.ratio != null && <div><dt>{R.ratio}</dt><dd dir="ltr">{r.market.ratio}%</dd></div>}
+              {r.market.overAsking != null && <div><dt>{R.over}</dt><dd dir="ltr">{r.market.overAsking}%</dd></div>}
+              {r.market.dom != null && <div><dt>{R.dom}</dt><dd dir="ltr">{r.market.dom}</dd></div>}
+            </dl>
+          </section>
+        )}
+        {r?.rent && (
+          <section className="rep-card">
+            <h2>{R.rentTitle}</h2>
+            <p className="rep-sub">{fill(R.rentSub, { n: r.rent.count })}</p>
+            <dl className="rep-stats big">
+              <div><dt>{R.rent}</dt><dd dir="ltr">{money(r.rent.median)}<small> {m.perMonth}</small></dd></div>
+              <div><dt>{R.rentRange}</dt><dd dir="ltr">{money(r.rent.low)} – {money(r.rent.high)}</dd></div>
+              <div><dt>{R.yield}</dt><dd dir="ltr">{r.rent.yield}%</dd></div>
+            </dl>
+          </section>
+        )}
+      </div>
+
+      {r?.lastSale && (
+        <section className="rep-card">
+          <h2>{R.lastSaleTitle}</h2>
+          <dl className="rep-stats">
+            <div><dt>{s.soldOn.replace('{d}', '')}</dt><dd dir="ltr">{r.lastSale.date}</dd></div>
+            <div><dt>{s.soldFor}</dt><dd dir="ltr">{money(r.lastSale.price)}</dd></div>
+            {r.lastSale.today && <div><dt>{e.report.cols.today}</dt><dd dir="ltr">{money(r.lastSale.today)}</dd></div>}
+          </dl>
+        </section>
+      )}
+
+      <aside className="mls-contact" style={{ margin: '6px 0 26px' }}>
+        <h2>{e.exactTitle}</h2>
+        <p>{e.exactText}</p>
+        <div className="row">
+          <a className="btn btn-accent" href={wa} target="_blank" rel="noopener noreferrer">{e.exactBtn}</a>
+          <a className="btn btn-ghost" href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(lang === 'fa' ? 'سلام پوریا، می‌خواهم یک تماس رایگان ۱۵ دقیقه‌ای رزرو کنم.' : 'Hi John, I’d like to book a free 15-minute call.')}`} target="_blank" rel="noopener noreferrer">{e.call}</a>
+        </div>
+      </aside>
+
+      <h2 style={{ fontSize: 26 }}>{e.compsTitle}</h2>
+      <div className="mls-grid" style={{ marginTop: 14 }}>
+        {(r?.comps || result.comps).map((l) => <SoldCard key={l.key} l={l} s={s} m={m} lang={lang} />)}
+      </div>
+
+      {r && (
+        <section className="rep-card" style={{ marginTop: 26 }}>
+          <h2>{R.tableTitle}</h2>
+          <div className="rep-table">
+            <table>
+              <thead>
+                <tr><th>{R.cols.address}</th><th>{R.cols.sold}</th><th>{R.cols.date}</th><th>{R.cols.layout}</th><th>{R.cols.size}</th><th>{R.cols.today}</th></tr>
+              </thead>
+              <tbody>
+                {(r.comps || []).map((c) => (
+                  <tr key={c.key}>
+                    <td dir="ltr"><a href={`/${lang}/mls/${encodeURIComponent(c.key)}`}>{c.address || [c.community, c.city].filter(Boolean).join(', ')}</a></td>
+                    <td dir="ltr">{c.soldPrice ? money(c.soldPrice) : '—'}</td>
+                    <td dir="ltr">{c.soldDate || '—'}</td>
+                    <td dir="ltr">{c.bedsBelow ? `${c.bedsAbove}+${c.bedsBelow}` : c.beds ?? '—'} / {c.baths ?? '—'}</td>
+                    <td dir="ltr">{c.sqft || '—'}</td>
+                    <td dir="ltr">{c.adjPrice ? money(Math.round(c.adjPrice / 1000) * 1000) : '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+    </div>
   );
 }

@@ -851,3 +851,60 @@ html[lang='fa'] .est-label { letter-spacing: 0; text-transform: none; }
 .est-disclaimer { font-size: 13px; color: var(--muted); margin: 28px 0 0; }
 @media (max-width: 860px) { .est-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } .est-form .wide { grid-column: 1 / -1; } .est-top { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 600px) { .snap-grid b { white-space: normal; } }
+
+/* Home value report */
+.report { display: grid; gap: 0; }
+.rep-head .rep-for { display: grid; gap: 2px; font-size: 15px; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+.est-range .bar em { position: absolute; top: -5px; width: 4px; height: 20px; border-radius: 2px; background: var(--ink); transform: translateX(-50%); }
+.rep-card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; margin-bottom: 22px; }
+.rep-card h2 { font-size: 24px; margin: 0; }
+.rep-sub { color: var(--muted); font-size: 15px; margin: 6px 0 16px; display: block; }
+.rep-h { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.rep-badge { font-size: 14px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #EAF5EE; color: #1E7A4C; }
+.rep-badge.down { background: #FFF4E8; color: #8A4B14; }
+.rep-methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.rep-method { border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 6px; align-content: start; background: var(--bg); }
+.rep-method .rm-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.rep-method .rm-top b { font-size: 15px; }
+.rep-method .rm-w { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.rep-method .rm-v { font-size: 24px; font-weight: 600; }
+.rep-method .rm-d { font-size: 13px; color: var(--muted); }
+.rep-method.total { background: var(--teal-deep); border-color: var(--teal-deep); color: #FFFDF8; }
+.rep-method.total .rm-v { font-size: 28px; color: #FFFDF8; }
+.rep-cond { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.rep-cond div { border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 6px; background: var(--bg); }
+.rep-cond div.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.rep-cond span { font-size: 14px; color: var(--muted); }
+.rep-cond b { font-size: 24px; font-weight: 600; }
+.rep-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0 22px; }
+.rep-market { display: grid; gap: 8px; margin-bottom: 16px; }
+.rep-market > b { font-size: 20px; }
+.rep-market.seller > b { color: #A9501C; }
+.rep-market.buyer > b { color: #0D4A50; }
+.rep-market .gauge { position: relative; height: 10px; border-radius: 999px; background: linear-gradient(90deg, #E8864C, #E6DECF 50%, #0D4A50); }
+.rep-market .gauge i { position: absolute; top: -5px; width: 4px; height: 20px; border-radius: 2px; background: var(--ink); transform: translateX(-50%); }
+.rep-market .gauge-l { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.rep-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 0; }
+.rep-stats div { border-inline-start: 3px solid var(--accent); padding-inline-start: 12px; }
+.rep-stats dt { font-size: 13px; color: var(--muted); }
+.rep-stats dd { margin: 2px 0 0; font-size: 20px; font-weight: 600; }
+.rep-stats.big dd { font-size: 24px; }
+.rep-table { overflow-x: auto; }
+.rep-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.rep-table th, .rep-table td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: start; white-space: nowrap; }
+.rep-table th { color: var(--muted); font-weight: 500; font-size: 13px; }
+.trend { margin: 0; }
+.trend-plot { position: relative; }
+.trend svg { width: 100%; height: auto; display: block; }
+.trend .grid { stroke: var(--line); stroke-width: 1; }
+.trend .axis { fill: var(--muted); font-size: 11px; font-family: var(--body); }
+.trend .line { fill: none; stroke: #0D4A50; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.trend .cross { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+.trend .dot { fill: #0D4A50; stroke: var(--surface); stroke-width: 2; }
+.trend .tip { position: absolute; top: 0; transform: translateX(-50%); background: var(--ink); color: var(--bg); border-radius: 10px; padding: 8px 10px; font-size: 13px; display: grid; gap: 2px; pointer-events: none; white-space: nowrap; }
+.trend-table { margin-top: 10px; font-size: 14px; }
+.trend-table summary { cursor: pointer; color: var(--accent-ink); }
+.trend-table table { margin-top: 8px; border-collapse: collapse; }
+.trend-table td, .trend-table th { padding: 4px 12px 4px 0; border-bottom: 1px solid var(--line); text-align: start; }
+@media (prefers-color-scheme: dark) { .trend .line { stroke: #6FB6BC; } .trend .dot { fill: #6FB6BC; } }
+@media (max-width: 600px) { .rep-cond { grid-template-columns: minmax(0, 1fr); } .rep-cond b { font-size: 20px; } }
