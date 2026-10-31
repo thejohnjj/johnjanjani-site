@@ -158,3 +158,11 @@ create table if not exists integrations (
   updated_at timestamptz not null default now()
 );
 alter table integrations enable row level security;
+
+-- Sold prices accounts (VOW): password, email confirmation, Terms of Use, 90-day password renewal
+alter table members add column if not exists password_hash text;
+alter table members add column if not exists password_set_at timestamptz;
+alter table members add column if not exists email_verified_at timestamptz;
+alter table members add column if not exists vow_terms_at timestamptz;
+alter table members add column if not exists vow_terms_version text;
+alter table members add column if not exists last_login_at timestamptz;

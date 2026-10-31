@@ -763,3 +763,22 @@ html[dir='rtl'] .hv-seg select { background-position: left 2px center; }
 .hv-agent b { font-size: 19px; }
 .hv-agent span { font-size: 14px; }
 @media (max-width: 640px) { .hv-agent img { width: 68px; height: 68px; } .hv-agent b { font-size: 17px; } .hv-agent span { font-size: 13px; } }
+
+/* Sold prices (VOW) account gate */
+.vow-gate { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.vow-gate.compact { grid-template-columns: minmax(0, 1fr); max-width: 520px; }
+.vow-pitch h2 { font-size: clamp(30px, 3.6vw, 44px); margin: 6px 0 12px; }
+.vow-pitch p { color: var(--muted); font-size: 18px; }
+.vow-pitch ul { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 10px; }
+.vow-pitch li { padding-inline-start: 30px; position: relative; }
+.vow-pitch li::before { content: '✓'; position: absolute; inset-inline-start: 0; top: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #0B2226; font-size: 13px; display: grid; place-items: center; font-weight: 700; }
+.vow-box { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; box-shadow: 0 18px 50px rgba(7, 47, 51, .08); }
+.vow-box .form { display: grid; gap: 12px; padding: 0; }
+.vow-box h3 { margin: 0; }
+.vow-box small { color: var(--muted); font-size: 13px; }
+.vow-tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 12px; margin-bottom: 16px; }
+.vow-tabs button { flex: 1; font: inherit; font-size: 15px; padding: 9px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); cursor: pointer; }
+.vow-tabs button[aria-selected='true'] { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 1px 4px rgba(0, 0, 0, .08); }
+.vow-note { background: #FFF4E8; border: 1px solid #F2C9A5; color: #6B3A12; padding: 10px 14px; border-radius: 12px; margin: 0 0 14px; }
+.vow-privacy { border-inline-start: 3px solid var(--accent); padding-inline-start: 16px; }
+@media (max-width: 860px) { .vow-gate { grid-template-columns: minmax(0, 1fr); gap: 22px; } }

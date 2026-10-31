@@ -12,7 +12,7 @@ export function generateMetadata({ params }) {
 
 const EN = (
   <>
-    <p>Last updated: October 2026</p>
+    <p>Last updated: October 31, 2026</p>
     <p>
       This website is run by Purya (John) Janjani, Sales Representative with Century 21 Leading Edge Realty Inc., Brokerage,
       1053 McNicoll Ave, Toronto, ON. This policy explains what personal information I collect on johnjanjani.com and how I use it.
@@ -23,6 +23,7 @@ const EN = (
       <li>While you are signed in: which listings you view and any showing requests you send.</li>
       <li>When you ask for a home value estimate: your property’s address and details, your timeline, and your name, email and phone number.</li>
       <li>When you open the buyer guide: your name, email, and optionally your phone number and where you are in your home search.</li>
+      <li>When you create a sold-prices account: your name, email, phone, a password (stored only in scrambled, one-way form, never readable), the dates you confirmed your email, accepted the Terms of Use and last set your password, and a log of the searches and listing pages you open while signed in.</li>
       <li>Small cookies that keep you signed in and remember that you unlocked the guide.</li>
       <li>Analytics and advertising cookies: this website uses Google Analytics to understand which pages are useful, and the Meta Pixel to measure and show ads on Facebook and Instagram to people who visited. They collect information such as the pages you view and your device type, not your name. You can block them in your browser settings or with an ad blocker.</li>
       <li>Listing pages may show Instagram videos. Instagram (Meta) may set its own cookies when you play them.</li>
@@ -36,10 +37,27 @@ const EN = (
     </ul>
     <h2>Who can see it</h2>
     <p>
-      Only I can see your information. It is stored with my service providers (Supabase for the database and Vercel for hosting), who
-      keep it on my behalf. I never sell or rent your information. I may share it with my brokerage when the law or my professional
+      Only I can see your information. It is stored with my service providers (Supabase for the database, Vercel for hosting, Resend for
+      sending emails and Zoho CRM for keeping track of my clients), who keep it on my behalf. I never sell or rent your information. I may share it with my brokerage when the law or my professional
       obligations require it.
     </p>
+    <div className="vow-privacy">
+      <h2>Sold prices account (MLS® Virtual Office Website)</h2>
+      <p>
+        <b>
+          Sold prices and other MLS® information on this website come from the MLS® System of the Toronto Regional Real Estate Board (TRREB),
+          delivered by PropTx Innovations Inc. To meet the MLS® rules, your account information (name, email, username and password records)
+          and the log of your activity on the sold-prices pages may be shared with TRREB and PropTx Innovations Inc. for auditing, compliance
+          or legal purposes.
+        </b>
+      </p>
+      <p>
+        <b>
+          The MLS® rules also require me to keep these account records for at least 180 days after your password expires. By creating an
+          account you consent to this.
+        </b>
+      </p>
+    </div>
     <h2>Your choices</h2>
     <ul>
       <li>You can stop emails or calls at any time by replying “unsubscribe” or telling me by phone.</li>
@@ -61,7 +79,7 @@ const EN = (
 
 const FA = (
   <>
-    <p>آخرین به‌روزرسانی: اکتبر ۲۰۲۶</p>
+    <p>آخرین به‌روزرسانی: ۳۱ اکتبر ۲۰۲۶</p>
     <p>
       این وب‌سایت توسط پوریا جان جانی، مشاور املاک در Century 21 Leading Edge Realty Inc., Brokerage به آدرس 1053 McNicoll Ave, Toronto, ON
       اداره می‌شود. در این صفحه توضیح می‌دهم چه اطلاعاتی در johnjanjani.com جمع می‌کنم و چطور از آن استفاده می‌کنم.
@@ -72,6 +90,7 @@ const FA = (
       <li>وقتی وارد حساب هستید: لیستینگ‌هایی که می‌بینید و درخواست‌های بازدیدی که می‌فرستید.</li>
       <li>هنگام درخواست برآورد قیمت خانه: آدرس و مشخصات ملک، زمان‌بندی فروش و نام، ایمیل و شماره تلفن شما.</li>
       <li>هنگام باز کردن راهنمای خرید: نام و ایمیل، و در صورت تمایل شماره تلفن و مرحله‌ای که در خرید خانه هستید.</li>
+      <li>هنگام ساخت حساب قیمت‌های فروش: نام، ایمیل، تلفن، رمز عبور (فقط به شکل رمزگذاری‌شده یک‌طرفه و غیرقابل خواندن)، تاریخ تأیید ایمیل، پذیرش شرایط استفاده و آخرین تغییر رمز، و سابقه جستجوها و صفحه‌هایی که هنگام ورود باز می‌کنید.</li>
       <li>کوکی‌های کوچکی که شما را وارد نگه می‌دارند و به یاد می‌سپارند که راهنما را باز کرده‌اید.</li>
       <li>کوکی‌های آماری و تبلیغاتی: این سایت از Google Analytics برای فهمیدن اینکه کدام صفحه‌ها مفیدند، و از Meta Pixel برای سنجش و نمایش تبلیغ در فیس‌بوک و اینستاگرام به کسانی که از سایت بازدید کرده‌اند استفاده می‌کند. این ابزارها اطلاعاتی مثل صفحه‌های دیده‌شده و نوع دستگاه را جمع می‌کنند، نه نام شما را. می‌توانید آن‌ها را در تنظیمات مرورگر یا با مسدودکننده تبلیغات غیرفعال کنید.</li>
       <li>صفحه لیستینگ‌ها ممکن است ویدیوی اینستاگرام نشان دهد. اینستاگرام (Meta) هنگام پخش ممکن است کوکی‌های خودش را ذخیره کند.</li>
@@ -85,9 +104,22 @@ const FA = (
     </ul>
     <h2>چه کسی به آن دسترسی دارد</h2>
     <p>
-      فقط من اطلاعات شما را می‌بینم. این اطلاعات نزد ارائه‌دهندگان خدمات من (Supabase برای پایگاه داده و Vercel برای میزبانی) نگهداری می‌شود.
+      فقط من اطلاعات شما را می‌بینم. این اطلاعات نزد ارائه‌دهندگان خدمات من (Supabase برای پایگاه داده، Vercel برای میزبانی، Resend برای ارسال ایمیل و Zoho CRM برای پیگیری مشتریان) نگهداری می‌شود.
       اطلاعات شما را هرگز نمی‌فروشم و اجاره نمی‌دهم. فقط در صورتی که قانون یا تعهدات حرفه‌ای‌ام لازم بداند، ممکن است با کارگزاری‌ام در میان بگذارم.
     </p>
+    <div className="vow-privacy">
+      <h2>حساب قیمت‌های فروش (وب‌سایت دفتر مجازی MLS®)</h2>
+      <p>
+        <b>
+          قیمت‌های فروش و سایر اطلاعات MLS® در این سایت از سیستم MLS® هیئت املاک منطقه‌ای تورنتو (TRREB) و از طریق PropTx Innovations Inc. ارائه می‌شود.
+          طبق قوانین MLS®، اطلاعات حساب شما (نام، ایمیل، نام کاربری و سوابق رمز عبور) و سابقه فعالیت شما در صفحه‌های قیمت فروش ممکن است برای حسابرسی،
+          بررسی رعایت قوانین یا مقاصد قانونی در اختیار TRREB و PropTx Innovations Inc. قرار گیرد.
+        </b>
+      </p>
+      <p>
+        <b>قوانین MLS® همچنین من را ملزم می‌کند این سوابق را تا حداقل ۱۸۰ روز پس از انقضای رمز عبور شما نگه دارم. با ساخت حساب با این موضوع موافقت می‌کنید.</b>
+      </p>
+    </div>
     <h2>اختیار با شماست</h2>
     <ul>
       <li>هر زمان بخواهید می‌توانید دریافت ایمیل یا تماس را لغو کنید؛ کافی است «لغو» را جواب بدهید یا تلفنی بگویید.</li>
