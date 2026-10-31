@@ -3,10 +3,12 @@ import { SITE } from '@/lib/site';
 import { accountEmail, sendMemberEmail } from '@/lib/member-mail';
 import { signToken } from '@/lib/vow';
 
-export async function sendVerify(member, lang) {
+export const safeNext = (n) => (typeof n === 'string' && /^\/(en|fa)\/[^/]/.test(n) && !n.includes('//') ? n.slice(0, 400) : '');
+
+export async function sendVerify(member, lang, next = '') {
   const expires = Date.now() + 48 * 3600 * 1000;
   const sig = signToken(member.id, 'verify', expires);
-  const url = `${SITE}/api/vow/verify?m=${member.id}&e=${expires}&s=${sig}&l=${lang === 'fa' ? 'fa' : 'en'}`;
+  const url = `${SITE}/api/vow/verify?m=${member.id}&e=${expires}&s=${sig}&l=${lang === 'fa' ? 'fa' : 'en'}${safeNext(next) ? `&n=${encodeURIComponent(safeNext(next))}` : ''}`;
   const mail = accountEmail({ kind: 'verify', name: member.name, lang, url });
   return sendMemberEmail({ to: member.email, ...mail });
 }

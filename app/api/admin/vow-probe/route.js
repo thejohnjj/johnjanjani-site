@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { isAdmin } from '@/lib/session';
+import { readEstimateInput, estimateValue } from '@/lib/estimate';
 import { readSoldFilters, searchSold, marketSnapshot, getVowListing, getAddressHistory, getPriceChanges } from '@/lib/vow-data';
 
 export const runtime = 'nodejs';
@@ -19,6 +20,12 @@ export async function GET(req) {
 async function run(req) {
   if (!isAdmin()) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const sp = Object.fromEntries(new URL(req.url).searchParams);
+  if (sp.est) {
+    const t0 = Date.now();
+    const r = await estimateValue(readEstimateInput(sp));
+    return NextResponse.json({ ms: Date.now() - t0, ok: r.ok, reason: r.reason, level: r.level, months: r.months, count: r.count, confidence: r.confidence,
+      comps: r.comps?.length, hasValue: Boolean(r.value), rangeOk: r.ok ? r.low <= r.value && r.value <= r.high : null, located: Boolean(r.location?.community), streetFound: r.location?.streetFound });
+  }
   const f = readSoldFilters(sp);
   const out = {};
   let t = Date.now();

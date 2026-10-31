@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { setMemberCookie } from '@/lib/session';
 import { upsertMember, EMAIL } from '@/lib/members';
 import { findMemberByEmail, hashPassword, passwordProblem, updateMember, TERMS_VERSION, tooManyAttempts } from '@/lib/vow';
-import { sendVerify } from '../_shared';
+import { sendVerify, safeNext } from '../_shared';
 
 export const runtime = 'nodejs';
 
@@ -29,7 +29,7 @@ export async function POST(req) {
     const { id } = await upsertMember({ name, email, phone, lang, source: 'Sold prices sign-up', firstListing: b.firstListing ? String(b.firstListing).slice(0, 160) : null });
     const now = new Date().toISOString();
     const member = await updateMember(id, { password_hash: hashPassword(b.password), password_set_at: now, vow_terms_at: now, vow_terms_version: TERMS_VERSION, email_verified_at: null });
-    const sent = await sendVerify(member, lang);
+    const sent = await sendVerify(member, lang, safeNext(b.next));
     const res = NextResponse.json({ ok: true, verify: true, sent });
     setMemberCookie(res, id);
     return res;

@@ -35,7 +35,7 @@ export default function VowGate({ lang, initial = 'signup', compact = false, ema
     if (String(f.phone || '').replace(/\D/g, '').length < 10) return setErr(E('phone'));
     setBusy(true);
     setErr('');
-    const r = await post('/api/vow/register', { ...f, terms: f.terms === 'on', consent: f.consent === 'on', lang });
+    const r = await post('/api/vow/register', { ...f, terms: f.terms === 'on', consent: f.consent === 'on', lang, next: next || window.location.pathname + window.location.search });
     setBusy(false);
     if (!r.ok) {
       if (r.error === 'exists') setMode('login');
@@ -51,7 +51,7 @@ export default function VowGate({ lang, initial = 'signup', compact = false, ema
     const f = Object.fromEntries(new FormData(e.currentTarget));
     setBusy(true);
     setErr('');
-    const r = await post('/api/vow/login', { ...f, lang });
+    const r = await post('/api/vow/login', { ...f, lang, next: next || window.location.pathname + window.location.search });
     setBusy(false);
     if (r.ok) return done();
     if (r.error === 'unverified') {

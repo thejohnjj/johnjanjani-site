@@ -166,3 +166,11 @@ alter table members add column if not exists email_verified_at timestamptz;
 alter table members add column if not exists vow_terms_at timestamptz;
 alter table members add column if not exists vow_terms_version text;
 alter table members add column if not exists last_login_at timestamptz;
+
+-- Seller opt-outs for the sold-prices area (MLS® rules 8.14/8.15): listings never shown or used in estimates
+create table if not exists vow_suppress (
+  listing_key text primary key,
+  reason text,
+  created_at timestamptz not null default now()
+);
+alter table vow_suppress enable row level security;

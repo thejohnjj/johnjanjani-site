@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { setMemberCookie } from '@/lib/session';
 import { checkToken, getMemberById, setVowCookie, updateMember } from '@/lib/vow';
 import { SITE } from '@/lib/site';
+import { safeNext } from '../_shared';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -15,7 +16,8 @@ export async function GET(req) {
     return NextResponse.redirect(`${SITE}/${lang}/account?state=link-expired`, 302);
   }
   const member = m.email_verified_at ? m : await updateMember(m.id, { email_verified_at: new Date().toISOString(), last_login_at: new Date().toISOString() });
-  const res = NextResponse.redirect(`${SITE}/${lang}/sold?welcome=1`, 302);
+  const next = safeNext(sp.get('n'));
+  const res = NextResponse.redirect(`${SITE}${next || `/${lang}/sold?welcome=1`}`, 302);
   setMemberCookie(res, member.id);
   setVowCookie(res, member);
   return res;

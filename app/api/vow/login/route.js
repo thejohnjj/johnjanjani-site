@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { setMemberCookie } from '@/lib/session';
 import { checkPassword, findMemberByEmail, setVowCookie, tooManyAttempts, updateMember, vowState } from '@/lib/vow';
-import { sendVerify } from '../_shared';
+import { sendVerify, safeNext } from '../_shared';
 
 export const runtime = 'nodejs';
 
@@ -15,7 +15,7 @@ export async function POST(req) {
   const lang = b.lang === 'fa' ? 'fa' : m.lang;
   const state = vowState(m);
   if (state === 'unverified') {
-    await sendVerify(m, lang);
+    await sendVerify(m, lang, safeNext(b.next));
     return NextResponse.json({ error: 'unverified' }, { status: 403 });
   }
   if (state === 'expired' || state === 'terms') return NextResponse.json({ error: 'expired' }, { status: 403 });
