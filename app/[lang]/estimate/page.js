@@ -33,10 +33,17 @@ const SIZE_LABEL = { '<700': '< 700', '700-999': '700–999', '1000-1399': '1,00
 function EstimateForm({ lang, e, i }) {
   return (
     <form className="est-form" method="get" action={`/${lang}/estimate`}>
+      <fieldset className="est-purpose">
+        <legend>{e.purpose.label}</legend>
+        <label><input type="radio" name="purpose" value="mine" defaultChecked={i.purpose !== 'interested'} /> {e.purpose.mine}</label>
+        <label><input type="radio" name="purpose" value="interested" defaultChecked={i.purpose === 'interested'} /> {e.purpose.interested}</label>
+      </fieldset>
+      {i.city && !AREAS.includes(i.city) && <input type="hidden" name="city" value={i.city} />}
+      {i.exclude && <input type="hidden" name="key" value={i.exclude} />}
       <label className="wide">{e.addr}<input name="addr" defaultValue={i.addr} placeholder={e.addrPh} dir="ltr" required maxLength={80} autoComplete="street-address" /></label>
       <label>{e.unit}<input name="unit" defaultValue={i.unit} dir="ltr" maxLength={10} /></label>
       <label>{e.area}
-        <select name="area" defaultValue={i.area} required>
+        <select name="area" defaultValue={i.area} required={!i.city}>
           <option value="" disabled>—</option>
           {AREAS.map((a) => <option key={a} value={a}>{a}</option>)}
         </select>
@@ -82,7 +89,7 @@ export default async function EstimatePage({ params, searchParams }) {
   const i = readEstimateInput(searchParams);
   const complete = inputComplete(i);
   const vow = access.status === 'ok';
-  const here = `/${lang}/estimate?${new URLSearchParams(Object.entries({ addr: i.addr, unit: i.unit, area: i.area, type: i.type, beds: i.beds ?? '', baths: i.baths ?? '', size: i.size }).filter(([, x]) => x !== '' && x != null)).toString()}`;
+  const here = `/${lang}/estimate?${new URLSearchParams(Object.entries({ addr: i.addr, unit: i.unit, area: i.area, city: i.city, type: i.type, beds: i.beds ?? '', baths: i.baths ?? '', size: i.size, key: i.exclude, purpose: i.purpose }).filter(([, x]) => x !== '' && x != null)).toString()}`;
 
   let result = null;
   let allowed = true;
@@ -153,7 +160,7 @@ function Report({ lang, e, s, m, i, result, where, wa }) {
   const high = r?.high ?? result.high;
   const span = high - low || 1;
   const pos = Math.min(95, Math.max(5, ((value - low) / span) * 100));
-  const address = `${i.unit ? `${i.unit} - ` : ''}${i.addr}, ${i.area}`;
+  const address = `${i.unit ? `${i.unit} - ` : ''}${i.addr}, ${i.city || i.area}`;
   const typeLabel = e.types[i.type];
   const placeT = r?.trend?.level === 'community' && result.location.community ? result.location.community : result.location.city || i.area;
   const placeM = r?.market?.level === 'community' && result.location.community ? result.location.community : result.location.city || i.area;

@@ -1,4 +1,6 @@
+import { Suspense } from 'react';
 import { t as dictFor } from '@/lib/i18n';
+import ListingEstimate, { ListingEstimateSkeleton } from '@/components/ListingEstimate';
 import { mlsT, FEED_LIVE } from '@/lib/i18n-mls';
 import { vowT } from '@/lib/i18n-vow';
 import { getMemberId } from '@/lib/session';
@@ -102,6 +104,11 @@ export default async function MlsListingPage({ params }) {
               <MlsSpecs l={l} m={m} />
               <div className="mls-line">{m.brokerage}: <span dir="ltr">{l.brokerage}</span></div>
               <div className="mls-line">{m.mlsNo} <span dir="ltr">{l.key}</span></div>
+              {vow && !l.lease && (
+                <Suspense fallback={<ListingEstimateSkeleton e={v.est} />}>
+                  <ListingEstimate l={l} e={v.est} lang={lang} />
+                </Suspense>
+              )}
 
               {!vow && (
                 <a className="vow-teaser" href={`/${lang}/account?next=${encodeURIComponent(here)}`} style={{ textDecoration: 'none', color: 'inherit' }}>

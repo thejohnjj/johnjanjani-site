@@ -908,3 +908,16 @@ html[lang='fa'] .est-label { letter-spacing: 0; text-transform: none; }
 .trend-table td, .trend-table th { padding: 4px 12px 4px 0; border-bottom: 1px solid var(--line); text-align: start; }
 @media (prefers-color-scheme: dark) { .trend .line { stroke: #6FB6BC; } .trend .dot { fill: #6FB6BC; } }
 @media (max-width: 600px) { .rep-cond { grid-template-columns: minmax(0, 1fr); } .rep-cond b { font-size: 20px; } }
+.lest { border: 1px solid var(--accent); border-radius: 18px; padding: 16px 18px; display: grid; gap: 6px; background: var(--surface); }
+.lest-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lest-v { font-family: var(--display); font-size: 34px; line-height: 1.1; }
+.lest-cmp { font-size: 15px; font-weight: 600; color: var(--ink); }
+.lest-cmp.hi { color: #A9501C; }
+.lest-cmp.lo { color: #1E7A4C; }
+.lest .btn { justify-self: start; margin-top: 6px; }
+.lest-skel { height: 64px; border-radius: 12px; background: linear-gradient(90deg, var(--line), var(--bg), var(--line)); background-size: 200% 100%; animation: lskel 1.2s infinite linear; }
+@keyframes lskel { from { background-position: 200% 0; } to { background-position: 0 0; } }
+.est-purpose { grid-column: 1 / -1; border: 0; padding: 0; margin: 0; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.est-purpose legend { font-size: 13px; color: var(--muted); margin-bottom: 6px; float: left; width: 100%; }
+.est-purpose label { flex-direction: row !important; align-items: center; gap: 8px; font-size: 15px !important; color: var(--ink) !important; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.est-purpose input { width: auto !important; }
