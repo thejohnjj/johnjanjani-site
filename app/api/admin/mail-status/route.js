@@ -19,5 +19,7 @@ export async function GET() {
   const client = db();
   const cols = client ? await client.from('members').select('interest, email_opt_out, welcome_sent_at').limit(1) : null;
   const columnsReady = cols ? !cols.error : null;
-  return NextResponse.json({ columnsReady, resendKey: Boolean(process.env.RESEND_API_KEY), senderDomain: domain, resendDomains: domains });
+  const rt = process.env.MEMBER_REPLY_TO || '';
+  const replyToDomain = (rt.match(/@([^>\s]+)/) || [])[1] || null;
+  return NextResponse.json({ replyToDomain, columnsReady, resendKey: Boolean(process.env.RESEND_API_KEY), senderDomain: domain, resendDomains: domains });
 }
