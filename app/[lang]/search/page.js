@@ -9,8 +9,17 @@ import MembershipProvider from '@/components/Membership';
 import { Header, Footer } from '@/components/SiteChrome';
 import MobileBar from '@/components/MobileBar';
 import MlsCard, { MlsDisclaimer } from '@/components/MlsCard';
+import { listingToParams } from '@/lib/estimate';
+import { VOW_LIVE, vowT } from '@/lib/i18n-vow';
 
 export const dynamic = 'force-dynamic';
+
+// Instant estimate for a home in the results: opens the estimate page prefilled (free account needed to see it).
+function estimateHref(l, lang) {
+  if (!VOW_LIVE || l.lease) return null;
+  const p = listingToParams(l);
+  return p ? `/${lang}/estimate?${new URLSearchParams(Object.entries(p).filter(([, v]) => v !== '')).toString()}` : null;
+}
 
 export function generateMetadata({ params }) {
   const m = mlsT(params.lang);
@@ -127,7 +136,7 @@ export default async function SearchPage({ params, searchParams }) {
                   {res.total > MAX_RESULTS ? ` ${m.capped}` : ''}
                 </p>
                 <div className="mls-grid">
-                  {res.items.map((l) => <MlsCard key={l.key} l={l} m={m} lang={lang} />)}
+                  {res.items.map((l) => <MlsCard key={l.key} l={l} m={m} lang={lang} estHref={estimateHref(l, lang)} estLabel={vowT(lang).promo.cardCta} />)}
                 </div>
                 {pages > 1 && (
                   <nav className="mls-pages" aria-label="Pages">

@@ -21,9 +21,10 @@ export function MlsSpecs({ l, m }) {
   );
 }
 
-export default function MlsCard({ l, m, lang }) {
+// estHref: link to the instant estimate for this home, prefilled. Sits under the card (not inside its link).
+export default function MlsCard({ l, m, lang, estHref, estLabel }) {
   const place = [l.community, l.city].filter(Boolean).join(', ');
-  return (
+  const card = (
     <a className="card mls-card" href={`/${lang}/mls/${encodeURIComponent(l.key)}`}>
       <div className="ph">
         {l.photo ? <img src={l.photo} alt={l.address || place} loading="lazy" /> : <span className="noimg">{l.subtype}</span>}
@@ -42,6 +43,17 @@ export default function MlsCard({ l, m, lang }) {
         </div>
       </div>
     </a>
+  );
+  if (!estHref) return card;
+  return (
+    <div className="mls-cell">
+      {card}
+      <a className="mls-est" href={estHref}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m6 10V5m6 14v-7m4 7H2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+        <span>{estLabel}</span>
+        <span aria-hidden="true" className="arr">{lang === 'fa' ? '←' : '→'}</span>
+      </a>
+    </div>
   );
 }
 

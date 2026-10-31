@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AREAS, TYPE_KEYS, PRICES_SALE, PRICES_LEASE, shortPrice } from '@/lib/mls-options';
 import { digits } from '@/lib/format';
 import { mlsT } from '@/lib/i18n-mls';
+import { VOW_LIVE, vowT } from '@/lib/i18n-vow';
 
 const toLatin = (s) => String(s || '').replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
 
@@ -120,12 +121,31 @@ export default function HeroVideo({ t, lang, stats, reel = false }) {
 
         <div className="hv-card">
           <div className="hv-tabs" role="tablist">
-            {[['sale', h.buy], ['lease', h.rent], ['sell', h.sell]].map(([k, label]) => (
+            {[['sale', h.buy], ['lease', h.rent], ['sell', VOW_LIVE ? vowT(lang).promo.heroTab : h.sell]].map(([k, label]) => (
               <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => pickTab(k)}>{label}</button>
             ))}
           </div>
 
-          {tab === 'sell' ? (
+          {tab === 'sell' && VOW_LIVE ? (
+            <form className="hv-form" method="get" action={`/${lang}/estimate`}>
+              <input type="hidden" name="purpose" value="mine" />
+              <div className="hv-bar hv-bar-est">
+                <label className="hv-seg hv-where">
+                  <span>{vowT(lang).est.addr}</span>
+                  <input name="addr" placeholder={lang === 'fa' ? vowT(lang).promo.addrPh : vowT(lang).est.addrPh} dir={lang === 'fa' ? 'rtl' : 'ltr'} required maxLength={80} autoComplete="street-address" />
+                </label>
+                <label className="hv-seg">
+                  <span>{vowT(lang).promo.area}</span>
+                  <select name="area" defaultValue="" required>
+                    <option value="" disabled>—</option>
+                    {AREAS.map((a) => <option key={a} value={a}>{a}</option>)}
+                  </select>
+                </label>
+                <button className="btn btn-accent hv-go" type="submit">{vowT(lang).promo.go}</button>
+              </div>
+              <p className="hv-est-note"><span className="nav-badge">{vowT(lang).promo.badge}</span>{vowT(lang).promo.heroText}</p>
+            </form>
+          ) : tab === 'sell' ? (
             <div className="hv-sell">
               <div>
                 <b>{h.sellTitle}</b>

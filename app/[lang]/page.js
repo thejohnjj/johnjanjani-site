@@ -5,6 +5,8 @@ import PicksGrid from '@/components/PicksGrid';
 import HeroStories from '@/components/HeroStories';
 import HeroMap from '@/components/HeroMap';
 import HeroVideo from '@/components/HeroVideo';
+import EstimatePromo from '@/components/EstimatePromo';
+import { VOW_LIVE, vowT } from '@/lib/i18n-vow';
 import { GEO } from '@/lib/geo';
 import ContactForm from '@/components/ContactForm';
 import { money, number } from '@/lib/format';
@@ -72,6 +74,8 @@ export default async function Home({ params, searchParams }) {
             </div>
           </section>
         )}
+
+        {VOW_LIVE && <EstimatePromo lang={lang} v={vowT(lang)} />}
 
         {picks.length > 0 && (
           <section className="block picks" id="picks">

@@ -14,7 +14,11 @@ export function Header({ lang, t, member, path = '' }) {
         <nav className="links" aria-label="Main">
           <a href={`/${lang}/listings`}>{t.nav.listings}</a>
           {VOW_LIVE && <a href={`/${lang}/sold`}>{vowT(lang).sold.title}</a>}
-          <a href={`/${lang}/home-value`}>{t.navTools.homeValue}</a>
+          {VOW_LIVE ? (
+            <a className="nav-est" href={`/${lang}/estimate`}>{vowT(lang).promo.nav}<span className="nav-badge">{vowT(lang).promo.badge}</span></a>
+          ) : (
+            <a href={`/${lang}/home-value`}>{t.navTools.homeValue}</a>
+          )}
           <a href={`/${lang}/calculator`}>{t.navTools.calculator}</a>
           <a href={`/${lang}/guide`}>{t.navTools.guide}</a>
           <a href={`/${lang}/seller-guide`}>{t.navTools.sellerGuide}</a>
@@ -41,6 +45,7 @@ export function Footer({ lang, t }) {
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 18px' }}>
           <a href={`/${lang}/picks`}>{t.navPicks}</a>
+          {VOW_LIVE && <a href={`/${lang}/estimate`}>{vowT(lang).promo.nav}</a>}
           <a href={`/${lang}/home-value`}>{t.navTools.homeValue}</a>
           <a href={`/${lang}/calculator`}>{t.navTools.calculator}</a>
           <a href={`/${lang}/guide`}>{t.navTools.guide}</a>

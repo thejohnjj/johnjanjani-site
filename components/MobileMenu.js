@@ -37,6 +37,7 @@ export default function MobileMenu({ lang, t, member, path = '' }) {
 
   const close = () => setOpen(false);
   const links = [
+    ...(VOW_LIVE ? [[`/${lang}/estimate`, vowT(lang).promo.nav, Icons.home, vowT(lang).promo.badge]] : []),
     [`/${lang}/listings`, t.nav.listings, Icons.grid],
     [`/${lang}/picks`, t.navPicks, Icons.star],
     ...(VOW_LIVE ? [[`/${lang}/sold`, vowT(lang).sold.title, Icons.chart]] : []),
@@ -66,11 +67,12 @@ export default function MobileMenu({ lang, t, member, path = '' }) {
         <div className="mmenu-scrim" style={{ top }} onClick={close}>
           <nav id="mmenu" className="mmenu" aria-label={t.menu} onClick={(e) => e.stopPropagation()}>
             <ul>
-              {links.map(([href, label, icon]) => (
+              {links.map(([href, label, icon, badge]) => (
                 <li key={href}>
-                  <a href={href} onClick={close}>
+                  <a href={href} onClick={close} className={badge ? 'mm-est' : undefined}>
                     <span className="mi">{icon}</span>
                     <span>{label}</span>
+                    {badge && <span className="nav-badge">{badge}</span>}
                   </a>
                 </li>
               ))}

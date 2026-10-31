@@ -2,7 +2,8 @@ import { Suspense } from 'react';
 import { t as dictFor } from '@/lib/i18n';
 import ListingEstimate, { ListingEstimateSkeleton } from '@/components/ListingEstimate';
 import { mlsT, FEED_LIVE } from '@/lib/i18n-mls';
-import { vowT } from '@/lib/i18n-vow';
+import { vowT, VOW_LIVE } from '@/lib/i18n-vow';
+import { listingToParams } from '@/lib/estimate';
 import { getMemberId } from '@/lib/session';
 import { getMember } from '@/lib/listings';
 import { getFeedListing } from '@/lib/proptx';
@@ -60,6 +61,9 @@ export default async function MlsListingPage({ params }) {
   const place = ok ? [l.community, l.city].filter(Boolean).join(', ') : '';
   const wa = ok ? `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(m.waText.replace('{k}', l.key).replace('{a}', l.address || place))}` : '';
   const here = `/${lang}/mls/${encodeURIComponent(key)}`;
+  // Guests: link to this home's instant estimate, prefilled; the estimate page asks for the free account.
+  const estParams = ok && !vow && VOW_LIVE && !l.lease ? listingToParams(l) : null;
+  const estHref = estParams ? `/${lang}/estimate?${new URLSearchParams(Object.entries(estParams).filter(([, x]) => x !== '')).toString()}` : null;
 
   return (
     <MembershipProvider lang={lang} t={t}>
@@ -108,6 +112,15 @@ export default async function MlsListingPage({ params }) {
                 <Suspense fallback={<ListingEstimateSkeleton e={v.est} />}>
                   <ListingEstimate l={l} e={v.est} lang={lang} />
                 </Suspense>
+              )}
+
+              {estHref && (
+                <a className="vow-teaser est-teaser" href={estHref} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <span className="nav-badge">{v.promo.badge}</span>
+                  <b>{v.promo.detailTitle}</b>
+                  <span className="mls-line">{v.promo.detailText}</span>
+                  <span className="btn btn-accent" style={{ justifySelf: 'start' }}>{v.promo.detailBtn}</span>
+                </a>
               )}
 
               {!vow && (
