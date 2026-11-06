@@ -1,6 +1,7 @@
 'use client';
 
 import { VOW_LIVE, vowT } from '@/lib/i18n-vow';
+import { FEED_LIVE, mlsT } from '@/lib/i18n-mls';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useMembership } from './Membership';
@@ -38,6 +39,7 @@ export default function MobileMenu({ lang, t, member, path = '' }) {
   const close = () => setOpen(false);
   const links = [
     ...(VOW_LIVE ? [[`/${lang}/estimate`, vowT(lang).promo.nav, Icons.home, vowT(lang).promo.badge]] : []),
+    ...(FEED_LIVE ? [[`/${lang}/search`, mlsT(lang).navSearch, Icons.globe]] : []),
     [`/${lang}/listings`, t.nav.listings, Icons.grid],
     [`/${lang}/picks`, t.navPicks, Icons.star],
     ...(VOW_LIVE ? [[`/${lang}/sold`, vowT(lang).sold.title, Icons.chart]] : []),

@@ -7,7 +7,7 @@ export default function robots() {
   const site = SITE;
   return {
     rules: [
-      { userAgent: AI_BOTS, disallow: ['/en/search', '/fa/search', '/en/mls/', '/fa/mls/'] },
+      { userAgent: AI_BOTS, disallow: ['/en/search', '/fa/search', '/en/mls/', '/fa/mls/', '/en/sold', '/fa/sold', '/en/estimate', '/fa/estimate'] },
       { userAgent: '*', allow: '/', disallow: ['/admin', '/api/'] },
     ],
     sitemap: `${site}/sitemap.xml`,

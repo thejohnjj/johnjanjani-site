@@ -1,4 +1,5 @@
 import { VOW_LIVE, vowT } from '@/lib/i18n-vow';
+import { FEED_LIVE, mlsT } from '@/lib/i18n-mls';
 import Logo from './Logo';
 import { JoinButton, SignOutButton } from './Membership';
 import MobileMenu from './MobileMenu';
@@ -13,6 +14,7 @@ export function Header({ lang, t, member, path = '' }) {
         </a>
         <nav className="links" aria-label="Main">
           <a href={`/${lang}/listings`}>{t.nav.listings}</a>
+          {FEED_LIVE && <a href={`/${lang}/search`}>{mlsT(lang).navSearch}</a>}
           {VOW_LIVE && <a href={`/${lang}/sold`}>{vowT(lang).sold.title}</a>}
           {VOW_LIVE ? (
             <a className="nav-est" href={`/${lang}/estimate`}>{vowT(lang).promo.nav}<span className="nav-badge">{vowT(lang).promo.badge}</span></a>
