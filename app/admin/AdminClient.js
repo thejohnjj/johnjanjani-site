@@ -363,3 +363,27 @@ export function ReviewsAdmin({ reviews }) {
     </div>
   );
 }
+
+// Remove a member (for test accounts). Asks first, since it can't be undone.
+export function RemoveMemberButton({ id, label }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      type="button"
+      className="btn btn-line"
+      style={{ minHeight: 32, padding: '4px 12px', fontSize: 13 }}
+      disabled={busy}
+      onClick={async () => {
+        if (!window.confirm(`Remove ${label}? This deletes the member from the website (not from Zoho) and can't be undone.`)) return;
+        setBusy(true);
+        const r = await fetch(`/api/admin/members?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+        setBusy(false);
+        if (r.ok) router.refresh();
+        else window.alert('Could not remove this member. Try again.');
+      }}
+    >
+      Remove
+    </button>
+  );
+}

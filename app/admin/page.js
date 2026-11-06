@@ -1,7 +1,7 @@
 import { sortByCode } from '@/lib/listings';
 import { isAdmin } from '@/lib/session';
 import { db } from '@/lib/supabase';
-import { LoginForm, LogoutButton, ReviewsAdmin } from './AdminClient';
+import { LoginForm, LogoutButton, ReviewsAdmin, RemoveMemberButton } from './AdminClient';
 import { zohoStatus } from '@/lib/zoho';
 
 export const dynamic = 'force-dynamic';
@@ -147,7 +147,7 @@ export default async function Admin({ searchParams }) {
           <div className="sec-head"><div><div className="eyebrow">Members (your leads)</div><h2>{members.data?.length || 0} members</h2></div></div>
           <div className="tablebox">
             <table>
-              <thead><tr><th>Joined</th><th>Name</th><th>Phone</th><th>Email</th><th>Language</th><th>Looking for</th><th>Sold prices</th><th>Emails</th><th>First listing viewed</th><th>Views</th><th>Last visit</th></tr></thead>
+              <thead><tr><th>Joined</th><th>Name</th><th>Phone</th><th>Email</th><th>Language</th><th>Looking for</th><th>Sold prices</th><th>Emails</th><th>First listing viewed</th><th>Views</th><th>Last visit</th><th></th></tr></thead>
               <tbody>
                 {(members.data || []).map((m) => (
                   <tr key={m.id}>
@@ -162,9 +162,10 @@ export default async function Admin({ searchParams }) {
                     <td>{m.first_listing || '—'}</td>
                     <td>{viewCount[m.id] || 0}</td>
                     <td>{when(m.last_seen_at)}</td>
+                    <td><RemoveMemberButton id={m.id} label={`${m.name} (${m.email})`} /></td>
                   </tr>
                 ))}
-                {!members.data?.length && <tr><td colSpan="11">No members yet.</td></tr>}
+                {!members.data?.length && <tr><td colSpan="12">No members yet.</td></tr>}
               </tbody>
             </table>
           </div>
